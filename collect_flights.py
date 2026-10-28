@@ -287,7 +287,7 @@ def enrich_with_gemini_api(rows: List[Dict[str, Any]], gemini_api_key: str) -> N
         )
         try:
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-3.8-flash",
                 contents=prompt,
             )
             text = (response.text or "").strip()
