@@ -2,13 +2,15 @@
 # -*- coding: utf-8 -*-
 """
 ===============================================================================
-[collect_flights.py] 데일리 최저가 항공권 소식 — 전 노선 자동 수집 로봇 (Plan 2)
+[collect_flights.py] 데일리 최저가 항공권 소식 — 전 노선 자동 수집 & 깃허브 페이지 발행 로봇
 ===============================================================================
 - 오픈소스 엔진: fast-flights (Google Flights Scraper) + Google GenAI SDK (Gemini API)
-- 수집 대상: 기존 시트 전 도시 + 추가 추천 직항 도시 전체 (로테이션 없이 매일 전수 수집)
+- 수집 대상: 기존 시트 전 도시 + 추가 추천 직항 도시 전체 (로테이션 없이 매일 58개 전수 수집)
 - 탐색 일정(선택 A): 검색일 기준 2주~5주 뒤의 [금~월 3박4일 / 토~화 3박4일 / 목~월 4박5일] 중 최저가
-- 예약 유의사항(선택 B): Gemini API를 10개 도시씩 분할 호출하여 노선·시간대 맞춤 코멘트 생성
-- 시트 저장 방식: 복잡한 Google Cloud 인증 없이 기존 Apps Script 웹앱(doPost)으로 즉시 전송
+- 예약 유의사항(선택 B): Gemini API(gemini-3.8-flash)를 10개 도시씩 분할 호출하여 맞춤 코멘트 생성
+- 자동 발행:
+  1) 구글 스프레드시트('시트1')에 58개 노선 자동 기록 (doPost 웹훅)
+  2) 깃허브 페이지(GitHub Pages)용 index.html 및 flights_data.json 최신 데이터 자동 갱신
 ===============================================================================
 """
 
@@ -23,9 +25,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # 한국 표준시(KST, UTC+9) 설정
 KST = datetime.timezone(datetime.timedelta(hours=9))
+SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1WHVBJoaWNO_wFw3hRPbfelKO_lGh0BY7qkovjqpHI5I/edit?gid=0#gid=0"
 
 # =============================================================================
-# 1. 매일 전수 수집할 전체 직항 도시 마스터 목록 (기존 도시 + 추천 후보 전체)
+# 1. 매일 전수 수집할 전체 직항 도시 마스터 목록 (기존 도시 + 추천 후보 전체 58곳)
 # =============================================================================
 CITIES_MASTER: List[Dict[str, Any]] = [
     # --- [1] 일본면 (대도시 + 소도시/휴양지 21곳) ---
@@ -104,17 +107,8 @@ WEEKDAY_KR = ["월", "화", "수", "목", "금", "토", "일"]
 # 2. 선택 A: 출발일 기준 2주~5주 뒤 주말 포함 황금 일정 후보 생성 함수
 # =============================================================================
 def get_candidate_weekend_schedules(today_date: datetime.date) -> List[Tuple[datetime.date, datetime.date, str]]:
-    """
-    검색일(today_date)로부터 약 16일~32일 뒤의
-    1) 금요일 출발 ~ 월요일 귀국 (3박 4일)
-    2) 토요일 출발 ~ 화요일 귀국 (3박 4일)
-    3) 목요일 출발 ~ 월요일 귀국 (4박 5일)
-    일정 후보를 생성합니다.
-    """
     candidates = []
     start_search = today_date + datetime.timedelta(days=15)
-
-    # 가장 가까운 금요일 찾기
     days_until_fri = (4 - start_search.weekday()) % 7
     first_fri = start_search + datetime.timedelta(days=days_until_fri)
 
@@ -139,7 +133,6 @@ def format_schedule_kr(dep: datetime.date, ret: datetime.date, nights: int) -> s
 
 
 def build_booking_urls(code: str, city_name_only: str, dep: datetime.date, ret: datetime.date) -> Tuple[str, str, str]:
-    """네이버 항공권(I열), 스카이스캐너(J열), 검색 키워드(K열)를 100% 정확하게 생성합니다."""
     dep_ymd = dep.strftime("%Y%m%d")
     ret_ymd = ret.strftime("%Y%m%d")
     dep_yymd = dep.strftime("%y%m%d")
@@ -168,7 +161,6 @@ def parse_price_int(price_str: Any) -> int:
     if not digits:
         return 0
     val = int(digits)
-    # 달러($)로 반환된 경우 원화 환산 (약 1,380원 기준)
     if "$" in s or val < 3000:
         val = val * 1380
     return val
@@ -178,9 +170,6 @@ def try_scrape_with_fast_flights(
     code: str,
     candidates: List[Tuple[datetime.date, datetime.date, str]]
 ) -> Optional[Dict[str, Any]]:
-    """
-    fast-flights 패키지(v2 및 v3 호환)를 사용해 후보 일정 중 최저가 항공편을 탐색합니다.
-    """
     try:
         import fast_flights  # type: ignore
     except ImportError:
@@ -188,13 +177,11 @@ def try_scrape_with_fast_flights(
 
     best_result: Optional[Dict[str, Any]] = None
 
-    # 상위 2개 대표 주말 일정(금~월, 토~화)을 빠르게 조회
     for dep_date, ret_date, sched_str in candidates[:2]:
         dep_s = dep_date.strftime("%Y-%m-%d")
         ret_s = ret_date.strftime("%Y-%m-%d")
         try:
             flights_list = []
-            # fast-flights v2 API 시도
             if hasattr(fast_flights, "FlightData") and hasattr(fast_flights, "get_flights"):
                 res = fast_flights.get_flights(
                     flight_data=[
@@ -207,7 +194,6 @@ def try_scrape_with_fast_flights(
                     fetch_mode="common",
                 )
                 flights_list = getattr(res, "flights", []) or []
-            # fast-flights v3 API 시도
             elif hasattr(fast_flights, "FlightQuery") and hasattr(fast_flights, "create_query"):
                 q = fast_flights.create_query(
                     flights=[
@@ -249,10 +235,6 @@ def try_scrape_with_fast_flights(
 # 4. 선택 B: Gemini API 10개 단위 분할 호출 (L열 예약 유의사항 생성 & 시세 보완)
 # =============================================================================
 def enrich_with_gemini_api(rows: List[Dict[str, Any]], gemini_api_key: str) -> None:
-    """
-    Gemini API(GEMINI_API_KEY)가 설정되어 있으면 10개 도시씩 안전하게 나누어 호출하여
-    노선·항공사·출도착 시간대에 맞춘 최신 예약 유의사항(L열)을 생성합니다.
-    """
     if not gemini_api_key:
         print("[안내] GEMINI_API_KEY가 설정되지 않아 내장된 스마트 에디터 코멘트를 사용합니다.")
         return
@@ -263,6 +245,9 @@ def enrich_with_gemini_api(rows: List[Dict[str, Any]], gemini_api_key: str) -> N
     except Exception as err:
         print(f"[안내] google-genai 초기화 생략 ({err}) -> 내장 에디터 코멘트를 사용합니다.")
         return
+
+    candidate_models = ["gemini-3.8-flash", "gemini-2.5-flash"]
+    active_model = candidate_models[0]
 
     chunk_size = 10
     for idx in range(0, len(rows), chunk_size):
@@ -286,11 +271,24 @@ def enrich_with_gemini_api(rows: List[Dict[str, Any]], gemini_api_key: str) -> N
             f"대상 노선 목록:\n{json.dumps(prompt_items, ensure_ascii=False)}"
         )
         try:
-            response = client.models.generate_content(
-                model="gemini-3.8-flash",
-                contents=prompt,
-            )
-            text = (response.text or "").strip()
+            response = None
+            last_err = None
+            for model_name in [active_model] + [m for m in candidate_models if m != active_model]:
+                try:
+                    response = client.models.generate_content(
+                        model=model_name,
+                        contents=prompt,
+                    )
+                    active_model = model_name
+                    break
+                except Exception as model_err:
+                    last_err = model_err
+                    continue
+
+            if response is None and last_err is not None:
+                raise last_err
+
+            text = (response.text or "").strip() if response else ""
             json_match = re.search(r"\{.*\}", text, re.S)
             if json_match:
                 notes_map = json.loads(json_match.group(0))
@@ -298,14 +296,78 @@ def enrich_with_gemini_api(rows: List[Dict[str, Any]], gemini_api_key: str) -> N
                     custom_note = notes_map.get(r["code"])
                     if isinstance(custom_note, str) and len(custom_note.strip()) > 10:
                         r["notes"] = custom_note.strip()
+            print(f"  ✨ [Gemini ({active_model})] 배치({idx // chunk_size + 1}) 맞춤 예약 유의사항 생성 완료")
             time.sleep(1.0)
         except Exception as err:
             print(f"[안내] Gemini 배치({idx // chunk_size + 1}) 기본 팁 유지: {err}")
 
 
 # =============================================================================
-# 5. 메인 실행 파이프라인 및 Google Sheets(Code.gs 웹훅) 자동 전송
+# 5. 메인 실행 파이프라인, Google Sheets 기록 및 GitHub Pages 자동 파일 갱신
 # =============================================================================
+def classify_country_group(category: str, city: str) -> str:
+    combined = f"{category} {city}"
+    if "일본" in combined:
+        return "일본"
+    if "베트남" in combined:
+        return "베트남"
+    if any(k in combined for k in ["중국", "대만", "홍콩", "마카오", "중화"]):
+        return "중화권"
+    if any(k in combined for k in ["태국", "필리핀", "말레이시아", "싱가포르", "동남아"]):
+        return "태국"
+    return "이색직항"
+
+
+def decorate_flight_item(item: Dict[str, Any], idx: int) -> Dict[str, Any]:
+    d = str(item.get("date", "")).strip()
+    cat = str(item.get("category", "")).strip()
+    city = str(item.get("city", "")).strip()
+    code = str(item.get("code", "")).strip()
+    if not code:
+        m = re.search(r"\(([A-Z/]+)\)", city)
+        code = m.group(1) if m else city
+    ts = str(item.get("timeSlot", "")).strip()
+    bag = str(item.get("baggage", "")).strip()
+    airline = str(item.get("airline", "")).strip()
+    price = int(re.sub(r"[^0-9]", "", str(item.get("price", 0))) or "0")
+
+    has_bag = ("포함" in bag) and not bool(
+        re.search(r"^(특가\s*미포함|Eco\s*미포함|심플피치\s*미포함|기내\s*\d+kg\s*포함|특가\s*기내|Eco\s*기내)", bag)
+    )
+    is_morn = bool(re.search(r"출국\s*(0[5-9]|10):", ts))
+    is_night = bool(re.search(r"출국\s*(19|2[0-3]|0[0-4]):", ts)) or bool(re.search(r"귀국\s*(0[0-4]):", ts))
+    is_fsc = bool(
+        re.search(
+            r"(대한항공|아시아나|에어아스타나|로열브루나이|중국남방|중국동방|캐세이|중화항공|에바항공|싱가포르항공|타이항공|베트남항공|가루다)",
+            airline,
+        )
+    )
+    return {
+        "id": item.get("id") or f"{d.replace('-', '')}-{idx}",
+        "date": d,
+        "month": d[:7],
+        "category": cat,
+        "countryGroup": item.get("countryGroup") or classify_country_group(cat, city),
+        "city": city,
+        "code": code,
+        "schedule": str(item.get("schedule", "")).strip(),
+        "price": price,
+        "airline": airline,
+        "timeSlot": ts,
+        "baggage": bag,
+        "naverUrl": str(item.get("naverUrl", "")).strip(),
+        "skyUrl": str(item.get("skyUrl", "")).strip(),
+        "keyword": str(item.get("keyword", "")).strip(),
+        "notes": str(item.get("notes", "")).strip(),
+        "hasBaggage": has_bag,
+        "isMorning": is_morn,
+        "isNight": is_night,
+        "isFSC": is_fsc,
+        "prevPrice": None,
+        "priceDiff": 0,
+    }
+
+
 def collect_all_50_cities() -> List[Dict[str, Any]]:
     now_kst = datetime.datetime.now(KST)
     today_date = now_kst.date()
@@ -321,10 +383,7 @@ def collect_all_50_cities() -> List[Dict[str, Any]]:
         city_full = item["city"]
         city_name_only = re.sub(r"\s*\([A-Z/]+\)", "", city_full).strip()
 
-        # 1차: fast-flights로 실시간 조회 시도
         scraped = try_scrape_with_fast_flights(code, candidates)
-
-        # 후보 일정 중 도시별 최적 주말 일정 배정 (금~월, 토~화, 목~월 골고루 탐색)
         default_dep, default_ret, default_sched = candidates[i % len(candidates)]
 
         if scraped and scraped.get("price"):
@@ -336,7 +395,6 @@ def collect_all_50_cities() -> List[Dict[str, Any]]:
             time_str = scraped["timeSlot"] or item["default_time"]
         else:
             dep_d, ret_d, sched_str = default_dep, default_ret, default_sched
-            # 일자별 미세 시세 변동 반영 (실시간 스크래핑 제한 시에도 끊김 없는 추이 제공)
             day_seed = (today_date.day * 7 + i * 13) % 9 - 4
             price_val = max(165000, item["base_price"] + (day_seed * 2400))
             airline_str = item["default_airline"]
@@ -362,16 +420,15 @@ def collect_all_50_cities() -> List[Dict[str, Any]]:
         collected_rows.append(row_obj)
         print(f"  ✓ [{i + 1:02d}/{len(CITIES_MASTER)}] {city_full}: {price_val:,}원 ({sched_str})")
 
-    # 선택 B: Gemini API로 L열 예약 유의사항(Editor's Note) 보강
     gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
     enrich_with_gemini_api(collected_rows, gemini_key)
 
     return collected_rows
 
 
-def post_rows_to_google_sheet(rows: List[Dict[str, Any]]) -> None:
+def post_rows_to_google_sheet(rows: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
     webapp_url = os.environ.get("WEBAPP_URL", "").strip()
-    secret_key = os.environ.get("SYNC_SECRET_KEY", "flight-news-secret-2026").strip()
+    secret_key = os.environ.get("SYNC_SECRET_KEY", "").strip() or "flight-news-secret-2026"
 
     if not webapp_url:
         print("⚠️ [오류] GitHub Secrets에 'WEBAPP_URL'(구글 앱스크립트 웹앱 주소)이 설정되지 않았습니다.")
@@ -391,12 +448,162 @@ def post_rows_to_google_sheet(rows: List[Dict[str, Any]]) -> None:
 
     with urllib.request.urlopen(req, timeout=60) as resp:
         resp_text = resp.read().decode("utf-8", errors="replace")
-        print(f"🎉 [시트 기록 완료] 응답: {resp_text}")
+        try:
+            resp_json = json.loads(resp_text)
+        except Exception:
+            resp_json = {}
+
+        if resp_json.get("status") == "error":
+            print(f"❌ [시트 기록 실패] 응답: {resp_text}")
+            print("💡 해결 방법: GitHub Secrets의 'SYNC_SECRET_KEY' 값을 'flight-news-secret-2026'으로 맞추거나 삭제해 주세요.")
+            raise SystemExit(1)
+
+        summary = {k: v for k, v in resp_json.items() if k != "payload"}
+        print(f"🎉 [시트 기록 완료] 응답: {json.dumps(summary, ensure_ascii=False) if summary else resp_text[:200]}")
+        return resp_json
+
+
+def update_github_pages_files(new_rows: List[Dict[str, Any]], sheet_resp: Optional[Dict[str, Any]] = None) -> None:
+    """
+    GitHub Pages 호스팅을 위해 저장소 루트의 flights_data.json 과 index.html 내장 데이터를
+    오늘 수집된 58개 노선 및 기존 누적 이력과 합쳐 자동으로 최신화합니다.
+    """
+    now_kst_str = datetime.datetime.now(KST).strftime("%Y-%m-%d %H:%M")
+    webapp_url = os.environ.get("WEBAPP_URL", "").strip()
+
+    html_path = "index.html"
+    json_path = "flights_data.json"
+
+    existing_flights: List[Dict[str, Any]] = []
+
+    # 1. Code.gs가 전체 시트 payload를 반환한 경우 우선 사용
+    if sheet_resp and isinstance(sheet_resp.get("payload"), dict):
+        srv_flights = sheet_resp["payload"].get("flights")
+        if isinstance(srv_flights, list) and len(srv_flights) > 0:
+            existing_flights = srv_flights
+
+    # 2. 그렇지 않으면 기존 flights_data.json 또는 index.html에서 누적 이력 로드
+    if not existing_flights and os.path.exists(json_path):
+        try:
+            with open(json_path, encoding="utf-8") as jf:
+                jdata = json.load(jf)
+                if isinstance(jdata.get("flights"), list):
+                    existing_flights = jdata["flights"]
+        except Exception:
+            pass
+
+    if not existing_flights and os.path.exists(html_path):
+        try:
+            with open(html_path, encoding="utf-8") as hf:
+                html_text = hf.read()
+            m = re.search(r"function getFallbackPayload\(\)\s*\{\s*return\s*(\{.*?\});\s*\}", html_text, re.S)
+            if m:
+                fallback_obj = json.loads(m.group(1))
+                if isinstance(fallback_obj.get("flights"), list):
+                    existing_flights = fallback_obj["flights"]
+        except Exception:
+            pass
+
+    # 3. 기존 데이터와 오늘 수집된 58개 노선 병합 (동일 날짜 + 동일 공항코드는 최신값으로 덮어쓰기)
+    merged_map: Dict[str, Dict[str, Any]] = {}
+    ordered_keys: List[str] = []
+
+    for idx, f in enumerate(existing_flights, start=1):
+        dec = decorate_flight_item(f, idx)
+        if not dec["date"] or not dec["price"]:
+            continue
+        k = f"{dec['date']}|{dec['code']}"
+        if k not in merged_map:
+            ordered_keys.append(k)
+        merged_map[k] = dec
+
+    for idx, r in enumerate(new_rows, start=len(ordered_keys) + 1):
+        dec = decorate_flight_item(r, idx)
+        if not dec["date"] or not dec["price"]:
+            continue
+        k = f"{dec['date']}|{dec['code']}"
+        if k not in merged_map:
+            ordered_keys.append(k)
+        merged_map[k] = dec
+
+    merged_list = [merged_map[k] for k in ordered_keys]
+    for i, item in enumerate(merged_list, start=1):
+        item["id"] = f"{item['date'].replace('-', '')}-{i}"
+
+    # 4. 날짜 목록(내림차순) 및 노선별 누적 시세 추이(historicalSeries) 재계산
+    dates_desc = sorted(list({it["date"] for it in merged_list}), reverse=True)
+    latest_date = dates_desc[0] if dates_desc else datetime.datetime.now(KST).strftime("%Y-%m-%d")
+    latest_month = latest_date[:7]
+
+    by_code: Dict[str, List[Dict[str, Any]]] = {}
+    for it in sorted(merged_list, key=lambda x: x["date"]):
+        by_code.setdefault(it["code"], []).append(it)
+
+    hist_series: Dict[str, Any] = {}
+    for code, items in by_code.items():
+        date_price_map: Dict[str, int] = {}
+        for it in items:
+            date_price_map[it["date"]] = it["price"]
+        d_sorted = sorted(date_price_map.keys())
+        for it in items:
+            prev_dates = [d for d in d_sorted if d < it["date"]]
+            if prev_dates:
+                pp = date_price_map[prev_dates[-1]]
+                it["prevPrice"] = pp
+                it["priceDiff"] = it["price"] - pp
+        hist_series[code] = {
+            "label": items[-1]["city"],
+            "countryGroup": items[-1]["countryGroup"],
+            "dates": [d[5:].replace("-", "/") for d in d_sorted],
+            "fullDates": d_sorted,
+            "prices": [date_price_map[d] for d in d_sorted],
+        }
+
+    avail_dates = []
+    for i, d in enumerate(dates_desc):
+        p = d.split("-")
+        badge = "조간 · 최신호" if i == 0 else "조간 · 이달의 일간지"
+        avail_dates.append({
+            "date": d,
+            "month": d[:7],
+            "label": f"제{p[0]}-{p[1]}{p[2]}호 ({p[0]}년 {int(p[1])}월 {int(p[2])}일 {badge})",
+        })
+
+    payload_obj: Dict[str, Any] = {
+        "isFallback": False,
+        "updatedAt": now_kst_str,
+        "spreadsheetUrl": SPREADSHEET_URL,
+        "webappUrl": webapp_url,
+        "latestDate": latest_date,
+        "latestMonth": latest_month,
+        "availableDates": avail_dates,
+        "flights": merged_list,
+        "historicalSeries": hist_series,
+    }
+
+    # 5. flights_data.json 저장
+    with open(json_path, "w", encoding="utf-8") as jf:
+        json.dump(payload_obj, jf, ensure_ascii=False)
+    print(f"📦 [GitHub Pages] {json_path} 업데이트 완료 (총 {len(merged_list)}개 누적 노선, 최신호: {latest_date})")
+
+    # 6. index.html 내장 폴백 데이터도 함께 최신화 (초고속 즉시 로딩 보장)
+    if os.path.exists(html_path):
+        with open(html_path, encoding="utf-8") as hf:
+            html_content = hf.read()
+        pattern = r"function getFallbackPayload\(\)\s*\{\s*return\s*\{.*?\};\s*\}"
+        replacement = "function getFallbackPayload() {\n      return " + json.dumps(payload_obj, ensure_ascii=False) + ";\n    }"
+        new_html, count = re.subn(pattern, lambda m: replacement, html_content, flags=re.S)
+        if count > 0:
+            with open(html_path, "w", encoding="utf-8") as hf:
+                hf.write(new_html)
+            print(f"🌐 [GitHub Pages] {html_path} 내장 최신 데이터 동기화 완료!")
 
 
 if __name__ == "__main__":
     all_rows = collect_all_50_cities()
     if os.environ.get("DRY_RUN") == "1":
-        print(f"✅ DRY_RUN 테스트 완료: 총 {len(all_rows)}개 노선 생성 성공!")
+        update_github_pages_files(all_rows, None)
+        print(f"✅ DRY_RUN 테스트 완료: 총 {len(all_rows)}개 노선 생성 및 GitHub Pages 파일 갱신 성공!")
     else:
-        post_rows_to_google_sheet(all_rows)
+        resp_obj = post_rows_to_google_sheet(all_rows)
+        update_github_pages_files(all_rows, resp_obj)
