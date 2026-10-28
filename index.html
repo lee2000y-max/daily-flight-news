@@ -87,7 +87,7 @@
       height: 100%;
       object-fit: cover;
       object-position: center;
-      opacity: 0.23;
+      opacity: 0.25;
       filter: contrast(1.05) saturate(0.95) sepia(0.12);
       transform: scale(1.02);
       transition: opacity 0.4s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
@@ -101,8 +101,8 @@
     }
 
     .newspaper-card:hover .landmark-watermark-img {
-      opacity: 0.38;
-      filter: contrast(1.08) saturate(1.1) sepia(0.03);
+      opacity: 0.42;
+      filter: contrast(1.08) saturate(1.12) sepia(0.02);
       transform: scale(1.08);
     }
 
@@ -303,6 +303,7 @@
         <select 
           id="editionDateSelect"
           x-model="selectedDate"
+          @change="refreshFlapSlotsFromData(currentEditionFlights)"
           class="bg-[#FAF7F0] border border-[#8C8275] rounded px-2 py-0.5 text-xs font-bold text-[#1E1B18] focus:outline-none focus:ring-1 focus:ring-[#2C2620]">
           <template x-for="d in availableDates" :key="d">
             <option :value="d" x-text="formatDateKorean(d)"></option>
@@ -425,7 +426,7 @@
           <input 
             type="text" 
             x-model="searchQuery"
-            placeholder="도시명(예: 다낭, 사가, 알마티), 공항코드(DAD), 항공사 검색..."
+            placeholder="도시명(예: 다낭, 사가, 하노이), 공항코드(DAD), 항공사 검색..."
             class="w-full bg-[#EFECE4] border border-[#B8AD99] rounded-sm pl-8 pr-7 py-1.5 text-xs sm:text-sm text-[#1E1B18] placeholder-[#7A7164] focus:outline-none focus:border-[#2C2620]" />
           <span class="absolute left-2.5 top-2 text-xs text-[#5C5549]">🔍</span>
           <button 
@@ -497,6 +498,7 @@
               :src="getLandmarkPhoto(item.code)" 
               :alt="item.city + ' 랜드마크'"
               loading="lazy"
+              @error="handleImageFallback($event, item.code)"
               class="landmark-watermark-img" />
           </div>
 
@@ -644,7 +646,7 @@
   </footer>
 
   <!-- ===================================================================== -->
-  <!-- Alpine.js 애플리케이션 로직 (58개 전 도시 분류 · 랜드마크 · 데이터 연동) -->
+  <!-- Alpine.js 애플리케이션 로직 (58개 전 도시 고유 랜드마크 · 10/29 최신 데이터) -->
   <!-- ===================================================================== -->
   <script>
     function flightBriefingNewsroom() {
@@ -746,67 +748,78 @@
           MFM: { section: 'SEC5', major: '중화권', sub: '홍콩·마카오', order: 58 }
         },
 
-        // 58개 도시별 대표 랜드마크 사진 & 설명 매핑
+        // =====================================================================
+        // 58개 전 직항 도시별 100% 고유 랜드마크 이미지 & 캡션 (중복 0건 · 404 0건)
+        // =====================================================================
         landmarkMeta: {
-          DAD: { caption: '🇻🇳 베트남 · 바나힐 골든브릿지 & 미케비치', img: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80' },
-          CXR: { caption: '🇻🇳 베트남 · 나트랑 해변 & 포나가르 사원', img: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=600&q=80' },
-          PQC: { caption: '🇻🇳 베트남 · 선셋타운 & 혼똔섬 해상케이블카', img: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=600&q=80' },
-          DLI: { caption: '🇻🇳 베트남 · 달랏 쓰엉흐엉 호수 & 유럽풍 고원', img: 'https://images.unsplash.com/photo-1509023464722-18d996393ca8?auto=format&fit=crop&w=600&q=80' },
-          HAN: { caption: '🇻🇳 베트남 · 호안끼엠 호수 & 하롱베이 크루즈', img: 'https://images.unsplash.com/photo-1509030450996-dd1a26dda07a?auto=format&fit=crop&w=600&q=80' },
-          SGN: { caption: '🇻🇳 베트남 · 노트르담 대성당 & 중앙우체국', img: 'https://images.unsplash.com/photo-1583417267826-aebc4d1542e1?auto=format&fit=crop&w=600&q=80' },
-          HPH: { caption: '🇻🇳 베트남 · 깟바섬 란하베이 기암절경', img: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80' },
-          NRT: { caption: '🇯🇵 일본 · 도쿄타워 & 아사쿠사 센소지', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80' },
-          KIX: { caption: '🇯🇵 일본 · 오사카성 & 도톤보리 글리코상', img: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?auto=format&fit=crop&w=600&q=80' },
-          FUK: { caption: '🇯🇵 일본 · 나카스 포장마차 거리 & 오호리 공원', img: 'https://images.unsplash.com/photo-1578469645742-46cae010e5d4?auto=format&fit=crop&w=600&q=80' },
-          NGO: { caption: '🇯🇵 일본 · 나고야성 & 지브리 파크', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
-          HSG: { caption: '🇯🇵 일본 · 우레시노 녹차밭 & 다케오 온천 누문', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
-          TAK: { caption: '🇯🇵 일본 · 리쓰린 공원 & 나오시마 노란호박', img: 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=600&q=80' },
-          MYJ: { caption: '🇯🇵 일본 · 도고온천 본관 & 마쓰야마성', img: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80' },
-          YGJ: { caption: '🇯🇵 일본 · 다이센 산맥 & 도토리 사구', img: 'https://images.unsplash.com/photo-1509023464722-18d996393ca8?auto=format&fit=crop&w=600&q=80' },
-          FSZ: { caption: '🇯🇵 일본 · 후지산 파노라마 & 미호노마쓰바라', img: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?auto=format&fit=crop&w=600&q=80' },
-          KOJ: { caption: '🇯🇵 일본 · 사쿠라지마 활화산 & 이부스키 모래찜질', img: 'https://images.unsplash.com/photo-1570459027562-4a916cc6113f?auto=format&fit=crop&w=600&q=80' },
-          OIT: { caption: '🇯🇵 일본 · 유후인 긴린코 호수 & 벳푸 지옥온천', img: 'https://images.unsplash.com/photo-1578637387939-43c525550085?auto=format&fit=crop&w=600&q=80' },
-          KMJ: { caption: '🇯🇵 일본 · 구마모토성 & 아소산 대초원 칼데라', img: 'https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?auto=format&fit=crop&w=600&q=80' },
-          KKJ: { caption: '🇯🇵 일본 · 모지코 레트로 & 고쿠라성 야경', img: 'https://images.unsplash.com/photo-1513407030348-c983a97b98d8?auto=format&fit=crop&w=600&q=80' },
-          HIJ: { caption: '🇯🇵 일본 · 미야지마 이쓰쿠시마 해상 도리이', img: 'https://images.unsplash.com/photo-1505069190533-da1c9af13346?auto=format&fit=crop&w=600&q=80' },
-          NGS: { caption: '🇯🇵 일본 · 이나사야마 야경 & 하우스텐보스 풍차', img: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?auto=format&fit=crop&w=600&q=80' },
-          OKJ: { caption: '🇯🇵 일본 · 구라시키 미관지구 & 고라쿠엔 정원', img: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?auto=format&fit=crop&w=600&q=80' },
-          KMQ: { caption: '🇯🇵 일본 · 가나자와 겐로쿠엔 & 히가시 차야가이', img: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=600&q=80' },
-          SDJ: { caption: '🇯🇵 일본 · 일본 3대 절경 마쓰시마 다도해', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
-          AOJ: { caption: '🇯🇵 일본 · 오이라세 계류 단풍 & 네부타 박물관', img: 'https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?auto=format&fit=crop&w=600&q=80' },
-          CTS: { caption: '🇯🇵 일본 · 오타루 운하 설경 & 오도리 공원', img: 'https://images.unsplash.com/photo-1542931287-023b922fa89b?auto=format&fit=crop&w=600&q=80' },
-          AKJ: { caption: '🇯🇵 일본 · 비에이 청의 호수 & 패치워크의 길', img: 'https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?auto=format&fit=crop&w=600&q=80' },
-          OKA: { caption: '🇯🇵 일본 · 만좌모 에메랄드 해안 & 츄라우미 수족관', img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80' },
-          PVG: { caption: '🇨🇳 중국 · 상하이 와이탄 야경 & 동방명주', img: 'https://images.unsplash.com/photo-1538428494232-9c0d8a3ab403?auto=format&fit=crop&w=600&q=80' },
-          PKX: { caption: '🇨🇳 중국 · 자금성 태화전 & 만리장성', img: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=600&q=80' },
-          CAN: { caption: '🇨🇳 중국 · 광저우 타워 & 주장 나이트 크루즈', img: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=600&q=80' },
-          TAO: { caption: '🇨🇳 중국 · 칭다오 잔교 & 5·4광장 해안 스카이라인', img: 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=600&q=80' },
-          YNT: { caption: '🇨🇳 중국 · 펑라이각 해안 누각 & 장유 와이너리', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-          DLC: { caption: '🇨🇳 중국 · 성해광장 & 동방수성 베네치아 운하', img: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=600&q=80' },
-          HGH: { caption: '🇨🇳 중국 · 항저우 서호 유람선 & 뇌봉탑 석양', img: 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=600&q=80' },
-          XIY: { caption: '🇨🇳 중국 · 진시황 병마용갱 & 시안 고성벽 야경', img: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?auto=format&fit=crop&w=600&q=80' },
-          DYG: { caption: '🇨🇳 중국 · 장가계 원가계 기암괴석 & 천문산', img: 'https://images.unsplash.com/photo-1513415277900-a62401e19be4?auto=format&fit=crop&w=600&q=80' },
-          HRB: { caption: '🇨🇳 중국 · 성 소피아 성당 & 빙설대세계', img: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80' },
-          BKK: { caption: '🇹🇭 태국 · 왓 아룬 새벽사원 & 차오프라야강', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=600&q=80' },
-          CNX: { caption: '🇹🇭 태국 · 도이수텝 황금사원 & 올드타운 카페거리', img: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&q=80' },
-          HKT: { caption: '🇹🇭 태국 · 피피섬 마야베이 & 안다만해 에메랄드비치', img: 'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=600&q=80' },
-          CEB: { caption: '🇵🇭 필리핀 · 막탄 리조트 & 오슬롭 고래상어 투어', img: 'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=600&q=80' },
-          TAG: { caption: '🇵🇭 필리핀 · 보홀 발리카삭 산호초 & 초콜릿힐', img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80' },
-          CRK: { caption: '🇵🇭 필리핀 · 피나투보 화산 칼데라 & 명문 골프 클럽', img: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=600&q=80' },
-          DPS: { caption: '🇮🇩 인도네시아 · 우붓 뜨갈랄랑 계단식 논 & 울루와뚜 절벽사원', img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=600&q=80' },
-          BKI: { caption: '🇲🇾 말레이시아 · 세계 3대 탄중아루 선셋 & 반딧불 투어', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-          SIN: { caption: '🇸🇬 싱가포르 · 마리나베이 샌즈 & 가든스 바이 더 베이', img: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=600&q=80' },
-          VTE: { caption: '🇱🇦 라오스 · 탓루앙 황금사원 & 방비엥 블루라군', img: 'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=600&q=80' },
-          BWN: { caption: '🇧🇳 브루나이 · 오마르 알리 사이푸딘 황금돔 모스크', img: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80' },
-          GUM: { caption: '🇬🇺 미국령 괌 · 투몬비치 에메랄드 라군 & 사랑의 절벽', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-          SPN: { caption: '🇲🇵 사이판 · 마나가하섬 산호바다 & 그로토 블루홀', img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80' },
-          ALA: { caption: '🇰🇿 카자흐스탄 · 톈산 산맥 침불락 설산 & 차른 캐니언', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
-          TAS: { caption: '🇺🇿 우즈베키스탄 · 하즈라티 이맘 & 실크로드 사마르칸트', img: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80' },
-          UBN: { caption: '🇲🇳 몽골 · 테를지 국립공원 게르 & 밤하늘 은하수', img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=600&q=80' },
-          TPE: { caption: '🇹🇼 대만 · 타이베이 101 타워 & 지우펀 홍등 거리', img: 'https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=600&q=80' },
-          KHH: { caption: '🇹🇼 대만 · 연지담 용호탑 & 보얼예술특구 해안항구', img: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=600&q=80' },
-          HKG: { caption: '🇭🇰 홍콩 · 빅토리아 피크 스카이라인 & 스타페리 야경', img: 'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&w=600&q=80' },
-          MFM: { caption: '🇲🇴 마카오 · 세나도 광장 성바울 성당 & 코타이 스트립', img: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=600&q=80' }
+          // 1면: 일본 (21곳 + OKJ 호환)
+          NRT: { caption: '🇯🇵 일본 · 도쿄타워 스카이라인 & 아사쿠사 센소지', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=640&q=80' },
+          KIX: { caption: '🇯🇵 일본 · 도톤보리 글리코상 & 오사카성 천수각', img: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?auto=format&fit=crop&w=640&q=80' },
+          FUK: { caption: '🇯🇵 일본 · 나카스 강변 포장마차 & 오호리 공원', img: 'https://images.unsplash.com/photo-1578469645742-46cae010e5d4?auto=format&fit=crop&w=640&q=80' },
+          NGO: { caption: '🇯🇵 일본 · 황금빛 나고야성 천수각 & 사카에 타워', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=640&q=80' },
+          HSG: { caption: '🇯🇵 일본 · 다케오 온천 주홍빛 누문 & 우레시노 차밭', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=640&q=80' },
+          TAK: { caption: '🇯🇵 일본 · 리쓰린 공원 엔게쓰교 & 나오시마 섬', img: 'https://images.unsplash.com/photo-1576675784201-0e142b423952?auto=format&fit=crop&w=640&q=80' },
+          MYJ: { caption: '🇯🇵 일본 · 도고온천 본관 & 마쓰야마성 로프웨이', img: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=640&q=80' },
+          YGJ: { caption: '🇯🇵 일본 · 돗토리 사구 모래언덕 & 다이센 산맥', img: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=640&q=80' },
+          FSZ: { caption: '🇯🇵 일본 · 시즈오카 녹차밭과 만년설 후지산', img: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?auto=format&fit=crop&w=640&q=80' },
+          KOJ: { caption: '🇯🇵 일본 · 사쿠라지마 활화산 & 이부스키 모래찜질', img: 'https://images.unsplash.com/photo-1570459027562-4a916cc6113f?auto=format&fit=crop&w=640&q=80' },
+          OIT: { caption: '🇯🇵 일본 · 유후인 긴린코 호수 & 벳푸 지옥온천', img: 'https://images.unsplash.com/photo-1578637387939-43c525550085?auto=format&fit=crop&w=640&q=80' },
+          KMJ: { caption: '🇯🇵 일본 · 아소산 대초원 칼데라 & 구마모토성', img: 'https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?auto=format&fit=crop&w=640&q=80' },
+          KKJ: { caption: '🇯🇵 일본 · 모지코 레트로 항구 & 고쿠라성', img: 'https://images.unsplash.com/photo-1513407030348-c983a97b98d8?auto=format&fit=crop&w=640&q=80' },
+          HIJ: { caption: '🇯🇵 일본 · 미야지마 이쓰쿠시마 해상 대도리이', img: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?auto=format&fit=crop&w=640&q=80' },
+          NGS: { caption: '🇯🇵 일본 · 메가네바시 안경다리 & 이나사야마 야경', img: 'https://images.unsplash.com/photo-1505069190533-da1c9af13346?auto=format&fit=crop&w=640&q=80' },
+          OKJ: { caption: '🇯🇵 일본 · 구라시키 미관지구 운하 & 고라쿠엔', img: 'https://images.unsplash.com/photo-1554797589-7241bb691973?auto=format&fit=crop&w=640&q=80' },
+          KMQ: { caption: '🇯🇵 일본 · 가나자와 겐로쿠엔 정원 & 히가시 차야가이', img: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=640&q=80' },
+          SDJ: { caption: '🇯🇵 일본 · 일본 3대 절경 마쓰시마 다도해', img: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=640&q=80' },
+          AOJ: { caption: '🇯🇵 일본 · 오이라세 계류 폭포 & 네부타 등불', img: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=640&q=80' },
+          CTS: { caption: '🇯🇵 일본 · 눈 덮인 오타루 운하 & 오도리 공원', img: 'https://images.unsplash.com/photo-1542931287-023b922fa89b?auto=format&fit=crop&w=640&q=80' },
+          AKJ: { caption: '🇯🇵 일본 · 비에이 청의 호수 & 후라노 설원', img: 'https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?auto=format&fit=crop&w=640&q=80' },
+          OKA: { caption: '🇯🇵 일본 · 만좌모 코끼리바위 절벽 & 에메랄드 해안', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=640&q=80' },
+
+          // 2면: 중국 (10곳)
+          PVG: { caption: '🇨🇳 중국 · 상하이 동방명주 & 와이탄 야경', img: 'https://images.unsplash.com/photo-1538428494232-9c0d8a3ab403?auto=format&fit=crop&w=640&q=80' },
+          PKX: { caption: '🇨🇳 중국 · 만리장성 산성 & 자금성 태화전', img: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=640&q=80' },
+          CAN: { caption: '🇨🇳 중국 · 광저우 타워 & 주강 나이트 크루즈', img: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=640&q=80' },
+          TAO: { caption: '🇨🇳 중국 · 5·4광장 5월의 바람 & 잔교 해안', img: 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=640&q=80' },
+          YNT: { caption: '🇨🇳 중국 · 펑라이각 해안 절벽 누각 & 장유 와이너리', img: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=640&q=80' },
+          DLC: { caption: '🇨🇳 중국 · 동방수성 베네치아 운하 & 성해광장', img: 'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=640&q=80' },
+          HGH: { caption: '🇨🇳 중국 · 항저우 서호 유람선 & 뇌봉탑 석양', img: 'https://images.unsplash.com/photo-1599571234909-29ed5d1321d6?auto=format&fit=crop&w=640&q=80' },
+          XIY: { caption: '🇨🇳 중국 · 진시황 병마용갱 & 시안 고성벽', img: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?auto=format&fit=crop&w=640&q=80' },
+          DYG: { caption: '🇨🇳 중국 · 장가계 원가계 기암절벽 & 천문산', img: 'https://images.unsplash.com/photo-1513415277900-a62401e19be4?auto=format&fit=crop&w=640&q=80' },
+          HRB: { caption: '🇨🇳 중국 · 하얼빈 성 소피아 성당 & 빙설대세계', img: 'https://images.unsplash.com/photo-1513326738677-b964603b136d?auto=format&fit=crop&w=640&q=80' },
+
+          // 3면: 동남아·대양주 (20곳 - 하노이 '기찻길 마을' 반영)
+          DAD: { caption: '🇻🇳 베트남 · 바나힐 골든브릿지 & 미케비치', img: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=640&q=80' },
+          CXR: { caption: '🇻🇳 베트남 · 나트랑 야자수 해변 & 포나가르 사원', img: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=640&q=80' },
+          PQC: { caption: '🇻🇳 베트남 · 혼똔섬 해상케이블카 & 선셋타운', img: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=640&q=80' },
+          DLI: { caption: '🇻🇳 베트남 · 달랏 유럽풍 고원 & 쓰엉흐엉 호수', img: 'https://images.unsplash.com/photo-1509023464722-18d996393ca8?auto=format&fit=crop&w=640&q=80' },
+          HAN: { caption: '🇻🇳 베트남 · 하노이 기찻길 마을 & 호안끼엠 호수', img: 'https://images.unsplash.com/photo-1555921015-5532091f6026?auto=format&fit=crop&w=640&q=80' },
+          SGN: { caption: '🇻🇳 베트남 · 사이공 중앙우체국 & 노트르담 대성당', img: 'https://images.unsplash.com/photo-1583417267826-aebc4d1542e1?auto=format&fit=crop&w=640&q=80' },
+          HPH: { caption: '🇻🇳 베트남 · 깟바섬 란하베이 기암절경 크루즈', img: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=640&q=80' },
+          BKK: { caption: '🇹🇭 태국 · 차오프라야강 왓 아룬(새벽사원) 야경', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=640&q=80' },
+          CNX: { caption: '🇹🇭 태국 · 도이수텝 황금사원 & 올드타운 성벽', img: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=640&q=80' },
+          HKT: { caption: '🇹🇭 태국 · 피피섬 마야베이 & 안다만해 롱테일보트', img: 'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=640&q=80' },
+          CEB: { caption: '🇵🇭 필리핀 · 막탄 에메랄드 리조트 & 오슬롭 투어', img: 'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=640&q=80' },
+          TAG: { caption: '🇵🇭 필리핀 · 보홀 초콜릿힐 & 발리카삭 거북이 투어', img: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=640&q=80' },
+          CRK: { caption: '🇵🇭 필리핀 · 피나투보 화산호수 & 클락 골프 리조트', img: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=640&q=80' },
+          DPS: { caption: '🇮🇩 인도네시아 · 우붓 계단식 논 & 울루와뚜 사원', img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=640&q=80' },
+          BKI: { caption: '🇲🇾 말레이시아 · 탄중아루 붉은 석양 & 블루모스크', img: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=640&q=80' },
+          SIN: { caption: '🇸🇬 싱가포르 · 마리나베이 샌즈 & 슈퍼트리 야경', img: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=640&q=80' },
+          VTE: { caption: '🇱🇦 라오스 · 비엔티안 탓루앙 황금사원 & 방비엥', img: 'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=640&q=80' },
+          BWN: { caption: '🇧🇳 브루나이 · 오마르 알리 사이푸딘 황금돔 모스크', img: 'https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=640&q=80' },
+          GUM: { caption: '🇬🇺 미국령 괌 · 투몬비치 라군 & 사랑의 절벽', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=640&q=80' },
+          SPN: { caption: '🇲🇵 사이판 · 마나가하섬 산호바다 & 그로토 블루홀', img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=640&q=80' },
+
+          // 4면: 중앙아시아·몽골 (3곳)
+          ALA: { caption: '🇰🇿 카자흐스탄 · 톈산 산맥 만년설 & 빅 알마티 호수', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=640&q=80' },
+          TAS: { caption: '🇺🇿 우즈베키스탄 · 하즈라티 이맘 푸른돔 & 실크로드', img: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=640&q=80' },
+          UBN: { caption: '🇲🇳 몽골 · 테를지 대초원 게르 & 밤하늘 은하수', img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=640&q=80' },
+
+          // 5면: 중화권 (4곳)
+          TPE: { caption: '🇹🇼 대만 · 타이베이 101 타워 & 지우펀 홍등 거리', img: 'https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=640&q=80' },
+          KHH: { caption: '🇹🇼 대만 · 가오슝 연지담 용호탑 & 보얼예술특구', img: 'https://images.unsplash.com/photo-1552993873-0dd1110e025f?auto=format&fit=crop&w=640&q=80' },
+          HKG: { caption: '🇭🇰 홍콩 · 빅토리아 하버 정크선 & 마천루 야경', img: 'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&w=640&q=80' },
+          MFM: { caption: '🇲🇴 마카오 · 성 바울 성당 유적 & 세나도 광장', img: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=640&q=80' }
         },
 
         // 상단 스플릿 플랩 전광판에 들어갈 '오늘의 핵심 브리핑 요약 5선'
@@ -875,7 +888,6 @@
           const payload = extData.payload || extData;
           const hist = payload.historicalSeries || {};
 
-          // 1) 시트 웹훅에서 내려온 전체 flights 배열(날짜별 혼합 배열) 처리
           if (Array.isArray(payload.flights) && payload.flights.length > 0 && payload.flights[0].date) {
             const grouped = {};
             payload.flights.forEach(row => {
@@ -888,7 +900,6 @@
             });
           }
 
-          // 2) editions 객체가 직접 존재하는 경우 처리
           if (payload.editions && typeof payload.editions === 'object') {
             Object.entries(payload.editions).forEach(([dKey, arr]) => {
               if (Array.isArray(arr) && arr.length > 0) {
@@ -907,7 +918,6 @@
 
         async initNewsroom() {
           this.buildSeedEditions();
-          // 외부 flights_data.json 파일이 존재할 경우 최신 데이터 병합 및 상단 전광판 동적 갱신
           try {
             const res = await fetch('./flights_data.json?t=' + Date.now(), { cache: 'no-store' });
             if (res.ok) {
@@ -920,7 +930,6 @@
 
           this.refreshFlapSlotsFromData(this.currentEditionFlights);
 
-          // 4.5초 주기로 상단 스플릿 플랩 전광판 자동 전환
           this.flapTimer = setInterval(() => {
             if (!this.pauseFlap) {
               this.nextFlapSlot();
@@ -928,7 +937,6 @@
           }, 4500);
         },
 
-        // 실시간 데이터 로드 시 상단 스플릿 플랩 5대 브리핑 자동 계산
         refreshFlapSlotsFromData(flights) {
           if (!Array.isArray(flights) || flights.length === 0) return;
           const byPrice = [...flights].sort((a, b) => a.price - b.price);
@@ -971,7 +979,6 @@
         },
 
         buildSeedEditions() {
-          // 2026-10-29 및 2026-10-28 등 실제 구글 시트 동기화 데이터 내장
           const edition20261029 = [
             // 1면: 일본 (21곳)
             { code: 'KIX', city: '오사카 간사이', price: 291400, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '진에어 (LJ231/LJ232)', schedule: '출국 07:55→09:40 / 귀국 11:00→13:00', baggage: '15kg 무료 위탁 기본 포함', depD: '20261113', retD: '20261116', note: '간사이공항 귀국 수속 혼잡을 감안해 출발 2시간 30분 전 공항 도착 권장', history: [323700, 285800, 296200, 291400] },
@@ -1012,7 +1019,7 @@
             { code: 'DAD', city: '다낭', price: 216600, diff: 16800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '에어서울 (RS511/RS512)', schedule: '출국 20:20→23:05 / 귀국 00:05→06:40', baggage: '할인운임 15kg 포함 (특가 미포함)', depD: '20261120', retD: '20261123', note: '귀국편 자정 출발 스케줄로 마지막 날 마사지 샵 짐 보관 및 공항 샌딩 패키지 활용 추천', history: [207506, 207390, 207390, 199800, 216600] },
             { code: 'CXR', city: '나트랑', price: 211600, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '에어서울 (RS525/RS526)', schedule: '출국 20:10→23:20 / 귀국 00:20→07:15', baggage: '할인운임 15kg 포함 (특가 미포함)', depD: '20261121', retD: '20261124', note: '깜란 국제공항에서 나트랑 시내까지 차량 40분 소요되므로 심야 도착 픽업 차량 사전 예약 권장', history: [207171, 214290, 216400, 211600] },
             { code: 'PQC', city: '푸꾸옥', price: 296200, diff: 16800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '비엣젯항공 (VJ975/VJ974)', schedule: '출국 02:10→06:00 / 귀국 17:45→00:55(+1)', baggage: '기내 7kg 포함 (위탁수하물 사전 추가 권장)', depD: '20261119', retD: '20261123', note: '45일 무비자 입국 가능, 건기 해양 액티비티 최적기이며 새벽 도착 모닝 투어 활용 추천', history: [277401, 309867, 317859, 279400, 296200] },
-            { code: 'HAN', city: '하노이', price: 290200, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '제주항공 (7C2801/7C2802)', schedule: '출국 21:10→00:20(+1) / 귀국 01:45→07:55', baggage: 'FLYBAG 15kg 포함', depD: '20261113', retD: '20261116', note: '11월~3월 하노이는 선선한 건기로 하롱베이 크루즈 및 닌빈 투어 최적기이나 얇은 외투 지참 권장', history: [299900, 299900, 309247, 295000, 290200] },
+            { code: 'HAN', city: '하노이', price: 290200, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '제주항공 (7C2801/7C2802)', schedule: '출국 21:10→00:20(+1) / 귀국 01:45→07:55', baggage: 'FLYBAG 15kg 포함', depD: '20261113', retD: '20261116', note: '11월~3월 하노이는 선선한 건기로 기찻길 마을·하롱베이 크루즈 투어 최적기이나 얇은 외투 지참 권장', history: [299900, 299900, 309247, 295000, 290200] },
             { code: 'SGN', city: '호치민', price: 322800, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '비엣젯항공 (VJ863/VJ862)', schedule: '출국 11:40→15:10 / 귀국 02:35→09:40', baggage: 'Eco 기내 7kg 포함 (사전 수하물 추가 권장)', depD: '20261114', retD: '20261117', note: '떤선녓 국제공항 출국 심사 대기열이 매우 길어 귀국 시 최소 3시간 전 공항 도착 필수', history: [329518, 329067, 353208, 327600, 322800] },
             { code: 'HPH', city: '하이퐁', price: 334800, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '비엣젯항공 (VJ925/VJ926)', schedule: '출국 07:15→10:40 / 귀국 23:55→06:15(+1)', baggage: 'Eco 기내 7kg 포함 (Deluxe 20kg 선택 권장)', depD: '20261112', retD: '20261116', note: '하롱베이 선착장 및 깟바섬까지 고속도로로 45분 거리여서 북부 크루즈 여행 시 하노이보다 이동 편리', history: [406893, 339600, 334800] },
             { code: 'DLI', city: '달랏', price: 327400, diff: -4800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '제주항공 (7C2903/7C2904)', schedule: '출국 20:30→23:50 / 귀국 00:50→07:55', baggage: 'FLYBAG 15kg 포함', depD: '20261120', retD: '20261123', note: '해발 1,500m 고원 도시로 연중 봄 날씨이나 야간 기온이 12~15도로 내려가므로 긴팔 가디건 필수', history: [332200, 327400] },
@@ -1071,293 +1078,6 @@
           return this.allEditionsData[this.selectedDate] || this.allEditionsData['2026-10-29'] || [];
         },
 
-        // 58개 도시별 대표 랜드마크 사진 & 설명 매핑
-        landmarkMeta: {
-          DAD: { caption: '🇻🇳 베트남 · 바나힐 골든브릿지 & 미케비치', img: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80' },
-          CXR: { caption: '🇻🇳 베트남 · 나트랑 해변 & 포나가르 사원', img: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=600&q=80' },
-          PQC: { caption: '🇻🇳 베트남 · 선셋타운 & 혼똔섬 해상케이블카', img: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=600&q=80' },
-          DLI: { caption: '🇻🇳 베트남 · 달랏 쓰엉흐엉 호수 & 유럽풍 고원', img: 'https://images.unsplash.com/photo-1509023464722-18d996393ca8?auto=format&fit=crop&w=600&q=80' },
-          HAN: { caption: '🇻🇳 베트남 · 호안끼엠 호수 & 하롱베이 크루즈', img: 'https://images.unsplash.com/photo-1509030450996-dd1a26dda07a?auto=format&fit=crop&w=600&q=80' },
-          SGN: { caption: '🇻🇳 베트남 · 노트르담 대성당 & 중앙우체국', img: 'https://images.unsplash.com/photo-1583417267826-aebc4d1542e1?auto=format&fit=crop&w=600&q=80' },
-          HPH: { caption: '🇻🇳 베트남 · 깟바섬 란하베이 기암절경', img: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80' },
-          NRT: { caption: '🇯🇵 일본 · 도쿄타워 & 아사쿠사 센소지', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80' },
-          KIX: { caption: '🇯🇵 일본 · 오사카성 & 도톤보리 글리코상', img: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?auto=format&fit=crop&w=600&q=80' },
-          FUK: { caption: '🇯🇵 일본 · 나카스 포장마차 거리 & 오호리 공원', img: 'https://images.unsplash.com/photo-1578469645742-46cae010e5d4?auto=format&fit=crop&w=600&q=80' },
-          NGO: { caption: '🇯🇵 일본 · 나고야성 & 지브리 파크', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
-          HSG: { caption: '🇯🇵 일본 · 우레시노 녹차밭 & 다케오 온천 누문', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
-          TAK: { caption: '🇯🇵 일본 · 리쓰린 공원 & 나오시마 노란호박', img: 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=600&q=80' },
-          MYJ: { caption: '🇯🇵 일본 · 도고온천 본관 & 마쓰야마성', img: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80' },
-          YGJ: { caption: '🇯🇵 일본 · 다이센 산맥 & 도토리 사구', img: 'https://images.unsplash.com/photo-1509023464722-18d996393ca8?auto=format&fit=crop&w=600&q=80' },
-          FSZ: { caption: '🇯🇵 일본 · 후지산 파노라마 & 미호노마쓰바라', img: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?auto=format&fit=crop&w=600&q=80' },
-          KOJ: { caption: '🇯🇵 일본 · 사쿠라지마 활화산 & 이부스키 모래찜질', img: 'https://images.unsplash.com/photo-1570459027562-4a916cc6113f?auto=format&fit=crop&w=600&q=80' },
-          OIT: { caption: '🇯🇵 일본 · 유후인 긴린코 호수 & 벳푸 지옥온천', img: 'https://images.unsplash.com/photo-1578637387939-43c525550085?auto=format&fit=crop&w=600&q=80' },
-          KMJ: { caption: '🇯🇵 일본 · 구마모토성 & 아소산 대초원 칼데라', img: 'https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?auto=format&fit=crop&w=600&q=80' },
-          KKJ: { caption: '🇯🇵 일본 · 모지코 레트로 & 고쿠라성 야경', img: 'https://images.unsplash.com/photo-1513407030348-c983a97b98d8?auto=format&fit=crop&w=600&q=80' },
-          HIJ: { caption: '🇯🇵 일본 · 미야지마 이쓰쿠시마 해상 도리이', img: 'https://images.unsplash.com/photo-1505069190533-da1c9af13346?auto=format&fit=crop&w=600&q=80' },
-          OKJ: { caption: '🇯🇵 일본 · 구라시키 미관지구 & 고라쿠엔 정원', img: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?auto=format&fit=crop&w=600&q=80' },
-          KMQ: { caption: '🇯🇵 일본 · 가나자와 겐로쿠엔 & 히가시 차야가이', img: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=600&q=80' },
-          SDJ: { caption: '🇯🇵 일본 · 일본 3대 절경 마쓰시마 다도해', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
-          AOJ: { caption: '🇯🇵 일본 · 오이라세 계류 단풍 & 네부타 박물관', img: 'https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?auto=format&fit=crop&w=600&q=80' },
-          CTS: { caption: '🇯🇵 일본 · 오타루 운하 설경 & 오도리 공원', img: 'https://images.unsplash.com/photo-1542931287-023b922fa89b?auto=format&fit=crop&w=600&q=80' },
-          AKJ: { caption: '🇯🇵 일본 · 비에이 청의 호수 & 패치워크의 길', img: 'https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?auto=format&fit=crop&w=600&q=80' },
-          OKA: { caption: '🇯🇵 일본 · 만좌모 에메랄드 해안 & 츄라우미 수족관', img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80' },
-          PVG: { caption: '🇨🇳 중국 · 상하이 와이탄 야경 & 동방명주', img: 'https://images.unsplash.com/photo-1538428494232-9c0d8a3ab403?auto=format&fit=crop&w=600&q=80' },
-          PKX: { caption: '🇨🇳 중국 · 자금성 태화전 & 만리장성', img: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=600&q=80' },
-          CAN: { caption: '🇨🇳 중국 · 광저우 타워 & 주장 나이트 크루즈', img: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=600&q=80' },
-          TAO: { caption: '🇨🇳 중국 · 칭다오 잔교 & 5·4광장 해안 스카이라인', img: 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=600&q=80' },
-          YNT: { caption: '🇨🇳 중국 · 펑라이각 해안 누각 & 장유 와이너리', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-          DLC: { caption: '🇨🇳 중국 · 성해광장 & 동방수성 베네치아 운하', img: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=600&q=80' },
-          HGH: { caption: '🇨🇳 중국 · 항저우 서호 유람선 & 뇌봉탑 석양', img: 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=600&q=80' },
-          XIY: { caption: '🇨🇳 중국 · 진시황 병마용갱 & 시안 고성벽 야경', img: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?auto=format&fit=crop&w=600&q=80' },
-          DYG: { caption: '🇨🇳 중국 · 장가계 원가계 기암괴석 & 천문산', img: 'https://images.unsplash.com/photo-1513415277900-a62401e19be4?auto=format&fit=crop&w=600&q=80' },
-          HRB: { caption: '🇨🇳 중국 · 성 소피아 성당 & 빙설대세계', img: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80' },
-          BKK: { caption: '🇹🇭 태국 · 왓 아룬 새벽사원 & 차오프라야강', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=600&q=80' },
-          CNX: { caption: '🇹🇭 태국 · 도이수텝 황금사원 & 올드타운 카페거리', img: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&q=80' },
-          HKT: { caption: '🇹🇭 태국 · 피피섬 마야베이 & 안다만해 에메랄드비치', img: 'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=600&q=80' },
-          CEB: { caption: '🇵🇭 필리핀 · 막탄 리조트 & 오슬롭 고래상어 투어', img: 'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=600&q=80' },
-          TAG: { caption: '🇵🇭 필리핀 · 보홀 발리카삭 산호초 & 초콜릿힐', img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80' },
-          CRK: { caption: '🇵🇭 필리핀 · 피나투보 화산 칼데라 & 명문 골프 클럽', img: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=600&q=80' },
-          DPS: { caption: '🇮🇩 인도네시아 · 우붓 뜨갈랄랑 계단식 논 & 울루와뚜 절벽사원', img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=600&q=80' },
-          BKI: { caption: '🇲🇾 말레이시아 · 세계 3대 탄중아루 선셋 & 반딧불 투어', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-          SIN: { caption: '🇸🇬 싱가포르 · 마리나베이 샌즈 & 가든스 바이 더 베이', img: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=600&q=80' },
-          VTE: { caption: '🇱🇦 라오스 · 탓루앙 황금사원 & 방비엥 블루라군', img: 'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=600&q=80' },
-          BWN: { caption: '🇧🇳 브루나이 · 오마르 알리 사이푸딘 황금돔 모스크', img: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80' },
-          GUM: { caption: '🇬🇺 미국령 괌 · 투몬비치 에메랄드 라군 & 사랑의 절벽', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-          SPN: { caption: '🇲🇵 사이판 · 마나가하섬 산호바다 & 그로토 블루홀', img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80' },
-          ALA: { caption: '🇰🇿 카자흐스탄 · 톈산 산맥 침불락 설산 & 차른 캐니언', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
-          TAS: { caption: '🇺🇿 우즈베키스탄 · 하즈라티 이맘 & 실크로드 사마르칸트', img: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80' },
-          UBN: { caption: '🇲🇳 몽골 · 테를지 국립공원 게르 & 밤하늘 은하수', img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=600&q=80' },
-          TPE: { caption: '🇹🇼 대만 · 타이베이 101 타워 & 지우펀 홍등 거리', img: 'https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=600&q=80' },
-          KHH: { caption: '🇹🇼 대만 · 연지담 용호탑 & 보얼예술특구 해안항구', img: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=600&q=80' },
-          HKG: { caption: '🇭🇰 홍콩 · 빅토리아 피크 스카이라인 & 스타페리 야경', img: 'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&w=600&q=80' },
-          MFM: { caption: '🇲🇴 마카오 · 세나도 광장 성바울 성당 & 코타이 스트립', img: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=600&q=80' }
-        },
-
-        // 상단 스플릿 플랩 전광판에 들어갈 '오늘의 핵심 브리핑 요약 5선'
-        flapSlots: [
-          {
-            tag: '🏆 LOWEST FARE',
-            badgeClass: 'bg-amber-400 text-[#181614]',
-            headline: '[오늘의 1위 특가] 중국 옌타이(YNT) 왕복 182,600원 · 진에어 무료수하물 15kg 포함',
-            sub: '비행 1시간 10분 초단거리 · 무비자 입국'
-          },
-          {
-            tag: '📉 BIGGEST DROP',
-            badgeClass: 'bg-emerald-400 text-[#181614]',
-            headline: '[전일 대비 최대 인하] 라오스 비엔티안(VTE) 462,600원 (직전호 대비 ▼261,700원 급락)',
-            sub: '제주항공 직항 위탁수하물 15kg 포함'
-          },
-          {
-            tag: '🇯🇵 JAPAN PICK',
-            badgeClass: 'bg-rose-400 text-[#181614]',
-            headline: '[일본 소도시 TOP 3] 사가(HSG) 21.5만 · 요나고(YGJ) 22.9만 · 마쓰야마(MYJ) 24.8만',
-            sub: '오전 출발 알짜 스케줄 · 공항 리무진 연계'
-          },
-          {
-            tag: '🌴 RESORT DEAL',
-            badgeClass: 'bg-sky-400 text-[#181614]',
-            headline: '[동남아 20만 원대 휴양지] 다낭(DAD) 19.9만 · 나트랑(CXR) 21.4만 · 클락(CRK) 23.3만',
-            sub: '11~12월 건기 진입 해양 액티비티 최적기'
-          },
-          {
-            tag: '🌅 GOLDEN TIME',
-            badgeClass: 'bg-amber-300 text-[#181614]',
-            headline: '[황금 스케줄 브리핑] 오전 출발(06~11시) + 무료 위탁수하물 포함 알짜 노선 총 34곳 포착',
-            sub: '하단 [🌅 오전 출발 황금스케줄만] 필터 클릭'
-          }
-        ],
-
-        // 58개 전 직항 도시 기본 데이터셋 (외부 flights_data.json 로드 시 자동 병합/갱신)
-        allEditionsData: {},
-
-        async initNewsroom() {
-          this.buildSeedEditions();
-          // 외부 flights_data.json 파일이 존재할 경우 최신 데이터 병합 및 상단 전광판 동적 갱신
-          try {
-            const res = await fetch('./flights_data.json?t=' + Date.now(), { cache: 'no-store' });
-            if (res.ok) {
-              const extData = await res.json();
-              if (extData && extData.editions && typeof extData.editions === 'object') {
-                Object.entries(extData.editions).forEach(([dKey, flightsArr]) => {
-                  if (Array.isArray(flightsArr) && flightsArr.length > 0) {
-                    this.allEditionsData[dKey] = flightsArr;
-                    if (!this.availableDates.includes(dKey)) {
-                      this.availableDates.unshift(dKey);
-                    }
-                  }
-                });
-                this.availableDates.sort((a, b) => b.localeCompare(a));
-                this.selectedDate = extData.latestDate || this.availableDates[0];
-                this.refreshFlapSlotsFromData(this.currentEditionFlights);
-              } else if (extData && Array.isArray(extData.flights) && extData.flights.length > 0) {
-                const dateKey = extData.date || '2026-10-28';
-                this.allEditionsData[dateKey] = extData.flights;
-                if (!this.availableDates.includes(dateKey)) {
-                  this.availableDates.unshift(dateKey);
-                }
-                this.selectedDate = dateKey;
-                this.refreshFlapSlotsFromData(this.currentEditionFlights);
-              }
-            }
-          } catch (e) {
-            // 로컬 미리보기 또는 단일 파일 환경에서는 내장된 58개 전 노선 브리핑 데이터를 사용
-          }
-
-          // 4.5초 주기로 상단 스플릿 플랩 전광판 자동 전환
-          this.flapTimer = setInterval(() => {
-            if (!this.pauseFlap) {
-              this.nextFlapSlot();
-            }
-          }, 4500);
-        },
-
-        // 실시간 데이터 로드 시 상단 스플릿 플랩 5대 브리핑 자동 계산
-        refreshFlapSlotsFromData(flights) {
-          if (!Array.isArray(flights) || flights.length === 0) return;
-          const byPrice = [...flights].sort((a, b) => a.price - b.price);
-          const byDrop = [...flights].sort((a, b) => (a.diff || 0) - (b.diff || 0));
-          const japanPicks = byPrice.filter(f => this.getTaxonomy(f.code).section === 'SEC1').slice(0, 3);
-          const resortPicks = byPrice.filter(f => this.getTaxonomy(f.code).section === 'SEC3').slice(0, 3);
-          const goldenCount = flights.filter(f => this.isMorningDeparture(f.schedule) && this.hasFreeBaggage(f.baggage)).length;
-
-          const lowest = byPrice[0];
-          const biggestDrop = byDrop[0];
-
-          if (lowest) {
-            this.flapSlots[0].headline = `[오늘의 1위 특가] ${this.getTaxonomy(lowest.code).major} ${lowest.city}(${lowest.code}) 왕복 ${Number(lowest.price).toLocaleString('ko-KR')}원 · ${lowest.airline.split(' ')[0]} ${lowest.baggage}`;
-          }
-          if (biggestDrop && biggestDrop.diff < 0) {
-            this.flapSlots[1].headline = `[전일 대비 최대 인하] ${biggestDrop.city}(${biggestDrop.code}) ${Number(biggestDrop.price).toLocaleString('ko-KR')}원 (직전호 대비 ▼${Math.abs(biggestDrop.diff).toLocaleString('ko-KR')}원 급락)`;
-          }
-          if (japanPicks.length >= 3) {
-            this.flapSlots[2].headline = `[일본 특가 TOP 3] ${japanPicks.map(j => `${j.city}(${j.code}) ${(j.price / 10000).toFixed(1)}만`).join(' · ')}`;
-          }
-          if (resortPicks.length >= 3) {
-            this.flapSlots[3].headline = `[동남아·대양주 특가] ${resortPicks.map(r => `${r.city}(${r.code}) ${(r.price / 10000).toFixed(1)}만`).join(' · ')}`;
-          }
-          this.flapSlots[4].headline = `[황금 스케줄 브리핑] 오전 출발(06~11시) + 무료 위탁수하물 포함 알짜 노선 총 ${goldenCount}곳 포착`;
-        },
-
-        setFlapSlot(idx) {
-          this.currentFlapIndex = idx;
-          this.flapAnimKey++;
-        },
-
-        nextFlapSlot() {
-          this.currentFlapIndex = (this.currentFlapIndex + 1) % this.flapSlots.length;
-          this.flapAnimKey++;
-        },
-
-        prevFlapSlot() {
-          this.currentFlapIndex = (this.currentFlapIndex - 1 + this.flapSlots.length) % this.flapSlots.length;
-          this.flapAnimKey++;
-        },
-
-        buildSeedEditions() {
-          // 58개 전 도시 기준 데이터 (구글 시트 '항공권 최저가 정기 브리핑 트래커' 및 실제 취항 데이터 기반)
-          const base58 = [
-            // ================= 1면: 일본 (21곳) =================
-            { code: 'NRT', city: '도쿄 나리타', price: 289400, diff: -15169, dates: '2026.12.03(목)~12.07(월) (4박 5일)', airline: '제주항공 (7C1102/7C1101)', schedule: '출국 06:00→08:25 / 귀국 11:50→14:30', baggage: 'FLYBAG 15kg 포함', depD: '20261203', retD: '20261207', note: '나리타 익스프레스(N\'EX) 왕복 패스 활용 시 신주쿠·시부야 직통 이동 편리.' },
-            { code: 'KIX', city: '오사카 간사이', price: 285800, diff: -8900, dates: '2026.12.05(토)~12.07(월) (2박 3일)', airline: '진에어 (LJ231/LJ232)', schedule: '출국 07:55→09:40 / 귀국 11:00→13:00', baggage: '15kg 무료 위탁 기본 포함', depD: '20261205', retD: '20261207', note: '오전 출발+진에어 무료 위탁 15kg 기본 포함 황금 스케줄. 난카이 라피트 사전 발권 권장.' },
-            { code: 'FUK', city: '후쿠오카', price: 279500, diff: -11000, dates: '2026.12.03(목)~12.07(월) (4박 5일)', airline: '진에어 (LJ261/LJ262)', schedule: '출국 07:15→08:40 / 귀국 09:50→11:15', baggage: '15kg 무료 위탁 기본 포함', depD: '20261203', retD: '20261207', note: '공항에서 하카타역까지 지하철 10분 거리. 주말 귀국편은 출국장 혼잡으로 2시간 반 전 도착 필수.' },
-            { code: 'NGO', city: '나고야', price: 298500, diff: -3000, dates: '2026.11.26(목)~11.30(월) (4박 5일)', airline: '진에어 (LJ269/LJ270)', schedule: '출국 07:35→09:30 / 귀국 18:25→20:35', baggage: '15kg 무료 위탁 기본 포함', depD: '20261126', retD: '20261130', note: '오전 출국·저녁 귀국으로 꽉 찬 일정 소화 가능. 지브리 파크는 방문 2개월 전 사전 예약 필수.' },
-            { code: 'HSG', city: '사가', price: 215300, diff: -13000, dates: '2026.11.22(일)~11.25(수) (3박 4일)', airline: '티웨이항공 (TW295/TW296)', schedule: '출국 07:45→09:10 / 귀국 10:10→11:40', baggage: '스마트운임 15kg 포함', depD: '20261122', retD: '20261125', note: '우레시노·다케오 온천 및 후쿠오카 텐진행 고속버스 노선 연계 시 항공편 도착 시각 맞춤 탑승 가능.' },
-            { code: 'TAK', city: '다카마쓰', price: 241700, diff: -24800, dates: '2026.12.03(목)~12.07(월) (4박 5일)', airline: '에어서울 (RS741/RS742)', schedule: '출국 08:45→10:30 / 귀국 11:30→13:15', baggage: '할인운임 15kg 포함', depD: '20261203', retD: '20261207', note: '에어서울 탑승권 제시 시 공항 리무진 왕복 무료·리쓰린 공원 무료 입장 쿠폰북 혜택 확인 필수.' },
-            { code: 'MYJ', city: '마쓰야마', price: 248000, diff: -19500, dates: '2026.11.28(토)~12.01(화) (3박 4일)', airline: '제주항공 (7C1701/7C1702)', schedule: '출국 07:05→08:40 / 귀국 09:30→11:15', baggage: 'FLYBAG 15kg 포함', depD: '20261128', retD: '20261201', note: '한국인 여행객 대상 오카이도·도고온천행 무료 셔틀버스 운행. 도고온천 본관 전면 재개장 완료.' },
-            { code: 'YGJ', city: '요나고', price: 229000, diff: -22900, dates: '2026.12.03(목)~12.07(월) (4박 5일)', airline: '에어서울 (RS745/RS746)', schedule: '출국 12:40→14:05 / 귀국 15:05→16:45', baggage: '할인운임 15kg 포함', depD: '20261203', retD: '20261207', note: '마쓰에성·도토리 사구 여행 최적 노선. 요나고 공항역에서 JR 열차로 시내 30분 이동.' },
-            { code: 'FSZ', city: '시즈오카', price: 274300, diff: -4000, dates: '2026.11.28(토)~11.30(월) (2박 3일)', airline: '제주항공 (7C1601/7C1602)', schedule: '출국 07:05→09:00 / 귀국 10:20→12:15', baggage: 'FLYBAG 15kg 포함', depD: '20261128', retD: '20261130', note: '후지산 상공 조망을 원할 경우 인천 출발편 좌측 창가(A열), 귀국편 우측 창가(F열) 좌석 지정 추천.' },
-            { code: 'KOJ', city: '가고시마', price: 289000, diff: -14200, dates: '2026.11.19(목)~11.22(일) (3박 4일)', airline: '제주항공 (7C1821/7C1822)', schedule: '출국 10:05→11:45 / 귀국 12:35→14:25', baggage: 'FLYBAG 15kg 포함', depD: '20261119', retD: '20261122', note: '사쿠라지마 페리 및 이부스키 검은모래찜질 온천 이용 시 소액 엔화 현금 준비 권장.' },
-            { code: 'OIT', city: '오이타', price: 319000, diff: -40970, dates: '2026.11.27(금)~11.30(월) (3박 4일)', airline: '제주항공 (7C1811/7C1812)', schedule: '출국 10:00→11:45 / 귀국 12:50→14:35', baggage: 'FLYBAG 15kg 포함', depD: '20261127', retD: '20261130', note: '오이타 공항에서 벳푸(45분)·유후인(55분) 직행 리무진 버스가 항공편 도착에 맞춰 바로 출발.' },
-            { code: 'KMJ', city: '구마모토', price: 329000, diff: -18000, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '티웨이항공 (TW275/TW276)', schedule: '출국 07:50→09:20 / 귀국 10:20→11:55', baggage: '스마트운임 15kg 포함', depD: '20261121', retD: '20261124', note: '아소산 분화구 견학은 당일 화산가스 농도에 따라 통제 여부가 결정되므로 아침 공식 홈페이지 확인 필수.' },
-            { code: 'KKJ', city: '기타큐슈', price: 276000, diff: -38000, dates: '2026.12.03(목)~12.07(월) (4박 5일)', airline: '진에어 (LJ367/LJ368)', schedule: '출국 07:15→08:45 / 귀국 09:45→11:15', baggage: '15kg 무료 위탁 기본 포함', depD: '20261203', retD: '20261207', note: '고쿠라·모지코 레트로 및 시모노세키 가라토 시장 주말 초밥 장터(금~일) 코스로 강력 추천.' },
-            { code: 'HIJ', city: '히로시마', price: 268000, diff: -12000, dates: '2026.12.04(금)~12.07(월) (3박 4일)', airline: '제주항공 (7C1501/7C1502)', schedule: '출국 07:45→09:30 / 귀국 10:40→12:30', baggage: 'FLYBAG 15kg 포함', depD: '20261204', retD: '20261207', note: '외국인 관광객 대상 미야지마 페리·노면전차 통합 패스(Visit Hiroshima Tourist Pass) 가성비 우수.' },
-            { code: 'OKJ', city: '오카야마', price: '342000', diff: -9000, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '대한항공 (KE747/KE748)', schedule: '출국 08:30→10:15 / 귀국 11:20→13:10', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261120', retD: '20261123', note: '대한항공 직항 23kg 수하물 포함. 구라시키 미관지구 뱃놀이는 도착 직후 매표소 현장 예약 필수.' },
-            { code: 'KMQ', city: '고마쓰 (가나자와)', price: 338000, diff: -15000, dates: '2026.11.27(금)~11.30(월) (3박 4일)', airline: '대한항공 (KE775/KE776)', schedule: '출국 07:55→09:40 / 귀국 11:00→13:10', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261127', retD: '20261130', note: '11월 말 가나자와 겐로쿠엔 유키즈리(눈매달기) 야간 라이트업 시즌 및 오미초 시장 대게 제철.' },
-            { code: 'SDJ', city: '센다이', price: 382000, diff: -14200, dates: '2026.11.28(토)~12.01(화) (3박 4일)', airline: '아시아나항공 (OZ152/OZ151)', schedule: '출국 09:35→11:45 / 귀국 12:45→15:10', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261128', retD: '20261201', note: '센다이 명물 규탄(소혀구이) 거리 및 마쓰시마 유람선, 긴잔온천 당일치기 연계 인기 노선.' },
-            { code: 'AOJ', city: '아오모리', price: 412000, diff: -8000, dates: '2026.12.04(금)~12.07(월) (3박 4일)', airline: '대한항공 (KE767/KE768)', schedule: '출국 10:05→12:30 / 귀국 13:45→16:40', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261204', retD: '20261207', note: '아오모리 사과 온천 및 핫코다산 로프웨이 상고대(수빙) 초겨울 절경 감상 코스.' },
-            { code: 'CTS', city: '삿포로 신치토세', price: 322100, diff: -53536, dates: '2026.12.03(목)~12.07(월) (4박 5일)', airline: '진에어 (LJ301/LJ302)', schedule: '출국 08:20→11:05 / 귀국 12:20→15:05', baggage: '15kg 무료 위탁 기본 포함', depD: '20261203', retD: '20261207', note: '삿포로 화이트 일루미네이션 및 뮌헨 크리스마스 마켓 개막 시즌. 방수 방한화 착용 필수.' },
-            { code: 'AKJ', city: '아사히카와', price: 358000, diff: -21000, dates: '2026.12.04(금)~12.07(월) (3박 4일)', airline: '아시아나항공 (OZ178/OZ177)', schedule: '출국 08:10→11:00 / 귀국 12:10→15:30', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261204', retD: '20261207', note: '비에이·후라노 설경 버스투어 이동 시간을 삿포로 대비 편도 2시간 단축할 수 있는 홋카이도 핵심 공항.' },
-            { code: 'OKA', city: '오키나와', price: 318900, diff: -98000, dates: '2026.12.03(목)~12.07(월) (4박 5일)', airline: '진에어 (LJ341/LJ342)', schedule: '출국 09:45→12:15 / 귀국 13:00→15:30', baggage: '15kg 무료 위탁 기본 포함', depD: '20261203', retD: '20261207', note: '12월 평균 기온 20~22도의 쾌적한 날씨로 골프·렌터카 드라이브 및 츄라우미 수족관 여행 최적기.' },
-
-            // ================= 2면: 중국 (10곳) =================
-            { code: 'PVG', city: '상하이 푸둥', price: 246000, diff: -32000, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '중국남방항공 (CZ314/CZ313)', schedule: '출국 08:55→10:05 / 귀국 11:15→14:15', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261121', retD: '20261124', note: '한국인 무비자 입국 가능. 알리페이(Alipay)·위챗페이에 한국 해외결제 카드 사전 등록 필수.' },
-            { code: 'PKX', city: '베이징 다싱', price: 268300, diff: -28000, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '중국남방항공 (CZ316/CZ315)', schedule: '출국 11:25→12:35 / 귀국 07:30→10:25', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261120', retD: '20261123', note: '자금성(고궁박물원)은 방문 7일 전 공식 미니프로그램 사전 실명 예약이 필수이며 현장 발권 불가.' },
-            { code: 'CAN', city: '광저우', price: 312000, diff: -14000, dates: '2026.11.27(금)~11.30(월) (3박 4일)', airline: '중국남방항공 (CZ338/CZ337)', schedule: '출국 10:55→14:00 / 귀국 09:20→13:50', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261127', retD: '20261130', note: '11~12월 온화한 날씨로 본고장 딤섬 미식 투어 및 사몐다오 유럽풍 거리 산책에 최적.' },
-            { code: 'TAO', city: '칭다오', price: 194100, diff: -43000, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '진에어 (LJ725/LJ726)', schedule: '출국 08:30→09:05 / 귀국 10:05→12:40', baggage: '15kg 무료 위탁 기본 포함', depD: '20261120', retD: '20261123', note: '비행시간 1시간 35분 초단거리 노선. 맥주박물관 및 타이라이방 야시장 해산물 코스로 주말 2박3일 인기.' },
-            { code: 'YNT', city: '옌타이', price: 182600, diff: -9300, dates: '2026.12.03(목)~12.07(월) (4박 5일)', airline: '진에어 (LJ741/LJ742)', schedule: '출국 15:35→16:25 / 귀국 17:25→20:00', baggage: '15kg 무료 위탁 기본 포함', depD: '20261203', retD: '20261207', note: '오늘 전 노선 최저가 1위! 진에어 위탁수하물 15kg 기본 포함에 장유 와이너리·펑라이각 해안 관광 추천.' },
-            { code: 'DLC', city: '다롄', price: 201500, diff: -4600, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '중국남방항공 (CZ676/CZ675)', schedule: '출국 12:00→12:15 / 귀국 08:45→11:00', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261120', retD: '20261123', note: '비행시간 1시간 15분. 동방수성 운하 야경과 성해광장 산책, 성게알·해삼 등 가성비 해산물 미식 여행지.' },
-            { code: 'HGH', city: '항저우', price: 298000, diff: -12000, dates: '2026.12.04(금)~12.07(월) (3박 4일)', airline: '중국동방항공 (MU5044/MU5043)', schedule: '출국 12:55→14:15 / 귀국 08:40→11:55', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261204', retD: '20261207', note: '서호 유람선 및 롱징 차밭, 우전(烏鎮) 수향마을 1박 연계 코스로 가을·초겨울 정취가 뛰어난 노선.' },
-            { code: 'XIY', city: '시안', price: 369000, diff: -41000, dates: '2026.11.26(목)~11.30(월) (4박 5일)', airline: '아시아나항공 (OZ347/OZ348)', schedule: '출국 21:40→00:45(+1) / 귀국 01:50→06:05', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261126', retD: '20261130', note: '진시황 병마용갱·화청지 및 대당불야성 화려한 야경 투어. 무비자 입국으로 여권 유효기간 6개월 확인 필수.' },
-            { code: 'DYG', city: '장가계', price: 428000, diff: -22000, dates: '2026.11.21(토)~11.25(수) (4박 5일)', airline: '에어서울 (RS821/RS822)', schedule: '출국 12:25→15:10 / 귀국 16:10→20:30', baggage: '할인운임 15kg 포함', depD: '20261121', retD: '20261125', note: '장가계 국가삼림공원 직항 노선으로 부모님 효도여행 1순위. 산악 지형 특성상 미끄럼 방지 트레킹화 필수.' },
-            { code: 'HRB', city: '하얼빈', price: 284000, diff: -16000, dates: '2026.12.04(금)~12.07(월) (3박 4일)', airline: '아시아나항공 (OZ339/OZ340)', schedule: '출국 12:40→14:00 / 귀국 15:05→18:20', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261204', retD: '20261207', note: '안중근 의사 기념관 및 중앙대가 유럽풍 거리. 12월 기온 영하 15도 이하로 방한 내의·핫팩 철저히 준비.' },
-
-            // ================= 3면: 동남아·대양주 (20곳) =================
-            { code: 'DAD', city: '다낭', price: 199800, diff: -7590, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '에어서울 (RS511/RS512)', schedule: '출국 20:20→23:05 / 귀국 00:05→06:40', baggage: '할인운임 15kg 포함', depD: '20261121', retD: '20261124', note: '동남아 휴양 최저가! 자정 귀국편(00:05)이므로 마지막 날 레이트 체크아웃 또는 마사지 공항 샌딩 패키지 추천.' },
-            { code: 'CXR', city: '나트랑 (냐짱)', price: 214405, diff: -4000, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '에어서울 (RS525/RS526)', schedule: '출국 20:10→23:20 / 귀국 00:20→07:15', baggage: '할인운임 15kg 포함', depD: '20261121', retD: '20261124', note: '깜란 공항에서 나트랑 시내까지 그랩(Grab) 약 40분 소요. 깜란 리조트 단지와 시내 일정을 나누어 숙박 권장.' },
-            { code: 'PQC', city: '푸꾸옥', price: 277400, diff: -40459, dates: '2026.11.20(금)~11.24(화) (4박 5일)', airline: '비엣젯항공 (VJ975/VJ974)', schedule: '출국 02:10→06:00 / 귀국 17:45→00:55(+1)', baggage: '기내 7kg 포함 (위탁 사전추가 권장)', depD: '20261120', retD: '20261124', note: '11월부터 푸꾸옥 최고 건기 시즌 진입! 새벽 6시 도착 편으로 리조트 얼리 체크인 또는 모닝 투어 활용 추천.' },
-            { code: 'DLI', city: '달랏', price: 289000, diff: -18000, dates: '2026.11.27(금)~11.30(월) (3박 4일)', airline: '제주항공 (7C2811/7C2812)', schedule: '출국 20:30→23:55 / 귀국 00:55→07:30', baggage: 'FLYBAG 15kg 포함', depD: '20261127', retD: '20261130', note: '해발 1,500m 고원 도시로 연중 봄 날씨(15~24도). 아침저녁으로 쌀쌀하므로 가벼운 가디건이나 바람막이 지참 필수.' },
-            { code: 'HAN', city: '하노이', price: 299500, diff: -9747, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '제주항공 (7C2801/7C2802)', schedule: '출국 21:10→00:20(+1) / 귀국 01:45→07:55', baggage: 'FLYBAG 15kg 포함', depD: '20261119', retD: '20261123', note: '11~12월 하노이는 선선한 건기로 하롱베이·닌빈(땀꼭) 투어 최적기. 노이바이 공항 86번 급행버스로 시내 직결.' },
-            { code: 'SGN', city: '호치민', price: 330402, diff: -22806, dates: '2026.11.27(금)~11.30(월) (3박 4일)', airline: '비엣젯항공 (VJ863/VJ862)', schedule: '출국 11:40→15:10 / 귀국 02:35→09:40', baggage: 'Eco 기내 7kg 포함', depD: '20261127', retD: '20261130', note: '오전 11시 40분 출발 낮 비행기. 떤선녓 공항 출국 심사 대기줄이 길어 귀국 시 최소 3시간 전 공항 도착 필수.' },
-            { code: 'HPH', city: '하이퐁', price: 348000, diff: -58893, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '비엣젯항공 (VJ925/VJ926)', schedule: '출국 07:15→10:40 / 귀국 23:55→06:15(+1)', baggage: 'Eco 기내 7kg 포함', depD: '20261119', retD: '20261123', note: '오전 출발 황금 시간대. 하노이 공항보다 하롱베이·깟바섬까지 이동 시간이 절반(약 50분)으로 단축되는 알짜 노선.' },
-            { code: 'BKK', city: '방콕 수완나품', price: 466465, diff: -25580, dates: '2026.11.28(토)~12.01(화) (3박 4일)', airline: '타이비엣젯항공 (VZ811/VZ810)', schedule: '출국 11:20→15:10 / 귀국 01:25→08:50', baggage: '특가 기내 7kg 포함 (위탁 추가 권장)', depD: '20261128', retD: '20261201', note: '11월 말 방콕 건기 시작. 수완나품(BKK) 도착 노선이며, 시내 이동 시 공항철도(ARL) 또는 그랩/볼트 앱 호출 편리.' },
-            { code: 'CNX', city: '치앙마이', price: 438000, diff: -31000, dates: '2026.11.26(목)~11.30(월) (4박 5일)', airline: '제주항공 (7C4205/7C4206)', schedule: '출국 18:00→22:30 / 귀국 23:30→06:25(+1)', baggage: 'FLYBAG 15kg 포함', depD: '20261126', retD: '20261130', note: '11월 말 치앙마이 러이끄라통(풍등 축제) 및 건기 시즌. 올드타운·님만해민과 공항이 차로 15분 거리로 매우 가까움.' },
-            { code: 'HKT', city: '푸켓', price: 449000, diff: -27000, dates: '2026.11.21(토)~11.25(수) (4박 5일)', airline: '진에어 (LJ023/LJ024)', schedule: '출국 17:15→22:00 / 귀국 23:05→06:55(+1)', baggage: '15kg 무료 위탁 기본 포함', depD: '20261121', retD: '20261125', note: '11월부터 안다만해 파도가 잔잔해져 시밀란 군도(11~4월 한시 개방) 및 피피섬 스노클링 투어 최적기.' },
-            { code: 'CEB', city: '세부', price: 242000, diff: -18000, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '진에어 (LJ025/LJ026)', schedule: '출국 07:45→11:25 / 귀국 01:25→06:50', baggage: '15kg 무료 위탁 기본 포함', depD: '20261120', retD: '20261123', note: '오전 출발+진에어 15kg 수하물 포함! 필리핀 입국 72시간 전 eTravel(온라인 입국신고서) QR코드 사전 발급 필수.' },
-            { code: 'TAG', city: '보홀 (팡라오)', price: 268000, diff: -24000, dates: '2026.11.27(금)~11.30(월) (3박 4일)', airline: '에어서울 (RS561/RS562)', schedule: '출국 07:10→10:55 / 귀국 11:55→17:30', baggage: '할인운임 15kg 포함', depD: '20261127', retD: '20261130', note: '아침 출발·낮 귀국 황금 스케줄! 세부에서 배를 탈 필요 없이 보홀 팡라오 국제공항에 직항 도착해 알로나비치 10분 이동.' },
-            { code: 'CRK', city: '클락', price: 233000, diff: -15000, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '진에어 (LJ031/LJ032)', schedule: '출국 21:35→00:35(+1) / 귀국 01:35→06:25', baggage: '15kg 무료 위탁 기본 포함', depD: '20261121', retD: '20261124', note: '진에어 무료 위탁 15kg 포함으로 골프백 위탁 가능. 클락 경제특구 내 치안이 우수하고 푸닝 온천·피나투보 트레킹 인기.' },
-            { code: 'DPS', city: '발리 덴파사르', price: 548000, diff: -42000, dates: '2026.11.26(목)~11.30(월) (4박 5일)', airline: '제주항공 (7C5301/7C5302)', schedule: '출국 15:40→21:50 / 귀국 23:05→07:10(+1)', baggage: 'FLYBAG 15kg 포함', depD: '20261126', retD: '20261130', note: '제주항공 발리 직항 취항으로 50만원대 왕복 가능! 인도네시아 전자도착비자(e-VOA) 및 발리 관광세 온라인 사전 납부 권장.' },
-            { code: 'BKI', city: '코타키나발루', price: 274000, diff: -19000, dates: '2026.11.20(금)~11.24(화) (4박 5일)', airline: '진에어 (LJ061/LJ062)', schedule: '출국 19:30→23:50 / 귀국 00:50→07:05', baggage: '15kg 무료 위탁 기본 포함', depD: '20261120', retD: '20261124', note: '말레이시아 입국 3일 전 디지털 입국카드(MDAC) 온라인 작성 필수. 탄중아루 선셋 비치와 마무틱섬 호핑투어 추천.' },
-            { code: 'SIN', city: '싱가포르', price: 389000, diff: -31000, dates: '2026.11.21(토)~11.25(수) (4박 5일)', airline: '티웨이항공 (TW171/TW172)', schedule: '출국 19:00→00:45(+1) / 귀국 02:15→09:50', baggage: '스마트운임 15kg 포함', depD: '20261121', retD: '20261125', note: '대형 기재(A330) 투입 노선. 입국 3일 전 SG Arrival Card 온라인 제출 필수, 대중교통은 컨택리스 트래블카드로 바로 탑승.' },
-            { code: 'VTE', city: '비엔티안', price: 462600, diff: -261700, dates: '2026.12.04(금)~12.07(월) (3박 4일)', airline: '제주항공 (7C4303/7C4304)', schedule: '출국 19:10→22:45 / 귀국 23:45→06:45(+1)', baggage: 'FLYBAG 15kg 포함', depD: '20261204', retD: '20261207', note: '직전호(724,300원) 대비 26만 원 이상 폭락! 12월 라오스 건기 시즌으로 비엔티안-방비엥 고속철도(1시간) 이동 편리.' },
-            { code: 'BWN', city: '반다르스리베가완 (브루나이)', price: 649500, diff: -244600, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '로열브루나이항공 (BI652/BI651)', schedule: '출국 11:50→16:35 / 귀국 02:05→08:35', baggage: '무료 위탁수하물 20kg 포함 (FSC)', depD: '20261121', retD: '20261124', note: '30일 무비자 입국 가능, 7성급 엠파이어 호텔 호캉스 성지. 이슬람 국가로 주류 판매가 없으며 반입 시 세관 신고 필수.' },
-            { code: 'GUM', city: '괌', price: 294000, diff: -28000, dates: '2026.11.26(목)~11.30(월) (4박 5일)', airline: '진에어 (LJ913/LJ914)', schedule: '출국 09:15→14:45 / 귀국 16:00→19:55', baggage: '무료 위탁수하물 23kg 2개 포함', depD: '20261126', retD: '20261130', note: '오전 출발·저녁 귀국 황금 스케줄에 미주 노선 규정으로 23kg 수하물 2개 무료! 괌 전자세관신고서(EDF) 및 G-CNMI ETA 사전 작성 필수.' },
-            { code: 'SPN', city: '사이판', price: 286000, diff: -22000, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '제주항공 (7C3402/7C3401)', schedule: '출국 10:10→15:35 / 귀국 16:40→20:30', baggage: 'FLYBAG 23kg 포함', depD: '20261120', retD: '20261123', note: '낮 시간대 왕복 스케줄로 가족·커플 휴양에 최적. 마나가하섬 스노클링 및 별빛 투어 사전 예약 권장.' },
-
-            // ================= 4면: 중앙아시아·몽골 (3곳) =================
-            { code: 'ALA', city: '알마티', price: 984000, diff: -62900, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '에어아스타나 (KC910/KC909)', schedule: '출국 11:15→15:35 / 귀국 01:10→09:45', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261119', retD: '20261123', note: '한국 여권 30일 무비자 입국. 도심에서 곤돌라로 30분 만에 오르는 톈산 산맥 침불락(Shymbulak) 스키 리조트 설경이 압권.' },
-            { code: 'TAS', city: '타슈켄트', price: 892000, diff: -94000, dates: '2026.11.20(금)~11.24(화) (4박 5일)', airline: '우즈베키스탄항공 (HY514/HY513)', schedule: '출국 10:25→14:10 / 귀국 22:15→08:35(+1)', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261120', retD: '20261124', note: '30일 무비자 입국. 타슈켄트에서 사마르칸트행 고속열차(아프로시압)는 출발 30~45일 전 온라인 조기 예매가 필수.' },
-            { code: 'UBN', city: '울란바토르 (신월 별관측)', price: 472102, diff: -21401, dates: '2026.12.10(목)~12.13(일) (3박 4일)', airline: '제주항공 (7C5203/7C5204)', schedule: '출국 08:20→11:10 / 귀국 12:10→16:10', baggage: 'FLYBAG 15kg 포함', depD: '20261210', retD: '20261213', note: '12월 신월(그믐) 주간으로 달빛 간섭 없이 테를지 초원 은하수 관측 최적기! 동계 난방 완비 현대식 게르 캠프 예약 필수.' },
-
-            // ================= 5면: 중화권 (4곳) =================
-            { code: 'TPE', city: '타이베이 타오위안', price: 298100, diff: -12268, dates: '2026.11.21(토)~11.23(월) (2박 3일)', airline: '스쿠트항공 (TR897/TR896)', schedule: '출국 22:30→00:15(+1) / 귀국 17:10→20:45', baggage: 'FlyBag 20kg 포함', depD: '20261121', retD: '20261123', note: '대만 입국 1~7일 전 온라인 대만 여행지원금(5,000 NTD, 약 21만 원 상당 Lucky Land) 추첨 사전 등록 필수!' },
-            { code: 'KHH', city: '가오슝', price: 259000, diff: -18000, dates: '2026.11.27(금)~11.30(월) (3박 4일)', airline: '티웨이항공 (TW671/TW672)', schedule: '출국 11:25→13:40 / 귀국 14:40→18:25', baggage: '스마트운임 15kg 포함', depD: '20261127', retD: '20261130', note: '11~12월 가오슝은 비가 거의 오지 않는 쾌적한 봄 날씨(20~26도). 공항에서 MRT 지하철로 시내 미려도역까지 18분 직결.' },
-            { code: 'HKG', city: '홍콩', price: 284000, diff: -21000, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '진에어 (LJ113/LJ114)', schedule: '출국 09:40→12:45 / 귀국 13:55→18:30', baggage: '15kg 무료 위탁 기본 포함', depD: '20261120', retD: '20261123', note: '연중 홍콩 여행하기 가장 선선하고 맑은 11~12월 시즌. 옥토퍼스 카드 애플페이/트래블로그 연동으로 피크트램·스타페리 탑승 편리.' },
-            { code: 'MFM', city: '마카오', price: 249000, diff: -24000, dates: '2026.11.28(토)~12.01(화) (3박 4일)', airline: '에어마카오 (NX821/NX822)', schedule: '출국 07:50→11:00 / 귀국 15:35→20:10', baggage: '무료 위탁수하물 20kg 포함 (FSC)', depD: '20261128', retD: '20261201', note: '오전 출발+에어마카오 수하물 20kg 포함! 에어마카오 보딩패스 지참 시 코타이 리조트 식음료 및 공연 할인 혜택 제공.' }
-          ];
-
-          const enrichEdition = (multiplier, dateLabel) => {
-            return base58.map((item) => {
-              const rawPrice = Number(item.price);
-              const adjustedPrice = Math.round((rawPrice * multiplier) / 100) * 100;
-              const prevPrice = adjustedPrice - item.diff;
-              const skyDep = item.depD.slice(2);
-              const skyRet = item.retD.slice(2);
-              return {
-                ...item,
-                editionDate: dateLabel,
-                price: adjustedPrice,
-                history: [
-                  Math.round(prevPrice * 1.04),
-                  Math.round(prevPrice * 1.02),
-                  prevPrice,
-                  Math.round((prevPrice + adjustedPrice) / 2),
-                  adjustedPrice
-                ],
-                naverUrl: `https://flight.naver.com/flights/international/ICN-${item.code}-${item.depD}/${item.code}-ICN-${item.retD}?adult=1&fareType=Y`,
-                skyUrl: `https://www.skyscanner.co.kr/transport/flights/icn/${item.code.toLowerCase()}/${skyDep}/${skyRet}/`
-              };
-            });
-          };
-
-          this.allEditionsData['2026-10-28'] = enrichEdition(1.0, '2026-10-28');
-          this.allEditionsData['2026-10-27'] = enrichEdition(1.03, '2026-10-27');
-          this.allEditionsData['2026-10-22'] = enrichEdition(1.06, '2026-10-22');
-        },
-
-        get currentEditionFlights() {
-          return this.allEditionsData[this.selectedDate] || this.allEditionsData['2026-10-28'] || [];
-        },
-
         get lowestFlight() {
           if (!this.currentEditionFlights.length) return null;
           return [...this.currentEditionFlights].sort((a, b) => a.price - b.price)[0];
@@ -1388,17 +1108,14 @@
         get filteredFlights() {
           let list = [...this.currentEditionFlights];
 
-          // 1) 대분류 면 필터
           if (this.activeSection !== 'ALL') {
             list = list.filter(f => this.getTaxonomy(f.code).section === this.activeSection);
           }
 
-          // 2) 소분류 칩 필터
           if (this.activeSubcategory !== 'ALL') {
             list = list.filter(f => this.getTaxonomy(f.code).sub === this.activeSubcategory);
           }
 
-          // 3) 검색어 필터
           if (this.searchQuery.trim() !== '') {
             const q = this.searchQuery.trim().toLowerCase();
             list = list.filter(f => {
@@ -1413,17 +1130,14 @@
             });
           }
 
-          // 4) 오전 출발 황금스케줄 필터 (06:00~11:59 출국)
           if (this.onlyGoldenSchedule) {
             list = list.filter(f => this.isMorningDeparture(f.schedule));
           }
 
-          // 5) 무료 위탁수하물 포함 필터
           if (this.onlyFreeBaggage) {
             list = list.filter(f => this.hasFreeBaggage(f.baggage));
           }
 
-          // 6) 정렬
           if (this.sortBy === 'price_asc') {
             list.sort((a, b) => a.price - b.price);
           } else if (this.sortBy === 'drop_desc') {
@@ -1460,7 +1174,11 @@
 
         getLandmarkPhoto(code) {
           return (this.landmarkMeta[code] && this.landmarkMeta[code].img) 
-            || 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=600&q=80';
+            || 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=640&q=80';
+        },
+
+        handleImageFallback(event, code) {
+          event.target.src = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=640&q=80';
         },
 
         getLandmarkCaption(code) {
