@@ -1,0 +1,37 @@
+name: Daily Flight Briefing Collector (50 Cities)
+
+on:
+  # 1. 매일 아침 한국시간(KST) 오전 07:00에 자동 실행 (UTC 기준 전일 22:00)
+  schedule:
+    - cron: '0 22 * * *'
+
+  # 2. 사용자가 GitHub 웹페이지에서 언제든 'Run workflow' 버튼 한 번으로 즉시 테스트 실행 가능
+  workflow_dispatch:
+
+jobs:
+  collect-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 1. 저장소 파일 불러오기
+        uses: actions/checkout@v4
+
+      - name: 2. 파이썬(Python 3.11) 환경 준비
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 3. 오픈소스 패키지(fast-flights & google-genai) 자동 설치
+        run: |
+          python -m pip install --upgrade pip
+          pip install fast-flights google-genai
+
+      - name: 4. 50개 직항 도시 최저가 수집 및 구글 시트 자동 기록 실행
+        env:
+          WEBAPP_URL: ${{ secrets.WEBAPP_URL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SYNC_SECRET_KEY: ${{ secrets.SYNC_SECRET_KEY }}
+        run: |
+          python collect_flights.py
+
