@@ -176,33 +176,33 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 1.48rem;
+      min-width: 1.52rem;
       height: 1.95rem;
-      padding: 0 3px;
+      padding: 0 4px;
       background: linear-gradient(180deg, #2C2925 0%, #211E1B 49%, #141210 50%, #24211D 100%);
       border: 1px solid #3E3A34;
       border-radius: 3px;
       box-shadow: 0 2px 3px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.08);
       font-family: 'JetBrains Mono', 'Noto Sans KR', monospace;
       font-weight: 800;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       line-height: 1;
-      color: #FBF7EE;
+      color: #F4EFE6;
       transform-style: preserve-3d;
       backface-visibility: hidden;
       user-select: none;
       flex-shrink: 0;
     }
 
-    .flap-tile.is-space {
-      min-width: 0.7rem;
-      background: linear-gradient(180deg, #1E1C19 0%, #161412 100%);
-      border-color: #2B2823;
-      opacity: 0.75;
+    .flap-tile.is-price-tile {
+      color: #FBBF24; /* 우측 금액 전용 노란 텍스트 */
     }
 
-    .flap-tile.is-accent {
-      color: #FBBF24;
+    .flap-tile.is-space {
+      min-width: 0.6rem;
+      background: linear-gradient(180deg, #1E1C19 0%, #161412 100%);
+      border-color: #2B2823;
+      opacity: 0.65;
     }
 
     /* 가운데 스플릿 힌지 라인 */
@@ -257,7 +257,6 @@
       border-color: #807563;
     }
 
-    /* 태그 배지 전용 플립 모션 */
     @keyframes badgeFlipIn {
       0% {
         transform: perspective(400px) rotateX(-90deg);
@@ -291,7 +290,7 @@
 <body class="min-h-screen pb-16 antialiased" x-data="flightBriefingNewsroom()" x-init="initNewsroom()">
 
   <!-- ===================================================================== -->
-  <!-- 1. 최상단 공항 스플릿 플랩 출발 전광판 (ICN DEPARTURES · 핵심 요약 5선) -->
+  <!-- 1. 최상단 공항 스플릿 플랩 출발 전광판 (도시명(공항코드) + 우측 노란 금액만 표기) -->
   <!-- ===================================================================== -->
   <div class="max-w-7xl mx-auto px-4 pt-4">
     <div 
@@ -306,9 +305,6 @@
             <span class="font-mono-flap font-extrabold text-xs tracking-wider text-amber-300">ICN DEPARTURES</span>
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           </div>
-          <span class="font-mono-flap text-[11px] text-[#A99F8E] uppercase tracking-widest hidden sm:inline">
-            SOLARI SPLIT-FLAP BRIEFING
-          </span>
           <!-- 모바일용 슬롯 번호 -->
           <div class="flex lg:hidden items-center gap-1">
             <template x-for="(slot, idx) in flapSlots" :key="idx">
@@ -322,33 +318,40 @@
           </div>
         </div>
 
-        <!-- 중앙 스플릿 플랩 개별 타일 보드 (글자별 촤르륵 회전 애니메이션) -->
-        <div class="flex-1 min-w-0 flex items-center gap-2 overflow-hidden py-0.5">
-          <!-- 좌측 카테고리 플립 배지 -->
-          <span 
-            class="px-2.5 py-1 rounded text-[11px] font-mono-flap font-extrabold shrink-0 tracking-tight shadow-sm"
-            :class="[flapSlots[currentFlapIndex].badgeClass, isBadgeFlipping ? 'flap-badge-flip' : '']"
-            x-text="flapSlots[currentFlapIndex].tag"></span>
+        <!-- 중앙 스플릿 플랩 개별 타일 보드 (플랩보드: '도시명 (공항코드)'만, 우측 노란 텍스트: 금액만 표기) -->
+        <div class="flex-1 min-w-0 flex items-center justify-between gap-3 overflow-hidden bg-[#141311] border border-[#2E2A24] rounded px-3 py-1.5">
+          <div class="flex items-center gap-2.5 min-w-0 overflow-hidden">
+            <!-- 슬롯 카테고리 배지 -->
+            <span 
+              class="px-2.5 py-1 rounded text-[11px] font-mono-flap font-extrabold shrink-0 tracking-tight shadow-sm"
+              :class="[flapSlots[currentFlapIndex].badgeClass, isBadgeFlipping ? 'flap-badge-flip' : '']"
+              x-text="flapSlots[currentFlapIndex].badge"></span>
 
-          <!-- 개별 스플릿 플랩 문자 타일 트랙 -->
-          <div class="flap-row-track flex-1 min-w-0">
-            <template x-for="(cell, cIdx) in flapDisplayCells" :key="cIdx">
-              <span 
-                class="flap-tile"
-                :class="{
-                  'is-space': cell.char === ' ',
-                  'is-flipping': cell.flipping,
-                  'is-accent': cell.accent
-                }"
-                x-text="cell.char === ' ' ? '\u00A0' : cell.char"></span>
-            </template>
+            <!-- 플랩보드 타일: 오직 '도시명 (공항코드)'만 회전 표기 -->
+            <div class="flap-row-track">
+              <template x-for="(cell, cIdx) in flapCityCells" :key="'city-' + cIdx">
+                <span 
+                  class="flap-tile"
+                  :class="{
+                    'is-space': cell.char === ' ',
+                    'is-flipping': cell.flipping
+                  }"
+                  x-text="cell.char === ' ' ? '\u00A0' : cell.char"></span>
+              </template>
+            </div>
           </div>
 
-          <!-- 우측 보조 설명 플립 라벨 -->
-          <span 
-            class="text-amber-300/90 text-[11px] font-mono-flap hidden xl:inline shrink-0 pl-2 border-l border-[#3A3631]"
-            :class="isBadgeFlipping ? 'flap-badge-flip' : ''"
-            x-text="flapSlots[currentFlapIndex].sub"></span>
+          <!-- 우측 노란 텍스트: 오직 '금액'만 회전 표기 -->
+          <div class="flex items-center gap-1.5 shrink-0 pl-3 border-l border-[#332E27]">
+            <div class="flap-row-track">
+              <template x-for="(pCell, pIdx) in flapPriceCells" :key="'price-' + pIdx">
+                <span 
+                  class="flap-tile is-price-tile"
+                  :class="{ 'is-flipping': pCell.flipping }"
+                  x-text="pCell.char"></span>
+              </template>
+            </div>
+          </div>
         </div>
 
         <!-- 우측 슬롯 컨트롤러 (1~5 버튼 & 화살표) -->
@@ -357,7 +360,7 @@
             type="button"
             @click="prevFlapSlot()"
             class="px-2 py-1 rounded bg-[#2B2824] hover:bg-[#3B3731] text-[#D5CBB8] text-xs font-mono-flap border border-[#443E36]"
-            title="이전 브리핑">◀</button>
+            title="이전 노선">◀</button>
           <template x-for="(slot, idx) in flapSlots" :key="idx">
             <button 
               type="button"
@@ -370,7 +373,7 @@
             type="button"
             @click="nextFlapSlot()"
             class="px-2 py-1 rounded bg-[#2B2824] hover:bg-[#3B3731] text-[#D5CBB8] text-xs font-mono-flap border border-[#443E36]"
-            title="다음 브리핑">▶</button>
+            title="다음 노선">▶</button>
         </div>
       </div>
     </div>
@@ -595,7 +598,7 @@
 
           <!-- 카드 상단 영역 (z-10) -->
           <div class="relative z-10">
-            <!-- 대분류 · 소분류 배지 (예시 이미지 색감: 슬레이트 블루 #5B7083 & 토프 그레이 #8C8275) -->
+            <!-- 대분류 · 소분류 배지 -->
             <div class="flex flex-wrap items-center justify-between gap-1.5 mb-2.5">
               <div class="flex flex-wrap items-center gap-1.5">
                 <span 
@@ -619,7 +622,7 @@
               <p class="text-[11px] text-[#5C5549] font-medium mt-0.5" x-text="getLandmarkCaption(item.code)"></p>
             </div>
 
-            <!-- 가격 및 직전호 등락 & 스파크라인 -->
+            <!-- 가격 및 직전호 등락 & 최근 가격 변동 그래프 (가장 좌측 과거 가격 숫자 표기) -->
             <div class="flex items-end justify-between gap-2 mb-3.5 pb-2.5 border-b border-[#D5CBB8]/80">
               <div>
                 <div class="text-[11px] font-bold text-[#5C5549] mb-0.5">왕복 직항 최저가</div>
@@ -633,18 +636,29 @@
                 </div>
               </div>
 
-              <!-- 미니 운임 추이 스파크라인 -->
+              <!-- 미니 운임 추이 스파크라인 ('최근 가격 변동' + 가장 좌측 과거 시작 가격 숫자 병기) -->
               <div class="text-right shrink-0" x-show="item.history && item.history.length > 1">
-                <div class="text-[10px] font-mono-flap text-[#7A7164] mb-0.5">최근 5호 추이</div>
-                <svg class="w-20 h-6 overflow-visible" viewBox="0 0 80 24">
-                  <polyline
-                    fill="none"
-                    :stroke="item.diff <= 0 ? '#215E42' : '#B8332A'"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    :points="getSparklinePoints(item.history)" />
-                </svg>
+                <div class="text-[10px] font-mono-flap font-semibold text-[#6E6557] mb-0.5">최근 가격 변동</div>
+                <div class="flex items-center justify-end gap-1.5">
+                  <span 
+                    class="text-[10px] font-mono-flap font-bold text-[#5C5549] bg-[#EFECE4] px-1 py-0.2 rounded border border-[#D5CBB8]" 
+                    title="비교 시작일 요금"
+                    x-text="formatPrice(item.history[0])"></span>
+                  <svg class="w-16 h-6 overflow-visible" viewBox="0 0 80 24">
+                    <circle
+                      :cx="getSparklineFirstPoint(item.history).x"
+                      :cy="getSparklineFirstPoint(item.history).y"
+                      r="2.3"
+                      :fill="item.diff <= 0 ? '#215E42' : '#B8332A'" />
+                    <polyline
+                      fill="none"
+                      :stroke="item.diff <= 0 ? '#215E42' : '#B8332A'"
+                      stroke-width="2.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      :points="getSparklinePoints(item.history)" />
+                  </svg>
+                </div>
               </div>
             </div>
 
@@ -737,7 +751,7 @@
   </footer>
 
   <!-- ===================================================================== -->
-  <!-- Alpine.js 애플리케이션 로직 (58개 전 도시 고유 랜드마크 · 10/29 최신 데이터) -->
+  <!-- Alpine.js 애플리케이션 로직 -->
   <!-- ===================================================================== -->
   <script>
     function flightBriefingNewsroom() {
@@ -751,28 +765,26 @@
         onlyFreeBaggage: false,
         sortBy: 'section_order',
 
-        // 상단 스플릿 플랩 전광판 상태
+        // 상단 스플릿 플랩 전광판 상태 (좌측 플랩: '도시명 (공항코드)'만, 우측 노란 텍스트: '금액'만)
         currentFlapIndex: 0,
         pauseFlap: false,
         flapAnimKey: 0,
         flapTimer: null,
         isBadgeFlipping: false,
-        flapDisplayCells: [],
+        flapCityCells: [],
+        flapPriceCells: [],
         flapScrambleTimers: [],
 
-        // 5대 대분류 면 구성 (제안 1 + 방법 B 확정안)
         sections: [
-          { id: 'ALL', label: '전체 호외 (58곳)', icon: '🗞️', majorName: '전체' },
-          { id: 'SEC1', label: '1면: 일본', icon: '🇯🇵', majorName: '일본' },
-          { id: 'SEC2', label: '2면: 중국', icon: '🇨🇳', majorName: '중국' },
-          { id: 'SEC3', label: '3면: 동남아·대양주', icon: '🌴', majorName: '동남아' },
-          { id: 'SEC4', label: '4면: 중앙아시아·몽골', icon: '🐎', majorName: '중앙아시아' },
-          { id: 'SEC5', label: '5면: 중화권', icon: '🏮', majorName: '중화권' }
+          { id: 'ALL', label: '전체 호외 (58곳)', icon: '🗞️' },
+          { id: 'SEC1', label: '1면: 일본', icon: '🇯🇵' },
+          { id: 'SEC2', label: '2면: 중국', icon: '🇨🇳' },
+          { id: 'SEC3', label: '3면: 동남아·대양주', icon: '🌴' },
+          { id: 'SEC4', label: '4면: 중앙아시아·몽골', icon: '🐎' },
+          { id: 'SEC5', label: '5면: 중화권', icon: '🏮' }
         ],
 
-        // 58개 직항 도시 1:1 카테고리 매핑 (제안 1 [국가/권역 · 여행성격] + 방법 B: 괌/사이판 3면, 울란바토르 4면)
         taxonomyMap: {
-          // 1면: 일본 (21곳 - NGS 나가사키 포함)
           NRT: { section: 'SEC1', major: '일본', sub: '대도시', order: 1 },
           KIX: { section: 'SEC1', major: '일본', sub: '대도시', order: 2 },
           FUK: { section: 'SEC1', major: '일본', sub: '대도시', order: 3 },
@@ -796,7 +808,6 @@
           AKJ: { section: 'SEC1', major: '일본', sub: '홋카이도·오키나와', order: 20 },
           OKA: { section: 'SEC1', major: '일본', sub: '홋카이도·오키나와', order: 21 },
 
-          // 2면: 중국 (10곳)
           PVG: { section: 'SEC2', major: '중국', sub: '대도시', order: 22 },
           PKX: { section: 'SEC2', major: '중국', sub: '대도시', order: 23 },
           CAN: { section: 'SEC2', major: '중국', sub: '대도시', order: 24 },
@@ -808,7 +819,6 @@
           DYG: { section: 'SEC2', major: '중국', sub: '문화·절경', order: 30 },
           HRB: { section: 'SEC2', major: '중국', sub: '문화·절경', order: 31 },
 
-          // 3면: 동남아·대양주 (20곳 - 괌/사이판 남태평양 휴양 편입)
           DAD: { section: 'SEC3', major: '동남아', sub: '베트남 휴양', order: 32 },
           CXR: { section: 'SEC3', major: '동남아', sub: '베트남 휴양', order: 33 },
           PQC: { section: 'SEC3', major: '동남아', sub: '베트남 휴양', order: 34 },
@@ -830,23 +840,17 @@
           GUM: { section: 'SEC3', major: '동남아', sub: '남태평양 휴양', order: 50 },
           SPN: { section: 'SEC3', major: '동남아', sub: '남태평양 휴양', order: 51 },
 
-          // 4면: 중앙아시아·몽골 (3곳 - 울란바토르 초원·이색 편입)
           ALA: { section: 'SEC4', major: '중앙아시아', sub: '실크로드·자연', order: 52 },
           TAS: { section: 'SEC4', major: '중앙아시아', sub: '실크로드·자연', order: 53 },
           UBN: { section: 'SEC4', major: '중앙아시아', sub: '초원·이색', order: 54 },
 
-          // 5면: 중화권 (4곳)
           TPE: { section: 'SEC5', major: '중화권', sub: '대만', order: 55 },
           KHH: { section: 'SEC5', major: '중화권', sub: '대만', order: 56 },
           HKG: { section: 'SEC5', major: '중화권', sub: '홍콩·마카오', order: 57 },
           MFM: { section: 'SEC5', major: '중화권', sub: '홍콩·마카오', order: 58 }
         },
 
-        // =====================================================================
-        // 58개 전 직항 도시별 100% 고유 랜드마크 이미지 & 캡션 (중복 0건 · 404 0건)
-        // =====================================================================
         landmarkMeta: {
-          // 1면: 일본 (21곳 + OKJ 호환)
           NRT: { caption: '🇯🇵 일본 · 도쿄타워 스카이라인 & 아사쿠사 센소지', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=640&q=80' },
           KIX: { caption: '🇯🇵 일본 · 도톤보리 글리코상 & 오사카성 천수각', img: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?auto=format&fit=crop&w=640&q=80' },
           FUK: { caption: '🇯🇵 일본 · 나카스 강변 포장마차 & 오호리 공원', img: 'https://images.unsplash.com/photo-1578469645742-46cae010e5d4?auto=format&fit=crop&w=640&q=80' },
@@ -870,7 +874,6 @@
           AKJ: { caption: '🇯🇵 일본 · 비에이 청의 호수 & 후라노 설원', img: 'https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?auto=format&fit=crop&w=640&q=80' },
           OKA: { caption: '🇯🇵 일본 · 만좌모 코끼리바위 절벽 & 에메랄드 해안', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=640&q=80' },
 
-          // 2면: 중국 (10곳)
           PVG: { caption: '🇨🇳 중국 · 상하이 동방명주 & 와이탄 야경', img: 'https://images.unsplash.com/photo-1538428494232-9c0d8a3ab403?auto=format&fit=crop&w=640&q=80' },
           PKX: { caption: '🇨🇳 중국 · 만리장성 산성 & 자금성 태화전', img: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=640&q=80' },
           CAN: { caption: '🇨🇳 중국 · 광저우 타워 & 주강 나이트 크루즈', img: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?auto=format&fit=crop&w=640&q=80' },
@@ -882,7 +885,6 @@
           DYG: { caption: '🇨🇳 중국 · 장가계 원가계 기암절벽 & 천문산', img: 'https://images.unsplash.com/photo-1513415277900-a62401e19be4?auto=format&fit=crop&w=640&q=80' },
           HRB: { caption: '🇨🇳 중국 · 하얼빈 성 소피아 성당 & 빙설대세계', img: 'https://images.unsplash.com/photo-1513326738677-b964603b136d?auto=format&fit=crop&w=640&q=80' },
 
-          // 3면: 동남아·대양주 (20곳 - 하노이 '기찻길 마을' 반영)
           DAD: { caption: '🇻🇳 베트남 · 바나힐 골든브릿지 & 미케비치', img: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=640&q=80' },
           CXR: { caption: '🇻🇳 베트남 · 나트랑 야자수 해변 & 포나가르 사원', img: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=640&q=80' },
           PQC: { caption: '🇻🇳 베트남 · 혼똔섬 해상케이블카 & 선셋타운', img: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=640&q=80' },
@@ -904,56 +906,27 @@
           GUM: { caption: '🇬🇺 미국령 괌 · 투몬비치 라군 & 사랑의 절벽', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=640&q=80' },
           SPN: { caption: '🇲🇵 사이판 · 마나가하섬 산호바다 & 그로토 블루홀', img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=640&q=80' },
 
-          // 4면: 중앙아시아·몽골 (3곳)
           ALA: { caption: '🇰🇿 카자흐스탄 · 톈산 산맥 만년설 & 빅 알마티 호수', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=640&q=80' },
           TAS: { caption: '🇺🇿 우즈베키스탄 · 하즈라티 이맘 푸른돔 & 실크로드', img: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=640&q=80' },
           UBN: { caption: '🇲🇳 몽골 · 테를지 대초원 게르 & 밤하늘 은하수', img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=640&q=80' },
 
-          // 5면: 중화권 (4곳)
           TPE: { caption: '🇹🇼 대만 · 타이베이 101 타워 & 지우펀 홍등 거리', img: 'https://images.unsplash.com/photo-1470004914212-05527e49370b?auto=format&fit=crop&w=640&q=80' },
           KHH: { caption: '🇹🇼 대만 · 가오슝 연지담 용호탑 & 보얼예술특구', img: 'https://images.unsplash.com/photo-1552993873-0dd1110e025f?auto=format&fit=crop&w=640&q=80' },
           HKG: { caption: '🇭🇰 홍콩 · 빅토리아 하버 정크선 & 마천루 야경', img: 'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&w=640&q=80' },
           MFM: { caption: '🇲🇴 마카오 · 성 바울 성당 유적 & 세나도 광장', img: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=640&q=80' }
         },
 
-        // 상단 스플릿 플랩 전광판에 들어갈 '오늘의 핵심 브리핑 요약 5선'
+        // 상단 스플릿 플랩 전광판 5선 (플랩보드: '도시명 (공항코드)'만, 우측 노란 텍스트: '금액'만 표기)
         flapSlots: [
-          {
-            tag: '🏆 LOWEST FARE',
-            badgeClass: 'bg-amber-400 text-[#181614]',
-            headline: '중국 옌타이(YNT) 왕복 177,800원 · 진에어 수하물 15KG',
-            sub: '비행 1시간 15분 초단거리 · 무비자 입국'
-          },
-          {
-            tag: '📉 BIGGEST DROP',
-            badgeClass: 'bg-emerald-400 text-[#181614]',
-            headline: '오사카(KIX) 291,400원 · 후쿠오카(FUK) 269,400원 (▼4,800원)',
-            sub: '2026-10-29 조간 최신호 브리핑'
-          },
-          {
-            tag: '🇯🇵 JAPAN PICK',
-            badgeClass: 'bg-rose-400 text-[#181614]',
-            headline: '사가(HSG) 21.0만 · 요나고(YGJ) 22.5만 · 다카마쓰(TAK) 24.6만',
-            sub: '오전 출발 알짜 스케줄 · 공항 리무진 연계'
-          },
-          {
-            tag: '🌴 RESORT DEAL',
-            badgeClass: 'bg-sky-400 text-[#181614]',
-            headline: '나트랑(CXR) 21.1만 · 다낭(DAD) 21.6만 · 클락(CRK) 22.9만',
-            sub: '11~12월 건기 진입 해양 액티비티 최적기'
-          },
-          {
-            tag: '🌅 GOLDEN TIME',
-            badgeClass: 'bg-amber-300 text-[#181614]',
-            headline: '오전 출발(06~11시) + 무료 위탁수하물 포함 알짜 노선 총 31곳',
-            sub: '하단 [🌅 오전 출발 황금스케줄만] 필터 클릭'
-          }
+          { badge: '🏆 LOWEST FARE', badgeClass: 'bg-amber-400 text-[#181614]', cityText: '옌타이 (YNT)', priceText: '₩177,800' },
+          { badge: '📉 BIGGEST DROP', badgeClass: 'bg-emerald-400 text-[#181614]', cityText: '오사카 간사이 (KIX)', priceText: '₩291,400' },
+          { badge: '🇯🇵 JAPAN PICK', badgeClass: 'bg-sky-400 text-[#181614]', cityText: '사가 (HSG)', priceText: '₩210,200' },
+          { badge: '🌴 RESORT DEAL', badgeClass: 'bg-rose-400 text-[#181614]', cityText: '나트랑 (CXR)', priceText: '₩211,600' },
+          { badge: '🌅 GOLDEN TIME', badgeClass: 'bg-amber-300 text-[#181614]', cityText: '후쿠오카 (FUK)', priceText: '₩269,400' }
         ],
 
-        // 58개 전 직항 도시 기본 데이터셋 (외부 flights_data.json 로드 시 자동 병합/갱신)
         allEditionsData: {},
 
-        // 시트 웹훅 payload의 각 행(row) 또는 flights_data.json 항목을 UI 카드 표준 포맷으로 정규화
         normalizeFlightRecord(raw, historicalSeries = {}) {
           const code = raw.code || (raw.city && raw.city.match(/\(([A-Z]{3})\)/)?.[1]) || 'ICN';
           const cleanCity = (raw.city || '').replace(/\s*\([A-Z]{3}\)\s*$/, '').trim();
@@ -976,7 +949,6 @@
           };
         },
 
-        // 외부 JSON(Apps Script 웹훅 응답 포맷 또는 editions 포맷 모두 호환) 적용
         ingestExternalPayload(extData) {
           if (!extData || typeof extData !== 'object') return;
           const payload = extData.payload || extData;
@@ -1019,11 +991,11 @@
               this.ingestExternalPayload(extData);
             }
           } catch (e) {
-            // 로컬 미리보기 또는 단일 파일 환경에서는 내장된 2026-10-29 최신 브리핑 데이터를 사용
+            // 로컬 미리보기 환경
           }
 
           this.refreshFlapSlotsFromData(this.currentEditionFlights);
-          this.triggerSplitFlapTransition(this.flapSlots[this.currentFlapIndex].headline);
+          this.triggerSplitFlapTransition(this.flapSlots[this.currentFlapIndex]);
 
           this.flapTimer = setInterval(() => {
             if (!this.pauseFlap) {
@@ -1032,110 +1004,149 @@
           }, 5200);
         },
 
-        // 아날로그 공항 스플릿 플랩(Solari Board) 글자별 촤르륵 회전 애니메이션 실행기
-        triggerSplitFlapTransition(targetText) {
-          // 기존 타이머 정리
+        // 플랩보드('도시명 (공항코드)')와 우측 노란 텍스트('금액')를 각각 개별 플립 애니메이션으로 구동
+        triggerSplitFlapTransition(slotObj) {
+          if (!slotObj) return;
           if (this.flapScrambleTimers && this.flapScrambleTimers.length) {
             this.flapScrambleTimers.forEach(t => clearInterval(t));
           }
           this.flapScrambleTimers = [];
 
-          // 배지 플립 트리거
           this.isBadgeFlipping = false;
           setTimeout(() => { this.isBadgeFlipping = true; }, 20);
 
-          const drumChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789₩▼▲()·+-:✈ ';
-          const maxCells = 38;
-          const chars = Array.from(targetText || '').slice(0, maxCells);
-          while (chars.length < maxCells) {
-            chars.push(' ');
+          const cityTarget = String(slotObj.cityText || '').padEnd(14, ' ').slice(0, 16);
+          const priceTarget = String(slotObj.priceText || '');
+
+          const cityDrum = '가나다라마바사아자차카타파하ABCDEFGHIJKLMNOPQRSTUVWXYZ() ';
+          const priceDrum = '₩0123456789,';
+
+          const cityChars = Array.from(cityTarget);
+          const priceChars = Array.from(priceTarget);
+
+          if (!this.flapCityCells || this.flapCityCells.length !== cityChars.length) {
+            this.flapCityCells = cityChars.map(() => ({ char: ' ', flipping: false }));
+          }
+          if (!this.flapPriceCells || this.flapPriceCells.length !== priceChars.length) {
+            this.flapPriceCells = priceChars.map(() => ({ char: ' ', flipping: false }));
           }
 
-          if (!this.flapDisplayCells || this.flapDisplayCells.length !== maxCells) {
-            this.flapDisplayCells = chars.map(ch => ({
-              char: ' ',
-              flipping: false,
-              accent: false
-            }));
-          }
-
-          chars.forEach((finalChar, idx) => {
-            const isNumberOrPrice = /[0-9,₩▼▲]/.test(finalChar);
-            const startDelay = idx * 18; // 좌->우 웨이브 시작 지연
-            const totalSpins = 4 + (idx % 4); // 각 타일이 4~7회 드럼 회전 후 정착
-            let spinCount = 0;
-
-            const startTimer = setTimeout(() => {
-              this.flapDisplayCells[idx].flipping = true;
-              const spinInterval = setInterval(() => {
-                spinCount++;
-                if (spinCount < totalSpins) {
-                  const randChar = drumChars[Math.floor(Math.random() * drumChars.length)];
-                  this.flapDisplayCells[idx].char = randChar;
-                  this.flapDisplayCells[idx].accent = false;
+          cityChars.forEach((finalCh, idx) => {
+            const delay = idx * 24;
+            const totalSpins = 4 + (idx % 3);
+            let count = 0;
+            const st = setTimeout(() => {
+              this.flapCityCells[idx].flipping = true;
+              const iv = setInterval(() => {
+                count++;
+                if (count < totalSpins) {
+                  this.flapCityCells[idx].char = cityDrum[Math.floor(Math.random() * cityDrum.length)];
                 } else {
-                  clearInterval(spinInterval);
-                  this.flapDisplayCells[idx].char = finalChar;
-                  this.flapDisplayCells[idx].flipping = false;
-                  this.flapDisplayCells[idx].accent = isNumberOrPrice;
+                  clearInterval(iv);
+                  this.flapCityCells[idx].char = finalCh;
+                  this.flapCityCells[idx].flipping = false;
                 }
-              }, 55);
-              this.flapScrambleTimers.push(spinInterval);
-            }, startDelay);
+              }, 52);
+              this.flapScrambleTimers.push(iv);
+            }, delay);
+            this.flapScrambleTimers.push(st);
+          });
 
-            this.flapScrambleTimers.push(startTimer);
+          priceChars.forEach((finalCh, idx) => {
+            const delay = 80 + idx * 28;
+            const totalSpins = 5 + (idx % 3);
+            let count = 0;
+            const st = setTimeout(() => {
+              this.flapPriceCells[idx].flipping = true;
+              const iv = setInterval(() => {
+                count++;
+                if (count < totalSpins) {
+                  this.flapPriceCells[idx].char = priceDrum[Math.floor(Math.random() * priceDrum.length)];
+                } else {
+                  clearInterval(iv);
+                  this.flapPriceCells[idx].char = finalCh;
+                  this.flapPriceCells[idx].flipping = false;
+                }
+              }, 52);
+              this.flapScrambleTimers.push(iv);
+            }, delay);
+            this.flapScrambleTimers.push(st);
           });
         },
 
         refreshFlapSlotsFromData(flights) {
           if (!Array.isArray(flights) || flights.length === 0) return;
+
           const byPrice = [...flights].sort((a, b) => a.price - b.price);
           const byDrop = [...flights].sort((a, b) => (a.diff || 0) - (b.diff || 0));
-          const japanPicks = byPrice.filter(f => this.getTaxonomy(f.code).section === 'SEC1').slice(0, 3);
-          const resortPicks = byPrice.filter(f => this.getTaxonomy(f.code).section === 'SEC3').slice(0, 3);
-          const goldenCount = flights.filter(f => this.isMorningDeparture(f.schedule) && this.hasFreeBaggage(f.baggage)).length;
+          const jpPick = byPrice.find(f => this.getTaxonomy(f.code).section === 'SEC1') || byPrice[0];
+          const seaPick = byPrice.find(f => this.getTaxonomy(f.code).section === 'SEC3') || byPrice[0];
+          const goldenPick = byPrice.find(
+            f => this.isMorningDeparture(f.schedule) && this.hasFreeBaggage(f.baggage)
+          ) || byPrice[0];
 
           const lowest = byPrice[0];
-          const biggestDrop = byDrop[0];
+          const biggestDrop = byDrop[0] || byPrice[1] || lowest;
 
-          if (lowest) {
-            this.flapSlots[0].headline = `${lowest.city}(${lowest.code}) 왕복 ${Number(lowest.price).toLocaleString('ko-KR')}원 · ${lowest.airline.split(' ')[0]} ${lowest.baggage.slice(0, 12)}`;
-          }
-          if (biggestDrop && biggestDrop.diff < 0) {
-            this.flapSlots[1].headline = `${biggestDrop.city}(${biggestDrop.code}) ${Number(biggestDrop.price).toLocaleString('ko-KR')}원 (직전호 대비 ▼${Math.abs(biggestDrop.diff).toLocaleString('ko-KR')}원)`;
-          }
-          if (japanPicks.length >= 3) {
-            this.flapSlots[2].headline = japanPicks.map(j => `${j.city}(${j.code}) ${(j.price / 10000).toFixed(1)}만`).join(' · ');
-          }
-          if (resortPicks.length >= 3) {
-            this.flapSlots[3].headline = resortPicks.map(r => `${r.city}(${r.code}) ${(r.price / 10000).toFixed(1)}만`).join(' · ');
-          }
-          this.flapSlots[4].headline = `오전 출발(06~11시) + 무료 위탁수하물 알짜 노선 총 ${goldenCount}곳 포착`;
+          this.flapSlots = [
+            {
+              badge: '🏆 LOWEST FARE',
+              badgeClass: 'bg-amber-400 text-[#181614]',
+              cityText: `${lowest.city} (${lowest.code})`,
+              priceText: this.formatPrice(lowest.price)
+            },
+            {
+              badge: '📉 BIGGEST DROP',
+              badgeClass: 'bg-emerald-400 text-[#181614]',
+              cityText: `${biggestDrop.city} (${biggestDrop.code})`,
+              priceText: this.formatPrice(biggestDrop.price)
+            },
+            {
+              badge: '🇯🇵 JAPAN PICK',
+              badgeClass: 'bg-sky-400 text-[#181614]',
+              cityText: `${jpPick.city} (${jpPick.code})`,
+              priceText: this.formatPrice(jpPick.price)
+            },
+            {
+              badge: '🌴 RESORT DEAL',
+              badgeClass: 'bg-rose-400 text-[#181614]',
+              cityText: `${seaPick.city} (${seaPick.code})`,
+              priceText: this.formatPrice(seaPick.price)
+            },
+            {
+              badge: '🌅 GOLDEN TIME',
+              badgeClass: 'bg-amber-300 text-[#181614]',
+              cityText: `${goldenPick.city} (${goldenPick.code})`,
+              priceText: this.formatPrice(goldenPick.price)
+            }
+          ];
 
-          this.triggerSplitFlapTransition(this.flapSlots[this.currentFlapIndex].headline);
+          if (this.currentFlapIndex >= this.flapSlots.length) {
+            this.currentFlapIndex = 0;
+          }
+          this.triggerSplitFlapTransition(this.flapSlots[this.currentFlapIndex]);
         },
 
         setFlapSlot(idx) {
           this.currentFlapIndex = idx;
           this.flapAnimKey++;
-          this.triggerSplitFlapTransition(this.flapSlots[this.currentFlapIndex].headline);
+          this.triggerSplitFlapTransition(this.flapSlots[idx]);
         },
 
         nextFlapSlot() {
           this.currentFlapIndex = (this.currentFlapIndex + 1) % this.flapSlots.length;
           this.flapAnimKey++;
-          this.triggerSplitFlapTransition(this.flapSlots[this.currentFlapIndex].headline);
+          this.triggerSplitFlapTransition(this.flapSlots[this.currentFlapIndex]);
         },
 
         prevFlapSlot() {
           this.currentFlapIndex = (this.currentFlapIndex - 1 + this.flapSlots.length) % this.flapSlots.length;
           this.flapAnimKey++;
-          this.triggerSplitFlapTransition(this.flapSlots[this.currentFlapIndex].headline);
+          this.triggerSplitFlapTransition(this.flapSlots[this.currentFlapIndex]);
         },
 
         buildSeedEditions() {
           const edition20261029 = [
-            // 1면: 일본 (21곳)
             { code: 'KIX', city: '오사카 간사이', price: 291400, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '진에어 (LJ231/LJ232)', schedule: '출국 07:55→09:40 / 귀국 11:00→13:00', baggage: '15kg 무료 위탁 기본 포함', depD: '20261113', retD: '20261116', note: '간사이공항 귀국 수속 혼잡을 감안해 출발 2시간 30분 전 공항 도착 권장', history: [323700, 285800, 296200, 291400] },
             { code: 'FUK', city: '후쿠오카', price: 269400, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '진에어 (LJ261/LJ262)', schedule: '출국 07:15→08:40 / 귀국 09:50→11:15', baggage: '15kg 무료 위탁 기본 포함', depD: '20261114', retD: '20261117', note: '후쿠오카공항에서 하카타역까지 지하철 2정거장(5분)으로 도심 접근성 최고', history: [339600, 290700, 274200, 269400] },
             { code: 'NRT', city: '도쿄 나리타', price: 304000, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '제주항공 (7C1102/7C1101)', schedule: '출국 06:00→08:25 / 귀국 11:50→14:30', baggage: 'FLYBAG 15kg 포함', depD: '20261112', retD: '20261116', note: '도심 이동용 스카이라이너 또는 나리타 익스프레스(N\'EX) 사전 예매 시 할인 혜택', history: [343873, 304569, 308800, 304000] },
@@ -1158,19 +1169,17 @@
             { code: 'AOJ', city: '아오모리', price: 388400, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '대한항공 (KE767/KE768)', schedule: '출국 10:05→12:30 / 귀국 13:30→16:30', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261114', retD: '20261117', note: '오이라세 계류·도와다호 및 핫코다산 로프웨이 관람 시 JR 도호쿠 패스 연계 추천', history: [393200, 388400] },
             { code: 'AKJ', city: '아사히카와', price: 419000, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '아시아나항공 (OZ158/OZ157)', schedule: '출국 11:15→14:00 / 귀국 15:00→18:20', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261112', retD: '20261116', note: '비에이·후라노 설원 투어 및 아사히야마 동물원 펭귄 산책 관람 시 신치토세보다 이동 시간 대폭 단축', history: [423800, 419000] },
 
-            // 2면: 중국 (10곳)
             { code: 'TAO', city: '칭다오', price: 205200, diff: 16800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '진에어 (LJ725/LJ726)', schedule: '출국 08:30→09:05 / 귀국 10:05→12:40', baggage: '15kg 무료 위탁 기본 포함', depD: '20261112', retD: '20261116', note: '비행시간 1시간 30분 초단거리 노선, 중국 무비자 입국 요건 및 알리페이 한국 카드 사전 연동 필수', history: [237100, 188400, 205200] },
             { code: 'PVG', city: '상하이 푸둥', price: 263200, diff: -4800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '중국동방항공 (MU5042/MU5041)', schedule: '출국 08:55→10:05 / 귀국 17:45→20:45', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261120', retD: '20261123', note: '와이탄 야경 및 상하이 디즈니랜드 방문 시 공식 앱 사전 다운로드 및 여권 지참 필수', history: [428300, 268000, 263200] },
             { code: 'PKX', city: '베이징 다싱', price: 283800, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '중국남방항공 (CZ316/CZ315)', schedule: '출국 11:25→12:35 / 귀국 15:30→18:25', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261121', retD: '20261124', note: '자금성(고궁박물원) 및 만리장성 입장권은 방문 7일 전 위챗 미니프로그램 사전 예약 필수', history: [296300, 288600, 283800] },
             { code: 'YNT', city: '옌타이', price: 177800, diff: -4800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '진에어 (LJ741/LJ742)', schedule: '출국 15:35→16:25 / 귀국 17:25→20:00', baggage: '15kg 무료 위탁 기본 포함', depD: '20261119', retD: '20261123', note: '비행시간 1시간 15분 최단거리 가성비 노선으로 장유 와이너리 및 펑라이각 관광 추천', history: [191900, 182600, 177800] },
             { code: 'DLC', city: '다롄', price: 207400, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '중국남방항공 (CZ676/CZ675)', schedule: '출국 12:00→12:15 / 귀국 08:45→11:00', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261113', retD: '20261116', note: '동방수성 베네치아 수로 및 성해광장 야경 명소로 짧은 주말 미식 여행에 최적', history: [206100, 212200, 207400] },
-            { code: 'HGH', city: '항저우', price: 288400, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '중국동방항공 (MU5044/MU5043)', schedule: '출국 12:55→14:15 / 귀국 08:40→11:55', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261114', retD: '20261117', note: '서호 유람선·송성가무쇼 및 우전 수향마을 1박 연계 코스로 인기가 높은 노선', history: [310000, 293200, 288400] },
+            { code: 'HGH', city: '항저우', price: 288400, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '중국동방항공 (MU5044/MU5043)', schedule: '출국 12:55→14:15 / 귀국 08:40→11:55', baggage: '무료 위탁수하물 23kg 1개 포함 (FSC)', depD: '20261114', retD: '20261117', note: '서호 유람선·송성가무쇼 및 우전 수향마을 1박 연계 코스로 인기가 높은 노선', history: [310000, 293200, 288400] },
             { code: 'XIY', city: '시안', price: 415000, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '아시아나항공 (OZ347/OZ348)', schedule: '출국 21:40→00:45(+1) / 귀국 01:50→06:05', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261112', retD: '20261116', note: '진시황 병마용갱·화청지 장한가 공연 및 시안 성벽 야경 투어 사전 예약 권장', history: [419800, 415000] },
             { code: 'DYG', city: '장가계', price: 398600, diff: 16800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '에어서울 (RS811/RS812)', schedule: '출국 12:25→15:20 / 귀국 16:20→20:30', baggage: '할인운임 15kg 포함', depD: '20261120', retD: '20261123', note: '천문산 케이블카·원가계 엘리베이터 대기 시간을 줄이기 위해 VIP 패스트트랙 티켓 사전 확인', history: [381800, 398600] },
             { code: 'CAN', city: '광저우', price: 326600, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '중국남방항공 (CZ338/CZ337)', schedule: '출국 10:55→13:55 / 귀국 16:20→20:55', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261121', retD: '20261124', note: '겨울철 온화한 기후와 정통 딤섬 미식 여행, 주강 나이트 크루즈 코스로 추천', history: [331400, 326600] },
             { code: 'HRB', city: '하얼빈', price: 325200, diff: 16800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '아시아나항공 (OZ339/OZ340)', schedule: '출국 12:40→14:00 / 귀국 15:05→18:20', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261119', retD: '20261123', note: '빙설대세계 축제 및 성 소피아 성당 관람 시 영하 25도 대비 발열 내의·방한 용품 철저히 준비', history: [308400, 325200] },
 
-            // 3면: 동남아·대양주 (20곳)
             { code: 'DAD', city: '다낭', price: 216600, diff: 16800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '에어서울 (RS511/RS512)', schedule: '출국 20:20→23:05 / 귀국 00:05→06:40', baggage: '할인운임 15kg 포함 (특가 미포함)', depD: '20261120', retD: '20261123', note: '귀국편 자정 출발 스케줄로 마지막 날 마사지 샵 짐 보관 및 공항 샌딩 패키지 활용 추천', history: [207506, 207390, 207390, 199800, 216600] },
             { code: 'CXR', city: '나트랑', price: 211600, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '에어서울 (RS525/RS526)', schedule: '출국 20:10→23:20 / 귀국 00:20→07:15', baggage: '할인운임 15kg 포함 (특가 미포함)', depD: '20261121', retD: '20261124', note: '깜란 국제공항에서 나트랑 시내까지 차량 40분 소요되므로 심야 도착 픽업 차량 사전 예약 권장', history: [207171, 214290, 216400, 211600] },
             { code: 'PQC', city: '푸꾸옥', price: 296200, diff: 16800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '비엣젯항공 (VJ975/VJ974)', schedule: '출국 02:10→06:00 / 귀국 17:45→00:55(+1)', baggage: '기내 7kg 포함 (위탁수하물 사전 추가 권장)', depD: '20261119', retD: '20261123', note: '45일 무비자 입국 가능, 건기 해양 액티비티 최적기이며 새벽 도착 모닝 투어 활용 추천', history: [277401, 309867, 317859, 279400, 296200] },
@@ -1192,12 +1201,10 @@
             { code: 'SPN', city: '사이판', price: 329000, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '제주항공 (7C3402/7C3401)', schedule: '출국 10:10→15:35 / 귀국 16:40→20:30', baggage: 'FLYBAG 23kg 포함', depD: '20261112', retD: '20261116', note: '마나가하섬 스노클링 및 그로토 투어 명소, 출발 전 G-CNMI ETA 사전 전자여행허가 등록 필수', history: [333800, 329000] },
             { code: 'DPS', city: '발리 덴파사르', price: 537600, diff: 16800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '제주항공 (7C5301/7C5302)', schedule: '출국 15:40→21:50 / 귀국 23:05→07:10(+1)', baggage: 'FLYBAG 15kg 포함 (대한항공·가루다 23kg)', depD: '20261120', retD: '20261123', note: 'LCC 취항으로 발리 직항 운임 대폭 인하, 전자도착비자(e-VOA) 및 발리 관광세 온라인 사전 납부 권장', history: [520800, 537600] },
 
-            // 4면: 중앙아시아·몽골 (3곳)
             { code: 'UBN', city: '울란바토르', price: 452200, diff: 16800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '제주항공 (7C5203/7C5204)', schedule: '출국 08:20→11:10 / 귀국 12:10→16:10', baggage: 'FLYBAG 15kg 포함 (FSC 23kg)', depD: '20261112', retD: '20261116', note: '신월(그믐) 주간 달빛 없는 은하수 관측 최적기이나 야간 영하권 한파에 대비한 방한 장비 필수', history: [417102, 472102, 472102, 435400, 452200] },
             { code: 'ALA', city: '알마티', price: 980200, diff: -4800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '에어아스타나 (KC910/KC909)', schedule: '출국 11:15→15:35 / 귀국 01:10→09:45', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261120', retD: '20261123', note: '대한민국 여권 30일 무비자 입국 가능, 톈산 산맥 침불락 스키 리조트 및 차른 캐니언 투어 추천', history: [1097100, 1047300, 1047300, 985000, 980200] },
             { code: 'TAS', city: '타슈켄트', price: 1194800, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '대한항공 (KE941/KE942)', schedule: '출국 15:55→19:40 / 귀국 21:10→07:25(+1)', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261121', retD: '20261124', note: '30일 무비자 입국 가능, 사마르칸트 고속열차(아프로시압) 사전 예매 및 호텔 거주등록증 출국 시까지 보관 필수', history: [1347300, 1297300, 1297200, 1199600, 1194800] },
 
-            // 5면: 중화권 (4곳)
             { code: 'TPE', city: '타이베이 타오위안', price: 288400, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '스쿠트항공 (TR897/TR896)', schedule: '출국 22:30→00:15(+1) / 귀국 17:10→20:45', baggage: '기내 10kg 포함 (FlyBag 20kg 선택 가능)', depD: '20261121', retD: '20261124', note: '출국 1~7일 전 대만 관광청 온라인 여행지원금(Lucky Land) 추첨 신청 및 온라인 입국신고서 작성 필수', history: [321865, 337719, 337719, 293200, 288400] },
             { code: 'KHH', city: '가오슝', price: 276000, diff: -4800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '티웨이항공 (TW671/TW672)', schedule: '출국 11:25→13:25 / 귀국 14:25→18:10', baggage: '스마트운임 15kg 포함', depD: '20261119', retD: '20261123', note: '겨울에도 20~25도의 따뜻한 날씨로 보얼예술특구·치진섬 자전거 여행 및 컨딩 당일치기 추천', history: [280800, 276000] },
             { code: 'HKG', city: '홍콩', price: 274600, diff: 16800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '홍콩익스프레스 (UO619/UO618)', schedule: '출국 08:15→11:15 / 귀국 17:50→22:20', baggage: 'Lite 기내 7kg 포함 (위탁수하물 옵션 확인)', depD: '20261113', retD: '20261116', note: '옥토퍼스 카드 모바일 앱 충전 및 공항철도(AEL) 그룹 티켓 사전 할인 예매 추천', history: [257800, 274600] },
@@ -1231,15 +1238,6 @@
 
         get currentEditionFlights() {
           return this.allEditionsData[this.selectedDate] || this.allEditionsData['2026-10-29'] || [];
-        },
-
-        get lowestFlight() {
-          if (!this.currentEditionFlights.length) return null;
-          return [...this.currentEditionFlights].sort((a, b) => a.price - b.price)[0];
-        },
-
-        get under300kCount() {
-          return this.currentEditionFlights.filter(f => f.price <= 300000).length;
         },
 
         get currentSectionTitle() {
@@ -1385,6 +1383,15 @@
           return `${y}년 ${parseInt(m, 10)}월 ${parseInt(d, 10)}일 발행호`;
         },
 
+        getSparklineFirstPoint(history) {
+          if (!history || history.length < 2) return { x: 2, y: 12 };
+          const min = Math.min(...history);
+          const max = Math.max(...history);
+          const range = max - min || 1;
+          const y = 20 - ((history[0] - min) / range) * 16;
+          return { x: 2, y: Number(y.toFixed(1)) };
+        },
+
         getSparklinePoints(history) {
           if (!history || history.length < 2) return '0,12 80,12';
           const min = Math.min(...history);
@@ -1401,3 +1408,4 @@
   </script>
 </body>
 </html>
+```
