@@ -159,10 +159,14 @@ def parse_krw(text: Any) -> Optional[int]:
 
 
 def fetch_live_price(code: str, dep_yyyymmdd: str, ret_yyyymmdd: str) -> Optional[int]:
-    """fast-flights 로 ICN↔code 왕복 직항 최저가(원)를 조회합니다. 실패하면 None."""
+    """
+    fast-flights(2.x)로 ICN↔code 왕복 직항 최저가(원)를 조회합니다. 실패하면 None 과 함께 원인을 한 줄 출력합니다.
+    fetch_mode 는 "common"(직접 요청)만 씁니다. "fallback" 은 라이브러리 제작자의 외부 서버(토큰 필요)로 넘어가 401 로 실패했습니다.
+    """
     try:
         from fast_flights import FlightData, Passengers, get_flights  # type: ignore
-    except Exception:
+    except Exception as e:
+        print(f"   [실조회 실패] {code}: fast-flights 를 불러올 수 없음 ({type(e).__name__}: {str(e)[:80]})")
         return None
 
     def iso(d: str) -> str:
@@ -177,20 +181,26 @@ def fetch_live_price(code: str, dep_yyyymmdd: str, ret_yyyymmdd: str) -> Optiona
             trip="round-trip",
             seat="economy",
             passengers=Passengers(adults=1, children=0, infants_in_seat=0, infants_on_lap=0),
-            fetch_mode="fallback",
+            fetch_mode="common",
         )
     except Exception as e:  # 네트워크/차단/라이브러리 버전 차이 등
-        print(f"   [실조회 실패] {code}: {type(e).__name__}: {str(e)[:120]}")
+        print(f"   [실조회 실패] {code}: {type(e).__name__}: {str(e)[:160]}")
         return None
 
-    prices: List[int] = []
-    for f in getattr(result, "flights", None) or []:
-        if getattr(f, "stops", 0) not in (0, None):
-            continue  # 직항만
-        p = parse_krw(getattr(f, "price", None))
-        if p:
-            prices.append(p)
-    return min(prices) if prices else None
+    flights = list(getattr(result, "flights", None) or [])
+    if not flights:
+        print(f"   [실조회 실패] {code}: 응답에 항공편이 0건 (차단·동의 페이지·화면 형식 변경 가능성)")
+        return None
+    direct = [f for f in flights if getattr(f, "stops", 0) in (0, None)]
+    if not direct:
+        print(f"   [실조회 실패] {code}: 직항이 없음 (전체 {len(flights)}건은 모두 경유)")
+        return None
+    prices = [p for p in (parse_krw(getattr(f, "price", None)) for f in direct) if p]
+    if not prices:
+        samples = ", ".join(str(getattr(f, "price", ""))[:14] for f in direct[:2])
+        print(f"   [실조회 실패] {code}: 원화(₩) 가격이 없음 (응답 가격 예: {samples})")
+        return None
+    return min(prices)
 
 
 # ------------------------------------------------------------------------------
