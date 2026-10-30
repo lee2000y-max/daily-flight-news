@@ -2,16 +2,25 @@
 # -*- coding: utf-8 -*-
 """
 THE BOARDING PASS TIMES (보딩패스 타임즈 항공편집국)
-매일 아침 인천(ICN) 출발 58개 전 직항 도시의 최저가 항공권을 수집하여
-1) Google Sheets 웹훅(Apps Script)으로 전송 및 전체 시트 히스토리 수신
-2) Gemini 3.8 Flash 모델을 사용하여 현지 여행 유의사항/에디터 노트 생성 (폴백 지원)
-3) 수신한 최신 시트 payload와 58개 노선 데이터를 flights_data.json에 저장 (GitHub Pages 자동 반영)
+
+매일 아침 인천(ICN) 출발 58개 직항 노선 데이터를 만들어 flights_data.json 으로 저장합니다.
+
+동작 순서
+1) 노선별 왕복 최저가 확보
+   - fast-flights(구글 항공권 조회)가 설치되어 있으면 실제 조회를 시도합니다. (원화 ₩ 표기 + 직항만 인정)
+   - 조회에 실패한 노선은 직전 발행호 가격을 이월(carry)하고, 이력이 없으면 마스터 기준가(base)를 씁니다.
+   - 각 행의 priceSource 값: "live"(실조회) / "carry"(이월) / "base"(기준가)
+2) (선택) Google Sheets 웹훅(Apps Script)으로 전송하고 시트 히스토리를 수신
+3) (선택) ENABLE_GEMINI_NOTES=1 일 때만 Gemini 로 에디터 노트 보강
+4) 직전 flights_data.json 과 합쳐 최근 HISTORY_DAYS일 이력, 전일 대비 등락(priceDiff), 가격 추이(historicalSeries)를 계산해 저장
 """
 
 import json
 import os
+import re
+import time
 import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 import urllib.request
 import urllib.error
 
@@ -89,18 +98,21 @@ CITIES_58_MASTER: List[Dict[str, Any]] = [
 ]
 
 DATA_JSON_PATH = "flights_data.json"
+HISTORY_DAYS = 14                 # flights_data.json 에 보관할 최근 발행일 수
+LIVE_PRICE_BUDGET_SEC = 8 * 60    # 실조회에 쓸 최대 시간(초). 초과하면 나머지는 이월/기준가
+LIVE_PRICE_DELAY_SEC = 1.0        # 실조회 사이 대기(차단 방지)
+KST = datetime.timezone(datetime.timedelta(hours=9))
 
 
 def get_kst_today() -> str:
     """한국 표준시(KST) 기준 오늘 날짜 문자열(YYYY-MM-DD)을 반환합니다."""
-    kst = datetime.timezone(datetime.timedelta(hours=9))
-    return datetime.datetime.now(kst).strftime("%Y-%m-%d")
+    return datetime.datetime.now(KST).strftime("%Y-%m-%d")
 
 
 def build_schedule_window(idx: int) -> Dict[str, str]:
     """오늘 기준 2~4주 뒤 목/금/토 주말 포함 일정을 순환 생성합니다."""
-    kst = datetime.timezone(datetime.timedelta(hours=9))
-    today = datetime.datetime.now(kst).date()
+    today = datetime.datetime.now(KST).date()
+
     base_friday = today + datetime.timedelta(days=14)
     while base_friday.weekday() != 4:
         base_friday += datetime.timedelta(days=1)
@@ -119,67 +131,223 @@ def build_schedule_window(idx: int) -> Dict[str, str]:
         ret_dt = dep_dt + datetime.timedelta(days=4)
         label = f"{dep_dt.strftime('%Y.%m.%d')}(목)~{ret_dt.strftime('%m.%d')}(월) (4박 5일)"
 
-    dep_str = dep_dt.strftime("%Y%m%d")
-    ret_str = ret_dt.strftime("%Y%m%d")
     return {
         "schedule": label,
-        "dep_yyyymmdd": dep_str,
-        "ret_yyyymmdd": ret_str,
+        "dep_yyyymmdd": dep_dt.strftime("%Y%m%d"),
+        "ret_yyyymmdd": ret_dt.strftime("%Y%m%d"),
         "keyword_date": f"{dep_dt.month}월 {dep_dt.day}일 {ret_dt.month}월 {ret_dt.day}일",
     }
 
 
+# ------------------------------------------------------------------------------
+# 가격 확보
+# ------------------------------------------------------------------------------
+def parse_krw(text: Any) -> Optional[int]:
+    """'₩291,400' 같은 원화 표기만 정수로 변환합니다. (달러 등 다른 통화는 버림)"""
+    if text is None:
+        return None
+    s = str(text)
+    if "₩" not in s and "KRW" not in s.upper():
+        return None
+    digits = re.sub(r"[^\d]", "", s)
+    if not digits:
+        return None
+    value = int(digits)
+    return value if 30_000 <= value <= 5_000_000 else None
+
+
+def fetch_live_price(code: str, dep_yyyymmdd: str, ret_yyyymmdd: str) -> Optional[int]:
+    """fast-flights 로 ICN↔code 왕복 직항 최저가(원)를 조회합니다. 실패하면 None."""
+    try:
+        from fast_flights import FlightData, Passengers, get_flights  # type: ignore
+    except Exception:
+        return None
+
+    def iso(d: str) -> str:
+        return f"{d[:4]}-{d[4:6]}-{d[6:]}"
+
+    try:
+        result = get_flights(
+            flight_data=[
+                FlightData(date=iso(dep_yyyymmdd), from_airport="ICN", to_airport=code),
+                FlightData(date=iso(ret_yyyymmdd), from_airport=code, to_airport="ICN"),
+            ],
+            trip="round-trip",
+            seat="economy",
+            passengers=Passengers(adults=1, children=0, infants_in_seat=0, infants_on_lap=0),
+            fetch_mode="fallback",
+        )
+    except Exception as e:  # 네트워크/차단/라이브러리 버전 차이 등
+        print(f"   [실조회 실패] {code}: {type(e).__name__}: {str(e)[:120]}")
+        return None
+
+    prices: List[int] = []
+    for f in getattr(result, "flights", None) or []:
+        if getattr(f, "stops", 0) not in (0, None):
+            continue  # 직항만
+        p = parse_krw(getattr(f, "price", None))
+        if p:
+            prices.append(p)
+    return min(prices) if prices else None
+
+
+# ------------------------------------------------------------------------------
+# 이력 계산 (전일 대비 등락, 가격 추이)
+# ------------------------------------------------------------------------------
+def row_code(row: Dict[str, Any]) -> str:
+    code = row.get("code")
+    if code:
+        return str(code)
+    m = re.search(r"\(([A-Z]{3})\)\s*$", str(row.get("city", "")))
+    return m.group(1) if m else ""
+
+
+def load_previous(path: str) -> Dict[str, Any]:
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def trim_to_recent_dates(rows: List[Dict[str, Any]], keep_days: int) -> List[Dict[str, Any]]:
+    dates = sorted({str(r.get("date")) for r in rows if r.get("date")}, reverse=True)[:keep_days]
+    keep = set(dates)
+    return [r for r in rows if str(r.get("date")) in keep]
+
+
+def derive_history(rows: List[Dict[str, Any]]) -> Dict[str, Dict[str, List[Any]]]:
+    """
+    rows 에 priceDiff 가 없으면 같은 노선의 직전 기록 대비 등락을 채우고,
+    노선별 {dates, prices} 가격 추이를 반환합니다. (같은 날짜 중복은 마지막 값 사용)
+    """
+    per_code: Dict[str, Dict[str, Dict[str, Any]]] = {}
+    for r in rows:
+        code, date = row_code(r), r.get("date")
+        if not code or not date:
+            continue
+        per_code.setdefault(code, {})[str(date)] = r
+
+    series: Dict[str, Dict[str, List[Any]]] = {}
+    for code, by_date in per_code.items():
+        dates = sorted(by_date)
+        prices: List[int] = []
+        for i, d in enumerate(dates):
+            row = by_date[d]
+            price = int(row.get("price") or 0)
+            if "priceDiff" not in row:
+                row["priceDiff"] = (price - prices[-1]) if prices else 0
+            prices.append(price)
+        series[code] = {"dates": dates, "prices": prices}
+    return series
+
+
+# ------------------------------------------------------------------------------
+# (선택) Gemini 에디터 노트 보강
+# ------------------------------------------------------------------------------
 def enrich_notes_with_gemini(flights: List[Dict[str, Any]]) -> None:
     """
-    GEMINI_API_KEY가 있을 경우 최신 모델(gemini-3.8-flash -> gemini-2.5-flash 순 폴백)로
-    도시별 여행 팁을 보강하며, 실패 시 기본 팁을 안전하게 유지합니다.
+    ENABLE_GEMINI_NOTES=1 이고 GEMINI_API_KEY 가 있을 때만 동작합니다.
+    기본값은 꺼짐입니다. (큐레이션된 노트를 AI 문장이 덮어쓰지 않도록)
+    모델은 GEMINI_MODEL 환경 변수로 바꿀 수 있습니다.
     """
+    if os.environ.get("ENABLE_GEMINI_NOTES", "").strip() != "1":
+        return
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not api_key:
         return
 
     try:
-        from google import genai
+        from google import genai  # type: ignore
         client = genai.Client(api_key=api_key)
-        model_candidates = ["gemini-3.8-flash", "gemini-3-flash-preview"]
-        batch_size = 10
-        for b_idx in range(0, len(flights), batch_size):
-            batch = flights[b_idx : b_idx + batch_size]
-            cities_str = ", ".join([f"{it['city']}({it['code']})" for it in batch])
-            prompt = (
-                f"다음 도시들의 11~12월 한국인 직항 여행객을 위한 핵심 유의사항을 각 도시 코드별 1문장(50자 이내) JSON 객체로 작성해줘: {cities_str}"
-            )
-            for model_name in model_candidates:
-                try:
-                    resp = client.models.generate_content(model=model_name, contents=prompt)
-                    if resp and resp.text:
-                        break
-                except Exception as inner_e:
-                    if model_name == model_candidates[-1]:
-                        print(f"[안내] Gemini 배치({b_idx // batch_size + 1}) 기본 팁 유지: {inner_e}")
     except Exception as e:
-        print(f"[안내] Gemini 라이브러리 생략 및 기본 고품질 에디터 노트 유지: {e}")
+        print(f"[안내] Gemini 라이브러리 사용 불가, 기본 노트 유지: {e}")
+        return
+
+    models = [m for m in [os.environ.get("GEMINI_MODEL", "").strip(), "gemini-2.5-flash", "gemini-flash-latest"] if m]
+    batch_size = 10
+    for b_idx in range(0, len(flights), batch_size):
+        batch = flights[b_idx: b_idx + batch_size]
+        cities = ", ".join(f"{it['city']}({it['code']})" for it in batch)
+        prompt = (
+            "다음 도시들로 가는 한국인 직항 여행객을 위한 핵심 유의사항을 도시 코드별로 1문장(60자 이내) 작성해줘. "
+            "확실하지 않은 입국 규정·요금은 쓰지 말고, 반드시 {\"코드\": \"문장\"} 형태의 JSON 객체만 출력해: " + cities
+        )
+        text = ""
+        for model_name in models:
+            try:
+                resp = client.models.generate_content(model=model_name, contents=prompt)
+                text = (getattr(resp, "text", "") or "").strip()
+                if text:
+                    break
+            except Exception as e:
+                print(f"[안내] Gemini({model_name}) 실패: {str(e)[:100]}")
+        if not text:
+            continue
+        try:
+            text = re.sub(r"^```(?:json)?|```$", "", text.strip(), flags=re.M).strip()
+            tips = json.loads(text)
+        except Exception:
+            print(f"[안내] Gemini 배치 {b_idx // batch_size + 1} 응답 파싱 실패, 기본 노트 유지")
+            continue
+        if not isinstance(tips, dict):
+            continue
+        for it in batch:
+            tip = tips.get(it["code"])
+            if isinstance(tip, str) and 5 <= len(tip.strip()) <= 120:
+                it["notes"] = it["note"] = tip.strip()
 
 
+# ------------------------------------------------------------------------------
+# 메인
+# ------------------------------------------------------------------------------
 def main() -> None:
     today_str = get_kst_today()
-    print(f"📰 [{today_str}] 총 58개 직항 도시 항공권 조간 브리핑 수집을 시작합니다...")
+    print(f"📰 [{today_str}] 총 {len(CITIES_58_MASTER)}개 직항 도시 항공권 조간 브리핑 수집을 시작합니다...")
 
+    prev = load_previous(DATA_JSON_PATH)
+    prev_rows: List[Dict[str, Any]] = [r for r in (prev.get("flights") or []) if isinstance(r, dict)]
+
+    # 노선별 '오늘 이전' 가장 최근 기록 (가격 이월용)
+    last_before_today: Dict[str, Dict[str, Any]] = {}
+    for r in sorted(prev_rows, key=lambda x: str(x.get("date", ""))):
+        if str(r.get("date")) < today_str and row_code(r):
+            last_before_today[row_code(r)] = r
+
+    started = time.monotonic()
     collected_rows: List[Dict[str, Any]] = []
+    counts = {"live": 0, "carry": 0, "base": 0}
+
     for idx, meta in enumerate(CITIES_58_MASTER):
         code = meta["code"]
         sched = build_schedule_window(idx)
-        price = int(meta["base_price"])
+
+        live_price: Optional[int] = None
+        if time.monotonic() - started < LIVE_PRICE_BUDGET_SEC:
+            live_price = fetch_live_price(code, sched["dep_yyyymmdd"], sched["ret_yyyymmdd"])
+            if live_price is not None:
+                time.sleep(LIVE_PRICE_DELAY_SEC)
+
+        prev_row = last_before_today.get(code)
+        if live_price is not None:
+            price, source = live_price, "live"
+        elif prev_row and int(prev_row.get("price") or 0) > 0:
+            price = int(prev_row["price"])
+            source = "carry" if prev_row.get("priceSource") in ("live", "carry") else "base"
+        else:
+            price, source = int(meta["base_price"]), "base"
+        counts[source] += 1
+
         sky_dep = sched["dep_yyyymmdd"][2:]
         sky_ret = sched["ret_yyyymmdd"][2:]
-
         naver_url = (
             f"https://flight.naver.com/flights/international/"
             f"ICN-{code}-{sched['dep_yyyymmdd']}/{code}-ICN-{sched['ret_yyyymmdd']}?adult=1&fareType=Y"
         )
         sky_url = f"https://www.skyscanner.co.kr/transport/flights/icn/{code.lower()}/{sky_dep}/{sky_ret}/"
 
-        row = {
+        collected_rows.append({
             "date": today_str,
             "month": today_str[:7],
             "category": f"{meta['major']} ({meta['sub']})",
@@ -193,6 +361,7 @@ def main() -> None:
             "schedule": sched["schedule"],
             "dates": sched["schedule"],
             "price": price,
+            "priceSource": source,
             "airline": meta["airline"],
             "timeSlot": meta["timeSlot"],
             "baggage": meta["baggage"],
@@ -201,22 +370,20 @@ def main() -> None:
             "keyword": f"인천 {meta['city']} 직항 {sched['keyword_date']}",
             "notes": meta["note"],
             "note": meta["note"],
-        }
-        collected_rows.append(row)
-        print(f"  ✓ [{idx + 1:02d}/58] {meta['city']} ({code}): {price:,}원 ({sched['schedule']})")
+        })
+        print(f" ✓ [{idx + 1:02d}/{len(CITIES_58_MASTER)}] {meta['city']} ({code}): {price:,}원 [{source}] ({sched['schedule']})")
 
-    # 선택적 Gemini 팁 보강
+    print(f"💱 가격 출처 집계: 실조회 {counts['live']} / 이월 {counts['carry']} / 기준가 {counts['base']}")
+    if counts["live"] == 0:
+        print("[주의] 오늘은 실조회 가격이 한 건도 없습니다. (fast-flights 미설치/차단/버전 차이 가능) 로그의 [실조회 실패] 줄을 확인하세요.")
+
     enrich_notes_with_gemini(collected_rows)
 
-    # 구글 시트 웹훅 전송 및 응답(payload) 수신
-    webhook_url = (
-        os.environ.get("APPS_SCRIPT_WEBHOOK_URL")
-        or os.environ.get("WEBAPP_URL")
-        or ""
-    ).strip()
+    # ---- (선택) 구글 시트 웹훅 ----
+    webhook_url = (os.environ.get("APPS_SCRIPT_WEBHOOK_URL") or os.environ.get("WEBAPP_URL") or "").strip()
     secret_key = os.environ.get("SYNC_SECRET_KEY", "").strip()
-
     sheet_payload: Dict[str, Any] = {}
+
     if webhook_url:
         req_body = {
             "secret": secret_key,
@@ -235,30 +402,49 @@ def main() -> None:
             )
             with urllib.request.urlopen(req, timeout=45) as resp:
                 raw_text = resp.read().decode("utf-8")
-                print(f"🎉 [시트 기록 완료] 응답 수신 ({len(raw_text)} bytes)")
-                parsed = json.loads(raw_text)
-                if isinstance(parsed, dict):
-                    sheet_payload = parsed.get("payload") or parsed
+            print(f"🎉 [시트 기록 완료] 응답 수신 ({len(raw_text)} bytes)")
+            parsed = json.loads(raw_text)
+            if isinstance(parsed, dict):
+                inner = parsed.get("payload")
+                sheet_payload = inner if isinstance(inner, dict) else parsed
         except Exception as e:
-            print(f"[WARN] 구글 시트 웹훅 연동 오류 (로컬 flights_data.json 저장은 정상 진행): {e}")
+            print(f"[WARN] 구글 시트 웹훅 연동 오류 (로컬 이력으로 flights_data.json 저장은 계속 진행): {e}")
 
-    # flights_data.json 파일 생성 (시트 전체 히스토리 payload가 있으면 그대로 포함하여 사이트와 100% 동기화)
+    # ---- 이력 병합 ----
+    sheet_rows = [r for r in (sheet_payload.get("flights") or []) if isinstance(r, dict)]
+    if sheet_rows:
+        rows_all = list(sheet_rows)
+        if not any(str(r.get("date")) == today_str for r in rows_all):
+            rows_all += collected_rows       # 시트 응답에 오늘 호가 없으면 방금 수집분을 추가
+    else:
+        rows_all = [r for r in prev_rows if str(r.get("date")) != today_str] + collected_rows
+
+    rows_all = trim_to_recent_dates(rows_all, HISTORY_DAYS)
+    series = derive_history(rows_all)
+    sheet_series = sheet_payload.get("historicalSeries")
+    if isinstance(sheet_series, dict):
+        series.update({k: v for k, v in sheet_series.items() if v})
+
+    rows_all.sort(key=lambda r: (str(r.get("date")), -int(r.get("order") or 0)), reverse=True)
+    available_dates = sorted({str(r["date"]) for r in rows_all if r.get("date")}, reverse=True)
+
     output_json: Dict[str, Any] = {
         "publisher": "THE BOARDING PASS TIMES (보딩패스 타임즈 항공편집국)",
         "schedule": "매일 아침 정기 발행",
-        "updatedAt": datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime("%Y-%m-%d %H:%M"),
+        "updatedAt": datetime.datetime.now(KST).strftime("%Y-%m-%d %H:%M"),
         "latestDate": today_str,
         "date": today_str,
-        "flights": sheet_payload.get("flights") if sheet_payload.get("flights") else collected_rows,
-        "historicalSeries": sheet_payload.get("historicalSeries", {}),
-        "availableDates": sheet_payload.get("availableDates", []),
-        "payload": sheet_payload if sheet_payload else None,
+        "flights": rows_all,
+        "historicalSeries": series,
+        "availableDates": available_dates,
+        "payload": None,   # 프런트는 최상위 값을 사용합니다 (시트 payload 는 위에서 이미 병합)
     }
 
-    with open(DATA_JSON_PATH, "w", encoding="utf-8") as f:
-        json.dump(output_json, f, ensure_ascii=False, indent=2)
-
-    print(f"✅ [{today_str}] GitHub Pages 동기화용 {DATA_JSON_PATH} 저장 완료!")
+    tmp_path = DATA_JSON_PATH + ".tmp"
+    with open(tmp_path, "w", encoding="utf-8") as f:
+        json.dump(output_json, f, ensure_ascii=False, indent=1)
+    os.replace(tmp_path, DATA_JSON_PATH)
+    print(f"✅ [{today_str}] {DATA_JSON_PATH} 저장 완료 (발행일 {len(available_dates)}개, 행 {len(rows_all)}개)")
 
 
 if __name__ == "__main__":
