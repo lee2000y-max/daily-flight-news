@@ -102,6 +102,7 @@ DATA_JSON_PATH = "flights_data.json"
 HISTORY_DAYS = 14                 # flights_data.json(사이트 일간지 화면용) 에 담을 최근 발행일 수. 전체 이력은 data/history 에 별도 누적
 LIVE_PRICE_BUDGET_SEC = 8 * 60    # 실조회에 쓸 최대 시간(초). 초과하면 나머지는 이월/기준가
 LIVE_PRICE_DELAY_SEC = 1.0        # 실조회 사이 대기(차단 방지)
+LIVE_FAIL_LIMIT = 5               # 오늘 한 건도 성공하지 못한 채 연속 N회 실패하면 실조회를 중단(로그/시간 낭비 방지)
 KST = datetime.timezone(datetime.timedelta(hours=9))
 
 
@@ -392,6 +393,8 @@ def main() -> None:
             last_before_today[row_code(r)] = r
 
     started = time.monotonic()
+    live_enabled = True
+    consecutive_fail = 0
     collected_rows: List[Dict[str, Any]] = []
     counts = {"live": 0, "carry": 0, "base": 0}
 
@@ -400,10 +403,16 @@ def main() -> None:
         sched = build_schedule_window(idx)
 
         live_price: Optional[int] = None
-        if time.monotonic() - started < LIVE_PRICE_BUDGET_SEC:
+        if live_enabled and time.monotonic() - started < LIVE_PRICE_BUDGET_SEC:
             live_price = fetch_live_price(code, sched["dep_yyyymmdd"], sched["ret_yyyymmdd"])
             if live_price is not None:
+                consecutive_fail = 0
                 time.sleep(LIVE_PRICE_DELAY_SEC)
+            else:
+                consecutive_fail += 1
+                if counts["live"] == 0 and consecutive_fail >= LIVE_FAIL_LIMIT:
+                    live_enabled = False
+                    print(f"   [중단] 실조회가 연속 {consecutive_fail}회 실패해 오늘은 실조회를 중단합니다. 위의 [실조회 실패] 원인을 확인하세요.")
 
         prev_row = last_before_today.get(code)
         if live_price is not None:
