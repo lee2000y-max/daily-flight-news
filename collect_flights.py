@@ -13,6 +13,7 @@ THE BOARDING PASS TIMES (보딩패스 타임즈 항공편집국)
 2) (선택) Google Sheets 웹훅(Apps Script)으로 전송하고 시트 히스토리를 수신
 3) (선택) ENABLE_GEMINI_NOTES=1 일 때만 Gemini 로 에디터 노트 보강
 4) 직전 flights_data.json 과 합쳐 최근 HISTORY_DAYS일 이력, 전일 대비 등락(priceDiff), 가격 추이(historicalSeries)를 계산해 저장
+5) 실제 관측 가격(live)을 data/history/YYYY-MM.csv 에 영구 누적하고, data/reports 의 월간·분기·연간 리포트 JSON 을 갱신
 """
 
 import json
@@ -98,7 +99,7 @@ CITIES_58_MASTER: List[Dict[str, Any]] = [
 ]
 
 DATA_JSON_PATH = "flights_data.json"
-HISTORY_DAYS = 14                 # flights_data.json 에 보관할 최근 발행일 수
+HISTORY_DAYS = 14                 # flights_data.json(사이트 일간지 화면용) 에 담을 최근 발행일 수. 전체 이력은 data/history 에 별도 누적
 LIVE_PRICE_BUDGET_SEC = 8 * 60    # 실조회에 쓸 최대 시간(초). 초과하면 나머지는 이월/기준가
 LIVE_PRICE_DELAY_SEC = 1.0        # 실조회 사이 대기(차단 방지)
 KST = datetime.timezone(datetime.timedelta(hours=9))
@@ -239,7 +240,7 @@ def derive_history(rows: List[Dict[str, Any]]) -> Dict[str, Dict[str, List[Any]]
             if "priceDiff" not in row:
                 row["priceDiff"] = (price - prices[-1]) if prices else 0
             prices.append(price)
-        series[code] = {"dates": dates, "prices": prices}
+        series[code] = {"dates": dates, "fullDates": dates, "prices": prices}
     return series
 
 
@@ -299,6 +300,81 @@ def enrich_notes_with_gemini(flights: List[Dict[str, Any]]) -> None:
                 it["notes"] = it["note"] = tip.strip()
 
 
+def archive_and_report(collected_rows: List[Dict[str, Any]], today_str: str) -> None:
+    """실제 관측 가격을 전체 이력(data/history)에 누적하고 월간/분기/연간 리포트를 갱신합니다."""
+    try:
+        import history_store
+        import build_reports
+    except Exception as e:
+        print(f"[WARN] 이력 모듈을 불러오지 못했습니다: {e}")
+        return
+    try:
+        obs = [
+            {"date": r["date"], "code": r["code"], "price": r["price"], "source": r["priceSource"],
+             "dep": r.get("depDate", ""), "ret": r.get("retDate", "")}
+            for r in collected_rows
+        ]
+        res = history_store.upsert_observations(obs)
+        print(f"🗄️ [전체 이력] 실제 관측 {res['accepted']}건 보관 (이월/기준가 {res['skipped']}건은 제외), 새로 쓰거나 바뀐 행 {res['changed']}건")
+        if res["accepted"] == 0:
+            print("[주의] 오늘은 전체 이력에 기록된 실제 가격이 없습니다. 실조회가 0건이면 월간/분기/연간 통계가 쌓이지 않습니다.")
+        meta = {m["code"]: m for m in CITIES_58_MASTER}
+        built = build_reports.update_current(today_str, meta)
+        print("📊 [리포트 갱신]", ", ".join(built) or "(이번 기간 데이터 없음)")
+    except Exception as e:
+        print(f"[WARN] 이력/리포트 처리 중 오류 (사이트용 flights_data.json 은 이미 저장됨): {type(e).__name__}: {e}")
+
+
+# ------------------------------------------------------------------------------
+# 구글 시트 동기화
+# ------------------------------------------------------------------------------
+def sync_with_sheet(webhook_url: str, secret_key: str, today_str: str, live_rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Apps Script 웹앱(Code.gs)과 통신합니다.
+    - 실조회 행이 있으면 doPost 로 기록하고, 응답의 payload(시트 전체 이력)를 받습니다.
+    - 없으면 doGet ?action=json 으로 이력만 받아옵니다.
+    실패하거나 인증 오류면 빈 dict 를 돌려주고 로컬 이력으로 계속 진행합니다.
+    """
+    try:
+        if live_rows:
+            body = {
+                "secret": secret_key,
+                "secretKey": secret_key,   # Code.gs 는 secretKey 를 검사합니다
+                "date": today_str,
+                "editionDate": today_str,
+                "flights": live_rows,
+                "rows": live_rows,         # Code.gs 는 rows 를 읽습니다
+            }
+            req = urllib.request.Request(
+                webhook_url,
+                data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+        else:
+            sep = "&" if "?" in webhook_url else "?"
+            req = urllib.request.Request(webhook_url + sep + "action=json", method="GET")
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            raw_text = resp.read().decode("utf-8")
+        parsed = json.loads(raw_text)
+    except Exception as e:
+        print(f"[WARN] 구글 시트 연동 오류 (로컬 이력으로 계속 진행): {e}")
+        return {}
+
+    if not isinstance(parsed, dict):
+        print("[WARN] 구글 시트 응답 형식이 올바르지 않습니다. 로컬 이력으로 계속 진행합니다.")
+        return {}
+    if parsed.get("status") == "error":
+        print(f"[WARN] 구글 시트가 오류를 돌려줬습니다: {parsed.get('message')} (SYNC_SECRET_KEY 일치 여부 확인)")
+        return {}
+    if live_rows:
+        print(f"🎉 [시트 기록 완료] 추가 {parsed.get('appended')} / 갱신 {parsed.get('updated')} / 수신 {parsed.get('totalReceived')}")
+    else:
+        print("📥 [시트 이력 수신] 오늘은 실조회 행이 없어 시트에 기록하지 않았습니다.")
+    inner = parsed.get("payload")
+    return inner if isinstance(inner, dict) else parsed
+
+
 # ------------------------------------------------------------------------------
 # 메인
 # ------------------------------------------------------------------------------
@@ -334,7 +410,7 @@ def main() -> None:
             price, source = live_price, "live"
         elif prev_row and int(prev_row.get("price") or 0) > 0:
             price = int(prev_row["price"])
-            source = "carry" if prev_row.get("priceSource") in ("live", "carry") else "base"
+            source = "base" if prev_row.get("priceSource") == "base" else "carry"
         else:
             price, source = int(meta["base_price"]), "base"
         counts[source] += 1
@@ -360,6 +436,8 @@ def main() -> None:
             "order": meta["order"],
             "schedule": sched["schedule"],
             "dates": sched["schedule"],
+            "depDate": f"{sched['dep_yyyymmdd'][:4]}-{sched['dep_yyyymmdd'][4:6]}-{sched['dep_yyyymmdd'][6:]}",
+            "retDate": f"{sched['ret_yyyymmdd'][:4]}-{sched['ret_yyyymmdd'][4:6]}-{sched['ret_yyyymmdd'][6:]}",
             "price": price,
             "priceSource": source,
             "airline": meta["airline"],
@@ -379,51 +457,26 @@ def main() -> None:
 
     enrich_notes_with_gemini(collected_rows)
 
-    # ---- (선택) 구글 시트 웹훅 ----
+    # ---- (선택) 구글 시트 동기화 ----
+    # 실조회(live) 가격만 시트에 기록합니다. 이월/기준가를 기록하면 시트 이력이 가짜 값으로 오염되기 때문입니다.
     webhook_url = (os.environ.get("APPS_SCRIPT_WEBHOOK_URL") or os.environ.get("WEBAPP_URL") or "").strip()
     secret_key = os.environ.get("SYNC_SECRET_KEY", "").strip()
     sheet_payload: Dict[str, Any] = {}
-
     if webhook_url:
-        req_body = {
-            "secret": secret_key,
-            "secretKey": secret_key,
-            "date": today_str,
-            "editionDate": today_str,
-            "flights": collected_rows,
-            "rows": collected_rows,
-        }
-        try:
-            req = urllib.request.Request(
-                webhook_url,
-                data=json.dumps(req_body, ensure_ascii=False).encode("utf-8"),
-                headers={"Content-Type": "application/json"},
-                method="POST",
-            )
-            with urllib.request.urlopen(req, timeout=45) as resp:
-                raw_text = resp.read().decode("utf-8")
-            print(f"🎉 [시트 기록 완료] 응답 수신 ({len(raw_text)} bytes)")
-            parsed = json.loads(raw_text)
-            if isinstance(parsed, dict):
-                inner = parsed.get("payload")
-                sheet_payload = inner if isinstance(inner, dict) else parsed
-        except Exception as e:
-            print(f"[WARN] 구글 시트 웹훅 연동 오류 (로컬 이력으로 flights_data.json 저장은 계속 진행): {e}")
+        live_rows = [r for r in collected_rows if r.get("priceSource") == "live"]
+        sheet_payload = sync_with_sheet(webhook_url, secret_key, today_str, live_rows)
 
     # ---- 이력 병합 ----
     sheet_rows = [r for r in (sheet_payload.get("flights") or []) if isinstance(r, dict)]
     if sheet_rows:
-        rows_all = list(sheet_rows)
-        if not any(str(r.get("date")) == today_str for r in rows_all):
-            rows_all += collected_rows       # 시트 응답에 오늘 호가 없으면 방금 수집분을 추가
+        have = {(row_code(r), str(r.get("date"))) for r in sheet_rows}
+        # 시트에 없는 오늘 행(이월/기준가)은 사이트용으로만 추가
+        rows_all = list(sheet_rows) + [r for r in collected_rows if (row_code(r), today_str) not in have]
     else:
         rows_all = [r for r in prev_rows if str(r.get("date")) != today_str] + collected_rows
 
     rows_all = trim_to_recent_dates(rows_all, HISTORY_DAYS)
     series = derive_history(rows_all)
-    sheet_series = sheet_payload.get("historicalSeries")
-    if isinstance(sheet_series, dict):
-        series.update({k: v for k, v in sheet_series.items() if v})
 
     rows_all.sort(key=lambda r: (str(r.get("date")), -int(r.get("order") or 0)), reverse=True)
     available_dates = sorted({str(r["date"]) for r in rows_all if r.get("date")}, reverse=True)
@@ -445,6 +498,8 @@ def main() -> None:
         json.dump(output_json, f, ensure_ascii=False, indent=1)
     os.replace(tmp_path, DATA_JSON_PATH)
     print(f"✅ [{today_str}] {DATA_JSON_PATH} 저장 완료 (발행일 {len(available_dates)}개, 행 {len(rows_all)}개)")
+
+    archive_and_report(collected_rows, today_str)
 
 
 if __name__ == "__main__":
