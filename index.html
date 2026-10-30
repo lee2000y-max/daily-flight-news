@@ -386,7 +386,7 @@
     <!-- 상단 발행 메타데이터 라인 -->
     <div class="flex flex-wrap items-center justify-between text-xs text-[#5C5549] border-t-2 border-b border-[#2C2620] py-1.5 px-1 font-medium tracking-tight">
       <div class="flex items-center gap-3">
-        <span class="font-bold text-[#1E1B18]">VOL. 2026-10</span>
+        <span class="font-bold text-[#1E1B18]" x-text="'VOL. ' + (selectedDate || '').slice(0, 7)"></span>
         <span>|</span>
         <span>발행처: <strong class="text-[#1E1B18]">보딩패스 타임즈 항공편집국</strong> (ICN GATEWAY DESK)</span>
         <span class="hidden md:inline">|</span>
@@ -742,7 +742,7 @@
         THE BOARDING PASS TIMES · 보딩패스 타임즈 항공편집국
       </div>
       <p>
-        본 조간지는 매일 아침 인천국제공항(ICN) 출발 58개 전 직항 도시의 실시간 왕복 최저가 운임과 수하물 규정을 자동 취재하여 발행됩니다.
+        본 조간지는 매일 아침 인천국제공항(ICN) 출발 58개 전 직항 도시의 기준일 시점 왕복 최저가 운임과 수하물 규정을 자동 취재하여 발행됩니다.
       </p>
       <p class="text-[11px] text-[#7A7164]">
         ※ 항공권 운임은 실시간 좌석 상황에 따라 변동될 수 있으므로, 카드 하단의 네이버 항공권 및 스카이스캐너 링크에서 최종 발권 운임을 확인하시기 바랍니다.
@@ -756,8 +756,8 @@
   <script>
     function flightBriefingNewsroom() {
       return {
-        selectedDate: '2026-10-29',
-        availableDates: ['2026-10-29', '2026-10-28', '2026-10-27', '2026-10-26', '2026-10-25', '2026-10-24', '2026-10-23', '2026-10-22'],
+        selectedDate: '',
+        availableDates: [],
         activeSection: 'ALL',
         activeSubcategory: 'ALL',
         searchQuery: '',
@@ -776,7 +776,7 @@
         flapScrambleTimers: [],
 
         sections: [
-          { id: 'ALL', label: '전체 호외 (58곳)', icon: '🗞️' },
+          { id: 'ALL', label: '전체 호외', icon: '🗞️' },
           { id: 'SEC1', label: '1면: 일본', icon: '🇯🇵' },
           { id: 'SEC2', label: '2면: 중국', icon: '🇨🇳' },
           { id: 'SEC3', label: '3면: 동남아·대양주', icon: '🌴' },
@@ -800,7 +800,6 @@
           KKJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 13 },
           HIJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 14 },
           NGS: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 15 },
-          OKJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 15 },
           KMQ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 16 },
           SDJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 17 },
           AOJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 18 },
@@ -866,7 +865,6 @@
           KKJ: { caption: '🇯🇵 일본 · 모지코 레트로 항구 & 고쿠라성', img: 'https://images.unsplash.com/photo-1513407030348-c983a97b98d8?auto=format&fit=crop&w=640&q=80' },
           HIJ: { caption: '🇯🇵 일본 · 미야지마 이쓰쿠시마 해상 대도리이', img: 'https://images.unsplash.com/photo-1492571350019-22de08371fd3?auto=format&fit=crop&w=640&q=80' },
           NGS: { caption: '🇯🇵 일본 · 메가네바시 안경다리 & 이나사야마 야경', img: 'https://images.unsplash.com/photo-1505069190533-da1c9af13346?auto=format&fit=crop&w=640&q=80' },
-          OKJ: { caption: '🇯🇵 일본 · 구라시키 미관지구 운하 & 고라쿠엔', img: 'https://images.unsplash.com/photo-1554797589-7241bb691973?auto=format&fit=crop&w=640&q=80' },
           KMQ: { caption: '🇯🇵 일본 · 가나자와 겐로쿠엔 정원 & 히가시 차야가이', img: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=640&q=80' },
           SDJ: { caption: '🇯🇵 일본 · 일본 3대 절경 마쓰시마 다도해', img: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=640&q=80' },
           AOJ: { caption: '🇯🇵 일본 · 오이라세 계류 폭포 & 네부타 등불', img: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=640&q=80' },
@@ -930,14 +928,28 @@
         normalizeFlightRecord(raw, historicalSeries = {}) {
           const code = raw.code || (raw.city && raw.city.match(/\(([A-Z]{3})\)/)?.[1]) || 'ICN';
           const cleanCity = (raw.city || '').replace(/\s*\([A-Z]{3}\)\s*$/, '').trim();
-          const seriesPrices = (historicalSeries[code] && historicalSeries[code].prices) || raw.history || [raw.price];
+          const rowDate = raw.date || raw.editionDate || '';
+
+          // 운임 추이: 해당 발행일 이전(포함) 값만 사용
+          const series = historicalSeries && historicalSeries[code];
+          let prices;
+          if (series && Array.isArray(series.prices)) {
+            prices = (Array.isArray(series.dates) && series.dates.length === series.prices.length && rowDate)
+              ? series.prices.filter((_, i) => series.dates[i] <= rowDate)
+              : series.prices;
+          } else {
+            prices = raw.history || [raw.price];
+          }
+          if (!Array.isArray(prices) || prices.length === 0) prices = [raw.price];
+
           const isSheetFormat = Boolean(raw.timeSlot !== undefined || raw.notes !== undefined);
+
           return {
             code: code,
             city: cleanCity || code,
-            editionDate: raw.date || raw.editionDate || '2026-10-29',
+            editionDate: rowDate || this.selectedDate,
             price: Number(raw.price) || 0,
-            diff: Number(raw.priceDiff !== undefined ? raw.priceDiff : (raw.diff || 0)),
+            diff: Number(raw.priceDiff !== undefined ? raw.priceDiff : (raw.diff || 0)) || 0,
             dates: isSheetFormat ? (raw.schedule || '') : (raw.dates || raw.schedule || ''),
             airline: raw.airline || '',
             schedule: isSheetFormat ? (raw.timeSlot || '') : (raw.schedule || raw.timeSlot || ''),
@@ -945,41 +957,41 @@
             note: raw.notes || raw.note || '',
             naverUrl: raw.naverUrl || '#',
             skyUrl: raw.skyUrl || '#',
-            history: seriesPrices.slice(-5)
+            history: prices.slice(-5)
           };
         },
 
         ingestExternalPayload(extData) {
           if (!extData || typeof extData !== 'object') return;
           const payload = extData.payload || extData;
-          const hist = payload.historicalSeries || {};
+          const hist = payload.historicalSeries || extData.historicalSeries || {};
+          const fresh = {};
 
-          if (Array.isArray(payload.flights) && payload.flights.length > 0 && payload.flights[0].date) {
-            const grouped = {};
-            payload.flights.forEach(row => {
-              const d = row.date;
-              if (!grouped[d]) grouped[d] = [];
-              grouped[d].push(this.normalizeFlightRecord(row, hist));
-            });
-            Object.entries(grouped).forEach(([dKey, arr]) => {
-              this.allEditionsData[dKey] = arr;
-            });
-          }
+          const rows = Array.isArray(payload.flights) ? payload.flights : [];
+          rows.forEach(row => {
+            const d = row && (row.date || row.editionDate);
+            if (!d) return;
+            if (!fresh[d]) fresh[d] = [];
+            fresh[d].push(this.normalizeFlightRecord(row, hist));
+          });
 
           if (payload.editions && typeof payload.editions === 'object') {
             Object.entries(payload.editions).forEach(([dKey, arr]) => {
               if (Array.isArray(arr) && arr.length > 0) {
-                this.allEditionsData[dKey] = arr.map(item => this.normalizeFlightRecord(item, hist));
+                fresh[dKey] = arr.map(item => this.normalizeFlightRecord(item, hist));
               }
             });
           }
 
-          const allDates = Object.keys(this.allEditionsData).sort((a, b) => b.localeCompare(a));
-          if (allDates.length > 0) {
-            this.availableDates = allDates;
-            this.selectedDate = payload.latestDate || allDates[0];
-            this.refreshFlapSlotsFromData(this.currentEditionFlights);
-          }
+          const allDates = Object.keys(fresh).sort((a, b) => b.localeCompare(a));
+          if (allDates.length === 0) return;
+
+          // 실제 데이터가 있으면 미리보기 시드를 완전히 대체
+          this.allEditionsData = fresh;
+          this.availableDates = allDates;
+          const latest = payload.latestDate || extData.latestDate;
+          this.selectedDate = fresh[latest] ? latest : allDates[0];
+          this.refreshFlapSlotsFromData(this.currentEditionFlights);
         },
 
         async initNewsroom() {
@@ -1086,7 +1098,7 @@
           ) || byPrice[0];
 
           const lowest = byPrice[0];
-          const biggestDrop = byDrop[0] || byPrice[1] || lowest;
+          const biggestDrop = byDrop.find(f => (f.diff || 0) < 0) || byPrice[1] || lowest;
 
           this.flapSlots = [
             {
@@ -1226,18 +1238,14 @@
             });
           };
 
-          this.allEditionsData['2026-10-29'] = attachLinks(edition20261029, '2026-10-29', 0);
-          this.allEditionsData['2026-10-28'] = attachLinks(edition20261029.map(it => ({ ...it, price: it.price - it.diff })), '2026-10-28', 0);
-          this.allEditionsData['2026-10-27'] = attachLinks(edition20261029, '2026-10-27', 9600);
-          this.allEditionsData['2026-10-26'] = attachLinks(edition20261029, '2026-10-26', 14200);
-          this.allEditionsData['2026-10-25'] = attachLinks(edition20261029, '2026-10-25', 18000);
-          this.allEditionsData['2026-10-24'] = attachLinks(edition20261029, '2026-10-24', 22000);
-          this.allEditionsData['2026-10-23'] = attachLinks(edition20261029, '2026-10-23', 26000);
-          this.allEditionsData['2026-10-22'] = attachLinks(edition20261029, '2026-10-22', 31000);
+          // 미리보기용 시드는 10/29 호 1개만 둡니다. (과거 호를 임의 가격으로 만들어 보여주지 않음)
+          this.allEditionsData = { '2026-10-29': attachLinks(edition20261029, '2026-10-29', 0) };
+          this.availableDates = ['2026-10-29'];
+          this.selectedDate = '2026-10-29';
         },
 
         get currentEditionFlights() {
-          return this.allEditionsData[this.selectedDate] || this.allEditionsData['2026-10-29'] || [];
+          return this.allEditionsData[this.selectedDate] || this.allEditionsData[this.availableDates[0]] || [];
         },
 
         get currentSectionTitle() {
@@ -1331,6 +1339,7 @@
         },
 
         handleImageFallback(event, code) {
+          event.target.onerror = null;
           event.target.src = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=640&q=80';
         },
 
@@ -1348,10 +1357,11 @@
 
         hasFreeBaggage(baggageStr) {
           if (!baggageStr) return false;
-          if (baggageStr.includes('미포함') && !baggageStr.includes('15kg 포함') && !baggageStr.includes('20kg 포함')) {
-            return false;
-          }
-          return baggageStr.includes('15kg') || baggageStr.includes('20kg') || baggageStr.includes('23kg');
+          // 괄호 안 선택 옵션/부가 설명은 판정에서 제외
+          const core = String(baggageStr).replace(/\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim();
+          if (/^[^,]*미포함/.test(core)) return false;            // 기본 운임에 위탁 미포함
+          if (core.includes('기내') && !core.includes('위탁')) return false; // 기내 반입만 포함
+          return /(15|20|23)\s*kg/.test(core);
         },
 
         getPassportStamp(item) {
@@ -1408,4 +1418,3 @@
   </script>
 </body>
 </html>
-```
