@@ -7,7 +7,10 @@ THE BOARDING PASS TIMES (보딩패스 타임즈 항공편집국)
 
 동작 순서
 1) 노선별 왕복 최저가 확보
-   - fast-flights(구글 항공권 조회)가 설치되어 있으면 실제 조회를 시도합니다. (원화 ₩ 표기 + 직항만 인정)
+   - fast-flights(구글 항공권 조회)가 설치되어 있으면 실제 조회를 시도합니다.
+   - 1차로 curr=KRW, hl=ko 파라미터를 주입해 원화 조회를 시도하고,
+     구글 서버가 달러($)로 응답할 경우 실시간 USD/KRW 환율을 적용해 원화(100원 단위 반올림)로 환산합니다.
+   - 직항(stops == 0)만 인정하며, 항공사명·편명·출도착 시각·수하물 정보는 마스터(CITIES_58_MASTER)의 한국어 정보를 유지합니다.
    - 조회에 실패한 노선은 직전 발행호 가격을 이월(carry)하고, 이력이 없으면 마스터 기준가(base)를 씁니다.
    - 각 행의 priceSource 값: "live"(실조회) / "carry"(이월) / "base"(기준가)
 2) (선택) Google Sheets 웹훅(Apps Script)으로 전송하고 시트 히스토리를 수신
@@ -142,29 +145,93 @@ def build_schedule_window(idx: int) -> Dict[str, str]:
 
 
 # ------------------------------------------------------------------------------
-# 가격 확보
+# 가격 확보 (fast-flights 2.2 KRW 파라미터 주입 + USD 실시간 환율 폴백)
 # ------------------------------------------------------------------------------
+_USD_TO_KRW_CACHE: Optional[float] = None
+_CORE_PATCHED: bool = False
+
+
+def get_usd_to_krw_rate() -> float:
+    """실시간 USD->KRW 환율을 1회 조회하고 실패 시 기본값(1390.0)을 반환합니다."""
+    global _USD_TO_KRW_CACHE
+    if _USD_TO_KRW_CACHE is not None:
+        return _USD_TO_KRW_CACHE
+    try:
+        req = urllib.request.Request(
+            "https://open.er-api.com/v6/latest/USD",
+            headers={"User-Agent": "Mozilla/5.0"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        rate = float(data["rates"]["KRW"])
+        if 1000.0 <= rate <= 2000.0:
+            _USD_TO_KRW_CACHE = rate
+            print(f"💱 [환율 기준] 1 USD = {rate:,.2f} KRW (실시간 조회)")
+            return rate
+    except Exception as e:
+        print(f"[안내] 실시간 환율 조회 실패, 기본 환율(1,390원) 사용: {e}")
+    _USD_TO_KRW_CACHE = 1390.0
+    return _USD_TO_KRW_CACHE
+
+
+def _ensure_fast_flights_krw_patch() -> None:
+    """fast-flights 2.2 내부 fetch 호출 시 curr=KRW, hl=ko 파라미터를 주입합니다."""
+    global _CORE_PATCHED
+    if _CORE_PATCHED:
+        return
+    try:
+        import fast_flights.core as ff_core  # type: ignore
+        orig_fetch = getattr(ff_core, "fetch", None)
+        if callable(orig_fetch):
+            def patched_fetch(params: dict):
+                if isinstance(params, dict):
+                    params = dict(params)
+                    params.setdefault("curr", "KRW")
+                    params["hl"] = "ko"
+                return orig_fetch(params)
+            ff_core.fetch = patched_fetch
+            _CORE_PATCHED = True
+    except Exception:
+        pass
+
+
 def parse_krw(text: Any) -> Optional[int]:
-    """'₩291,400' 같은 원화 표기만 정수로 변환합니다. (달러 등 다른 통화는 버림)"""
+    """원화('₩291,400') 또는 달러('$338') 표기를 원화 정수로 변환합니다."""
     if text is None:
         return None
-    s = str(text)
-    if "₩" not in s and "KRW" not in s.upper():
-        return None
-    digits = re.sub(r"[^\d]", "", s)
-    if not digits:
-        return None
-    value = int(digits)
-    return value if 30_000 <= value <= 5_000_000 else None
+    s = str(text).strip()
+    upper = s.upper()
+
+    # 1) 원화(₩ / KRW) 직접 표기
+    if "₩" in s or "KRW" in upper:
+        digits = re.sub(r"[^\d]", "", s)
+        if not digits:
+            return None
+        value = int(digits)
+        return value if 30_000 <= value <= 5_000_000 else None
+
+    # 2) 미국 달러($ / USD) 표기 폴백 (HK$, NT$, S$, A$, CA$, NZ$ 등 타 통화 제외)
+    if ("$" in s or "USD" in upper) and not any(p in upper for p in ("HK$", "NT$", "S$", "A$", "CA$", "NZ$")):
+        m = re.search(r"(\d[\d,]*(?:\.\d+)?)", s)
+        if not m:
+            return None
+        usd_val = float(m.group(1).replace(",", ""))
+        if usd_val <= 0:
+            return None
+        krw_val = int(round((usd_val * get_usd_to_krw_rate()) / 100.0) * 100)
+        return krw_val if 30_000 <= krw_val <= 5_000_000 else None
+
+    return None
 
 
 def fetch_live_price(code: str, dep_yyyymmdd: str, ret_yyyymmdd: str) -> Optional[int]:
     """
     fast-flights(2.x)로 ICN↔code 왕복 직항 최저가(원)를 조회합니다. 실패하면 None 과 함께 원인을 한 줄 출력합니다.
-    fetch_mode 는 "common"(직접 요청)만 씁니다. "fallback" 은 라이브러리 제작자의 외부 서버(토큰 필요)로 넘어가 401 로 실패했습니다.
+    fetch_mode 는 "common"(직접 요청)만 씁니다.
     """
     try:
         from fast_flights import FlightData, Passengers, get_flights  # type: ignore
+        _ensure_fast_flights_krw_patch()
     except Exception as e:
         print(f"   [실조회 실패] {code}: fast-flights 를 불러올 수 없음 ({type(e).__name__}: {str(e)[:80]})")
         return None
@@ -198,7 +265,7 @@ def fetch_live_price(code: str, dep_yyyymmdd: str, ret_yyyymmdd: str) -> Optiona
     prices = [p for p in (parse_krw(getattr(f, "price", None)) for f in direct) if p]
     if not prices:
         samples = ", ".join(str(getattr(f, "price", ""))[:14] for f in direct[:2])
-        print(f"   [실조회 실패] {code}: 원화(₩) 가격이 없음 (응답 가격 예: {samples})")
+        print(f"   [실조회 실패] {code}: 유효한 가격 파싱 실패 (응답 가격 예: {samples})")
         return None
     return min(prices)
 
@@ -440,7 +507,10 @@ def main() -> None:
             f"https://flight.naver.com/flights/international/"
             f"ICN-{code}-{sched['dep_yyyymmdd']}/{code}-ICN-{sched['ret_yyyymmdd']}?adult=1&fareType=Y"
         )
-        sky_url = f"https://www.skyscanner.co.kr/transport/flights/icn/{code.lower()}/{sky_dep}/{sky_ret}/"
+        sky_url = (
+            f"https://www.skyscanner.co.kr/transport/flights/icn/{code.lower()}/{sky_dep}/{sky_ret}/"
+            f"?adultsv2=1&cabinclass=economy&preferdirects=true&ref=home&rtn=1"
+        )
 
         collected_rows.append({
             "date": today_str,
