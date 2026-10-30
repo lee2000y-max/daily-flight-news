@@ -1,0 +1,2107 @@
+{
+ "type": "quarterly",
+ "period": "2026-Q4",
+ "generatedAt": "2026-10-30 19:05",
+ "coverage": {
+  "days_with_data": 7,
+  "days_in_period": 92,
+  "first_date": "2026-10-22",
+  "last_date": "2026-10-28",
+  "observations": 148,
+  "routes_with_data": 58,
+  "by_source": {
+   "sheet": 148
+  }
+ },
+ "highlights": {
+  "cheapest_mean": [
+   {
+    "code": "YNT",
+    "value": 187250
+   },
+   {
+    "code": "DAD",
+    "value": 206428
+   },
+   {
+    "code": "DLC",
+    "value": 209150
+   },
+   {
+    "code": "CXR",
+    "value": 212620
+   },
+   {
+    "code": "TAO",
+    "value": 212750
+   }
+  ],
+  "biggest_drop_pct": [
+   {
+    "code": "VTE",
+    "value": -49.7
+   },
+   {
+    "code": "PVG",
+    "value": -37.4
+   },
+   {
+    "code": "UBN",
+    "value": -35.3
+   },
+   {
+    "code": "BWN",
+    "value": -23.7
+   },
+   {
+    "code": "TAO",
+    "value": -20.5
+   }
+  ],
+  "biggest_rise_pct": [
+   {
+    "code": "HSG",
+    "value": 5.8
+   },
+   {
+    "code": "CXR",
+    "value": 4.5
+   },
+   {
+    "code": "DLC",
+    "value": 3.0
+   },
+   {
+    "code": "KOJ",
+    "value": 2.0
+   },
+   {
+    "code": "PQC",
+    "value": 0.7
+   }
+  ],
+  "most_volatile_pct": [
+   {
+    "code": "VTE",
+    "value": 24.0
+   },
+   {
+    "code": "UBN",
+    "value": 20.8
+   },
+   {
+    "code": "CTS",
+    "value": 15.4
+   },
+   {
+    "code": "BWN",
+    "value": 13.5
+   },
+   {
+    "code": "FUK",
+    "value": 9.2
+   }
+  ]
+ },
+ "sections": {
+  "SEC1": {
+   "major": "일본",
+   "routes": 21,
+   "mean_price": 316296
+  },
+  "SEC2": {
+   "major": "중국",
+   "routes": 10,
+   "mean_price": 299275
+  },
+  "SEC3": {
+   "major": "동남아",
+   "routes": 20,
+   "mean_price": 371647
+  },
+  "SEC4": {
+   "major": "중앙아시아",
+   "routes": 3,
+   "mean_price": 945975
+  },
+  "SEC5": {
+   "major": "중화권",
+   "routes": 4,
+   "mean_price": 280874
+  }
+ },
+ "routes": {
+  "AKJ": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 423800
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 423800
+   },
+   "mean": 423800,
+   "median": 423800,
+   "first": {
+    "date": "2026-10-28",
+    "price": 423800
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 423800
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "아사히카와",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "홋카이도·오키나와",
+   "monthly_means": [
+    [
+     "2026-10",
+     423800
+    ]
+   ]
+  },
+  "ALA": {
+   "n": 4,
+   "min": {
+    "date": "2026-10-28",
+    "price": 985000
+   },
+   "max": {
+    "date": "2026-10-22",
+    "price": 1097100
+   },
+   "mean": 1044175,
+   "median": 1047300,
+   "first": {
+    "date": "2026-10-22",
+    "price": 1097100
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 985000
+   },
+   "change": -112100,
+   "change_pct": -10.2,
+   "volatility_pct": 3.8,
+   "city": "알마티",
+   "section": "SEC4",
+   "major": "중앙아시아",
+   "sub": "실크로드·자연",
+   "monthly_means": [
+    [
+     "2026-10",
+     1044175
+    ]
+   ]
+  },
+  "AOJ": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 393200
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 393200
+   },
+   "mean": 393200,
+   "median": 393200,
+   "first": {
+    "date": "2026-10-28",
+    "price": 393200
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 393200
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "아오모리",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     393200
+    ]
+   ]
+  },
+  "BKI": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 290800
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 290800
+   },
+   "mean": 290800,
+   "median": 290800,
+   "first": {
+    "date": "2026-10-28",
+    "price": 290800
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 290800
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "코타키나발루",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "인기 휴양섬",
+   "monthly_means": [
+    [
+     "2026-10",
+     290800
+    ]
+   ]
+  },
+  "BKK": {
+   "n": 7,
+   "min": {
+    "date": "2026-10-28",
+    "price": 389000
+   },
+   "max": {
+    "date": "2026-10-24",
+    "price": 494300
+   },
+   "mean": 470660,
+   "median": 492045,
+   "first": {
+    "date": "2026-10-22",
+    "price": 466465
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 389000
+   },
+   "change": -77465,
+   "change_pct": -16.6,
+   "volatility_pct": 7.5,
+   "city": "방콕 수완나품",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "태국 도시·감성",
+   "monthly_means": [
+    [
+     "2026-10",
+     470660
+    ]
+   ]
+  },
+  "BWN": {
+   "n": 4,
+   "min": {
+    "date": "2026-10-24",
+    "price": 649500
+   },
+   "max": {
+    "date": "2026-10-22",
+    "price": 894100
+   },
+   "mean": 725700,
+   "median": 679600,
+   "first": {
+    "date": "2026-10-22",
+    "price": 894100
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 682200
+   },
+   "change": -211900,
+   "change_pct": -23.7,
+   "volatility_pct": 13.5,
+   "city": "반다르스리베가완",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "도시·이색",
+   "monthly_means": [
+    [
+     "2026-10",
+     725700
+    ]
+   ]
+  },
+  "CAN": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 331400
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 331400
+   },
+   "mean": 331400,
+   "median": 331400,
+   "first": {
+    "date": "2026-10-28",
+    "price": 331400
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 331400
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "광저우",
+   "section": "SEC2",
+   "major": "중국",
+   "sub": "대도시",
+   "monthly_means": [
+    [
+     "2026-10",
+     331400
+    ]
+   ]
+  },
+  "CEB": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 245200
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 245200
+   },
+   "mean": 245200,
+   "median": 245200,
+   "first": {
+    "date": "2026-10-28",
+    "price": 245200
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 245200
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "세부",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "필리핀 휴양",
+   "monthly_means": [
+    [
+     "2026-10",
+     245200
+    ]
+   ]
+  },
+  "CNX": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 421600
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 421600
+   },
+   "mean": 421600,
+   "median": 421600,
+   "first": {
+    "date": "2026-10-28",
+    "price": 421600
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 421600
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "치앙마이",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "태국 도시·감성",
+   "monthly_means": [
+    [
+     "2026-10",
+     421600
+    ]
+   ]
+  },
+  "CRK": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 233800
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 233800
+   },
+   "mean": 233800,
+   "median": 233800,
+   "first": {
+    "date": "2026-10-28",
+    "price": 233800
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 233800
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "클락",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "필리핀 휴양",
+   "monthly_means": [
+    [
+     "2026-10",
+     233800
+    ]
+   ]
+  },
+  "CTS": {
+   "n": 7,
+   "min": {
+    "date": "2026-10-25",
+    "price": 332100
+   },
+   "max": {
+    "date": "2026-10-26",
+    "price": 487100
+   },
+   "mean": 407653,
+   "median": 375636,
+   "first": {
+    "date": "2026-10-22",
+    "price": 375636
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 337800
+   },
+   "change": -37836,
+   "change_pct": -10.1,
+   "volatility_pct": 15.4,
+   "city": "삿포로 신치토세",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "홋카이도·오키나와",
+   "monthly_means": [
+    [
+     "2026-10",
+     407653
+    ]
+   ]
+  },
+  "CXR": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-23",
+    "price": 207171
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 216400
+   },
+   "mean": 212620,
+   "median": 214290,
+   "first": {
+    "date": "2026-10-23",
+    "price": 207171
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 216400
+   },
+   "change": 9229,
+   "change_pct": 4.5,
+   "volatility_pct": 1.9,
+   "city": "나트랑",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "베트남 휴양",
+   "monthly_means": [
+    [
+     "2026-10",
+     212620
+    ]
+   ]
+  },
+  "DAD": {
+   "n": 7,
+   "min": {
+    "date": "2026-10-28",
+    "price": 199800
+   },
+   "max": {
+    "date": "2026-10-22",
+    "price": 207703
+   },
+   "mean": 206428,
+   "median": 207506,
+   "first": {
+    "date": "2026-10-22",
+    "price": 207703
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 199800
+   },
+   "change": -7903,
+   "change_pct": -3.8,
+   "volatility_pct": 1.3,
+   "city": "다낭",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "베트남 휴양",
+   "monthly_means": [
+    [
+     "2026-10",
+     206428
+    ]
+   ]
+  },
+  "DLC": {
+   "n": 2,
+   "min": {
+    "date": "2026-10-26",
+    "price": 206100
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 212200
+   },
+   "mean": 209150,
+   "median": 209150,
+   "first": {
+    "date": "2026-10-26",
+    "price": 206100
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 212200
+   },
+   "change": 6100,
+   "change_pct": 3.0,
+   "volatility_pct": null,
+   "city": "다롄",
+   "section": "SEC2",
+   "major": "중국",
+   "sub": "단거리·해안",
+   "monthly_means": [
+    [
+     "2026-10",
+     209150
+    ]
+   ]
+  },
+  "DLI": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 332200
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 332200
+   },
+   "mean": 332200,
+   "median": 332200,
+   "first": {
+    "date": "2026-10-28",
+    "price": 332200
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 332200
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "달랏",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "베트남 휴양",
+   "monthly_means": [
+    [
+     "2026-10",
+     332200
+    ]
+   ]
+  },
+  "DPS": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 520800
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 520800
+   },
+   "mean": 520800,
+   "median": 520800,
+   "first": {
+    "date": "2026-10-28",
+    "price": 520800
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 520800
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "발리 덴파사르",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "인기 휴양섬",
+   "monthly_means": [
+    [
+     "2026-10",
+     520800
+    ]
+   ]
+  },
+  "DYG": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 381800
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 381800
+   },
+   "mean": 381800,
+   "median": 381800,
+   "first": {
+    "date": "2026-10-28",
+    "price": 381800
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 381800
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "장가계",
+   "section": "SEC2",
+   "major": "중국",
+   "sub": "문화·절경",
+   "monthly_means": [
+    [
+     "2026-10",
+     381800
+    ]
+   ]
+  },
+  "FSZ": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-28",
+    "price": 265600
+   },
+   "max": {
+    "date": "2026-10-24",
+    "price": 278700
+   },
+   "mean": 274200,
+   "median": 278300,
+   "first": {
+    "date": "2026-10-24",
+    "price": 278700
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 265600
+   },
+   "change": -13100,
+   "change_pct": -4.7,
+   "volatility_pct": 2.2,
+   "city": "시즈오카",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     274200
+    ]
+   ]
+  },
+  "FUK": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-28",
+    "price": 274200
+   },
+   "max": {
+    "date": "2026-10-22",
+    "price": 339600
+   },
+   "mean": 301500,
+   "median": 290700,
+   "first": {
+    "date": "2026-10-22",
+    "price": 339600
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 274200
+   },
+   "change": -65400,
+   "change_pct": -19.3,
+   "volatility_pct": 9.2,
+   "city": "후쿠오카",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "대도시",
+   "monthly_means": [
+    [
+     "2026-10",
+     301500
+    ]
+   ]
+  },
+  "GUM": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 310200
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 310200
+   },
+   "mean": 310200,
+   "median": 310200,
+   "first": {
+    "date": "2026-10-28",
+    "price": 310200
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 310200
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "괌",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "남태평양 휴양",
+   "monthly_means": [
+    [
+     "2026-10",
+     310200
+    ]
+   ]
+  },
+  "HAN": {
+   "n": 7,
+   "min": {
+    "date": "2026-10-28",
+    "price": 295000
+   },
+   "max": {
+    "date": "2026-10-27",
+    "price": 309247
+   },
+   "mean": 300707,
+   "median": 299900,
+   "first": {
+    "date": "2026-10-22",
+    "price": 300500
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 295000
+   },
+   "change": -5500,
+   "change_pct": -1.8,
+   "volatility_pct": 1.3,
+   "city": "하노이",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "베트남 도시",
+   "monthly_means": [
+    [
+     "2026-10",
+     300707
+    ]
+   ]
+  },
+  "HGH": {
+   "n": 2,
+   "min": {
+    "date": "2026-10-28",
+    "price": 293200
+   },
+   "max": {
+    "date": "2026-10-27",
+    "price": 310000
+   },
+   "mean": 301600,
+   "median": 301600,
+   "first": {
+    "date": "2026-10-27",
+    "price": 310000
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 293200
+   },
+   "change": -16800,
+   "change_pct": -5.4,
+   "volatility_pct": null,
+   "city": "항저우",
+   "section": "SEC2",
+   "major": "중국",
+   "sub": "문화·절경",
+   "monthly_means": [
+    [
+     "2026-10",
+     301600
+    ]
+   ]
+  },
+  "HIJ": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 274000
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 274000
+   },
+   "mean": 274000,
+   "median": 274000,
+   "first": {
+    "date": "2026-10-28",
+    "price": 274000
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 274000
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "히로시마",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     274000
+    ]
+   ]
+  },
+  "HKG": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 257800
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 257800
+   },
+   "mean": 257800,
+   "median": 257800,
+   "first": {
+    "date": "2026-10-28",
+    "price": 257800
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 257800
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "홍콩",
+   "section": "SEC5",
+   "major": "중화권",
+   "sub": "홍콩·마카오",
+   "monthly_means": [
+    [
+     "2026-10",
+     257800
+    ]
+   ]
+  },
+  "HKT": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 425600
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 425600
+   },
+   "mean": 425600,
+   "median": 425600,
+   "first": {
+    "date": "2026-10-28",
+    "price": 425600
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 425600
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "푸켓",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "태국 휴양",
+   "monthly_means": [
+    [
+     "2026-10",
+     425600
+    ]
+   ]
+  },
+  "HPH": {
+   "n": 2,
+   "min": {
+    "date": "2026-10-28",
+    "price": 339600
+   },
+   "max": {
+    "date": "2026-10-24",
+    "price": 406893
+   },
+   "mean": 373246,
+   "median": 373246,
+   "first": {
+    "date": "2026-10-24",
+    "price": 406893
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 339600
+   },
+   "change": -67293,
+   "change_pct": -16.5,
+   "volatility_pct": null,
+   "city": "하이퐁",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "베트남 도시",
+   "monthly_means": [
+    [
+     "2026-10",
+     373246
+    ]
+   ]
+  },
+  "HRB": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 308400
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 308400
+   },
+   "mean": 308400,
+   "median": 308400,
+   "first": {
+    "date": "2026-10-28",
+    "price": 308400
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 308400
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "하얼빈",
+   "section": "SEC2",
+   "major": "중국",
+   "sub": "문화·절경",
+   "monthly_means": [
+    [
+     "2026-10",
+     308400
+    ]
+   ]
+  },
+  "HSG": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-22",
+    "price": 203200
+   },
+   "max": {
+    "date": "2026-10-25",
+    "price": 228300
+   },
+   "mean": 215500,
+   "median": 215000,
+   "first": {
+    "date": "2026-10-22",
+    "price": 203200
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 215000
+   },
+   "change": 11800,
+   "change_pct": 5.8,
+   "volatility_pct": 4.8,
+   "city": "사가",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     215500
+    ]
+   ]
+  },
+  "KHH": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 280800
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 280800
+   },
+   "mean": 280800,
+   "median": 280800,
+   "first": {
+    "date": "2026-10-28",
+    "price": 280800
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 280800
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "가오슝",
+   "section": "SEC5",
+   "major": "중화권",
+   "sub": "대만",
+   "monthly_means": [
+    [
+     "2026-10",
+     280800
+    ]
+   ]
+  },
+  "KIX": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-25",
+    "price": 285800
+   },
+   "max": {
+    "date": "2026-10-22",
+    "price": 323700
+   },
+   "mean": 301900,
+   "median": 296200,
+   "first": {
+    "date": "2026-10-22",
+    "price": 323700
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 296200
+   },
+   "change": -27500,
+   "change_pct": -8.5,
+   "volatility_pct": 5.3,
+   "city": "오사카 간사이",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "대도시",
+   "monthly_means": [
+    [
+     "2026-10",
+     301900
+    ]
+   ]
+  },
+  "KKJ": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-28",
+    "price": 281800
+   },
+   "max": {
+    "date": "2026-10-26",
+    "price": 314000
+   },
+   "mean": 301567,
+   "median": 308900,
+   "first": {
+    "date": "2026-10-23",
+    "price": 308900
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 281800
+   },
+   "change": -27100,
+   "change_pct": -8.8,
+   "volatility_pct": 4.7,
+   "city": "기타큐슈",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     301567
+    ]
+   ]
+  },
+  "KMJ": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 293600
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 293600
+   },
+   "mean": 293600,
+   "median": 293600,
+   "first": {
+    "date": "2026-10-28",
+    "price": 293600
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 293600
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "구마모토",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     293600
+    ]
+   ]
+  },
+  "KMQ": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 355200
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 355200
+   },
+   "mean": 355200,
+   "median": 355200,
+   "first": {
+    "date": "2026-10-28",
+    "price": 355200
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 355200
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "코마쓰",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     355200
+    ]
+   ]
+  },
+  "KOJ": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-24",
+    "price": 293300
+   },
+   "max": {
+    "date": "2026-10-27",
+    "price": 303200
+   },
+   "mean": 298567,
+   "median": 299200,
+   "first": {
+    "date": "2026-10-24",
+    "price": 293300
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 299200
+   },
+   "change": 5900,
+   "change_pct": 2.0,
+   "volatility_pct": 1.4,
+   "city": "가고시마",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     298567
+    ]
+   ]
+  },
+  "MFM": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 261400
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 261400
+   },
+   "mean": 261400,
+   "median": 261400,
+   "first": {
+    "date": "2026-10-28",
+    "price": 261400
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 261400
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "마카오",
+   "section": "SEC5",
+   "major": "중화권",
+   "sub": "홍콩·마카오",
+   "monthly_means": [
+    [
+     "2026-10",
+     261400
+    ]
+   ]
+  },
+  "MYJ": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 248400
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 248400
+   },
+   "mean": 248400,
+   "median": 248400,
+   "first": {
+    "date": "2026-10-28",
+    "price": 248400
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 248400
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "마쓰야마",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     248400
+    ]
+   ]
+  },
+  "NGO": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-28",
+    "price": 300400
+   },
+   "max": {
+    "date": "2026-10-23",
+    "price": 321500
+   },
+   "mean": 307800,
+   "median": 301500,
+   "first": {
+    "date": "2026-10-23",
+    "price": 321500
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 300400
+   },
+   "change": -21100,
+   "change_pct": -6.6,
+   "volatility_pct": 3.2,
+   "city": "나고야",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "대도시",
+   "monthly_means": [
+    [
+     "2026-10",
+     307800
+    ]
+   ]
+  },
+  "NGS": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 309600
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 309600
+   },
+   "mean": 309600,
+   "median": 309600,
+   "first": {
+    "date": "2026-10-28",
+    "price": 309600
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 309600
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "나가사키",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     309600
+    ]
+   ]
+  },
+  "NRT": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-26",
+    "price": 304569
+   },
+   "max": {
+    "date": "2026-10-23",
+    "price": 343873
+   },
+   "mean": 319081,
+   "median": 308800,
+   "first": {
+    "date": "2026-10-23",
+    "price": 343873
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 308800
+   },
+   "change": -35073,
+   "change_pct": -10.2,
+   "volatility_pct": 5.5,
+   "city": "도쿄 나리타",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "대도시",
+   "monthly_means": [
+    [
+     "2026-10",
+     319081
+    ]
+   ]
+  },
+  "OIT": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-28",
+    "price": 324200
+   },
+   "max": {
+    "date": "2026-10-27",
+    "price": 359970
+   },
+   "mean": 342490,
+   "median": 343300,
+   "first": {
+    "date": "2026-10-24",
+    "price": 343300
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 324200
+   },
+   "change": -19100,
+   "change_pct": -5.6,
+   "volatility_pct": 4.3,
+   "city": "오이타",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     342490
+    ]
+   ]
+  },
+  "OKA": {
+   "n": 2,
+   "min": {
+    "date": "2026-10-28",
+    "price": 359400
+   },
+   "max": {
+    "date": "2026-10-27",
+    "price": 416900
+   },
+   "mean": 388150,
+   "median": 388150,
+   "first": {
+    "date": "2026-10-27",
+    "price": 416900
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 359400
+   },
+   "change": -57500,
+   "change_pct": -13.8,
+   "volatility_pct": null,
+   "city": "오키나와",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "홋카이도·오키나와",
+   "monthly_means": [
+    [
+     "2026-10",
+     388150
+    ]
+   ]
+  },
+  "PKX": {
+   "n": 2,
+   "min": {
+    "date": "2026-10-28",
+    "price": 288600
+   },
+   "max": {
+    "date": "2026-10-24",
+    "price": 296300
+   },
+   "mean": 292450,
+   "median": 292450,
+   "first": {
+    "date": "2026-10-24",
+    "price": 296300
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 288600
+   },
+   "change": -7700,
+   "change_pct": -2.6,
+   "volatility_pct": null,
+   "city": "베이징 다싱",
+   "section": "SEC2",
+   "major": "중국",
+   "sub": "대도시",
+   "monthly_means": [
+    [
+     "2026-10",
+     292450
+    ]
+   ]
+  },
+  "PQC": {
+   "n": 4,
+   "min": {
+    "date": "2026-10-22",
+    "price": 277401
+   },
+   "max": {
+    "date": "2026-10-27",
+    "price": 317859
+   },
+   "mean": 296132,
+   "median": 294634,
+   "first": {
+    "date": "2026-10-22",
+    "price": 277401
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 279400
+   },
+   "change": 1999,
+   "change_pct": 0.7,
+   "volatility_pct": 6.1,
+   "city": "푸꾸옥",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "베트남 휴양",
+   "monthly_means": [
+    [
+     "2026-10",
+     296132
+    ]
+   ]
+  },
+  "PVG": {
+   "n": 2,
+   "min": {
+    "date": "2026-10-28",
+    "price": 268000
+   },
+   "max": {
+    "date": "2026-10-23",
+    "price": 428300
+   },
+   "mean": 348150,
+   "median": 348150,
+   "first": {
+    "date": "2026-10-23",
+    "price": 428300
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 268000
+   },
+   "change": -160300,
+   "change_pct": -37.4,
+   "volatility_pct": null,
+   "city": "상하이 푸둥",
+   "section": "SEC2",
+   "major": "중국",
+   "sub": "대도시",
+   "monthly_means": [
+    [
+     "2026-10",
+     348150
+    ]
+   ]
+  },
+  "SDJ": {
+   "n": 2,
+   "min": {
+    "date": "2026-10-28",
+    "price": 391400
+   },
+   "max": {
+    "date": "2026-10-24",
+    "price": 396200
+   },
+   "mean": 393800,
+   "median": 393800,
+   "first": {
+    "date": "2026-10-24",
+    "price": 396200
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 391400
+   },
+   "change": -4800,
+   "change_pct": -1.2,
+   "volatility_pct": null,
+   "city": "센다이",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     393800
+    ]
+   ]
+  },
+  "SGN": {
+   "n": 7,
+   "min": {
+    "date": "2026-10-28",
+    "price": 327600
+   },
+   "max": {
+    "date": "2026-10-27",
+    "price": 353208
+   },
+   "mean": 332732,
+   "median": 329518,
+   "first": {
+    "date": "2026-10-22",
+    "price": 330107
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 327600
+   },
+   "change": -2507,
+   "change_pct": -0.8,
+   "volatility_pct": 2.5,
+   "city": "호치민",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "베트남 도시",
+   "monthly_means": [
+    [
+     "2026-10",
+     332732
+    ]
+   ]
+  },
+  "SIN": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 381400
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 381400
+   },
+   "mean": 381400,
+   "median": 381400,
+   "first": {
+    "date": "2026-10-28",
+    "price": 381400
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 381400
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "싱가포르 창이",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "도시·이색",
+   "monthly_means": [
+    [
+     "2026-10",
+     381400
+    ]
+   ]
+  },
+  "SPN": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 333800
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 333800
+   },
+   "mean": 333800,
+   "median": 333800,
+   "first": {
+    "date": "2026-10-28",
+    "price": 333800
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 333800
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "사이판",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "남태평양 휴양",
+   "monthly_means": [
+    [
+     "2026-10",
+     333800
+    ]
+   ]
+  },
+  "TAG": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 273200
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 273200
+   },
+   "mean": 273200,
+   "median": 273200,
+   "first": {
+    "date": "2026-10-28",
+    "price": 273200
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 273200
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "보홀 팡라오",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "필리핀 휴양",
+   "monthly_means": [
+    [
+     "2026-10",
+     273200
+    ]
+   ]
+  },
+  "TAK": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-28",
+    "price": 251600
+   },
+   "max": {
+    "date": "2026-10-22",
+    "price": 266500
+   },
+   "mean": 258300,
+   "median": 256800,
+   "first": {
+    "date": "2026-10-22",
+    "price": 266500
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 251600
+   },
+   "change": -14900,
+   "change_pct": -5.6,
+   "volatility_pct": 2.4,
+   "city": "다카마쓰",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     258300
+    ]
+   ]
+  },
+  "TAO": {
+   "n": 2,
+   "min": {
+    "date": "2026-10-28",
+    "price": 188400
+   },
+   "max": {
+    "date": "2026-10-22",
+    "price": 237100
+   },
+   "mean": 212750,
+   "median": 212750,
+   "first": {
+    "date": "2026-10-22",
+    "price": 237100
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 188400
+   },
+   "change": -48700,
+   "change_pct": -20.5,
+   "volatility_pct": null,
+   "city": "칭다오",
+   "section": "SEC2",
+   "major": "중국",
+   "sub": "단거리·해안",
+   "monthly_means": [
+    [
+     "2026-10",
+     212750
+    ]
+   ]
+  },
+  "TAS": {
+   "n": 4,
+   "min": {
+    "date": "2026-10-28",
+    "price": 1199600
+   },
+   "max": {
+    "date": "2026-10-23",
+    "price": 1347300
+   },
+   "mean": 1285350,
+   "median": 1297250,
+   "first": {
+    "date": "2026-10-23",
+    "price": 1347300
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 1199600
+   },
+   "change": -147700,
+   "change_pct": -11.0,
+   "volatility_pct": 4.2,
+   "city": "타슈켄트",
+   "section": "SEC4",
+   "major": "중앙아시아",
+   "sub": "실크로드·자연",
+   "monthly_means": [
+    [
+     "2026-10",
+     1285350
+    ]
+   ]
+  },
+  "TPE": {
+   "n": 7,
+   "min": {
+    "date": "2026-10-28",
+    "price": 293200
+   },
+   "max": {
+    "date": "2026-10-26",
+    "price": 337719
+   },
+   "mean": 323495,
+   "median": 326049,
+   "first": {
+    "date": "2026-10-22",
+    "price": 326049
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 293200
+   },
+   "change": -32849,
+   "change_pct": -10.1,
+   "volatility_pct": 4.3,
+   "city": "타이베이 타오위안",
+   "section": "SEC5",
+   "major": "중화권",
+   "sub": "대만",
+   "monthly_means": [
+    [
+     "2026-10",
+     323495
+    ]
+   ]
+  },
+  "UBN": {
+   "n": 7,
+   "min": {
+    "date": "2026-10-24",
+    "price": 417102
+   },
+   "max": {
+    "date": "2026-10-22",
+    "price": 672500
+   },
+   "mean": 508401,
+   "median": 472102,
+   "first": {
+    "date": "2026-10-22",
+    "price": 672500
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 435400
+   },
+   "change": -237100,
+   "change_pct": -35.3,
+   "volatility_pct": 20.8,
+   "city": "울란바토르",
+   "section": "SEC4",
+   "major": "중앙아시아",
+   "sub": "초원·이색",
+   "monthly_means": [
+    [
+     "2026-10",
+     508401
+    ]
+   ]
+  },
+  "VTE": {
+   "n": 4,
+   "min": {
+    "date": "2026-10-28",
+    "price": 462600
+   },
+   "max": {
+    "date": "2026-10-23",
+    "price": 919300
+   },
+   "mean": 746111,
+   "median": 801272,
+   "first": {
+    "date": "2026-10-23",
+    "price": 919300
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 462600
+   },
+   "change": -456700,
+   "change_pct": -49.7,
+   "volatility_pct": 24.0,
+   "city": "비엔티안",
+   "section": "SEC3",
+   "major": "동남아",
+   "sub": "도시·이색",
+   "monthly_means": [
+    [
+     "2026-10",
+     746111
+    ]
+   ]
+  },
+  "XIY": {
+   "n": 1,
+   "min": {
+    "date": "2026-10-28",
+    "price": 419800
+   },
+   "max": {
+    "date": "2026-10-28",
+    "price": 419800
+   },
+   "mean": 419800,
+   "median": 419800,
+   "first": {
+    "date": "2026-10-28",
+    "price": 419800
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 419800
+   },
+   "change": null,
+   "change_pct": null,
+   "volatility_pct": null,
+   "city": "시안",
+   "section": "SEC2",
+   "major": "중국",
+   "sub": "문화·절경",
+   "monthly_means": [
+    [
+     "2026-10",
+     419800
+    ]
+   ]
+  },
+  "YGJ": {
+   "n": 3,
+   "min": {
+    "date": "2026-10-26",
+    "price": 220000
+   },
+   "max": {
+    "date": "2026-10-23",
+    "price": 251900
+   },
+   "mean": 233900,
+   "median": 229800,
+   "first": {
+    "date": "2026-10-23",
+    "price": 251900
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 229800
+   },
+   "change": -22100,
+   "change_pct": -8.8,
+   "volatility_pct": 5.7,
+   "city": "요나고",
+   "section": "SEC1",
+   "major": "일본",
+   "sub": "소도시·온천",
+   "monthly_means": [
+    [
+     "2026-10",
+     233900
+    ]
+   ]
+  },
+  "YNT": {
+   "n": 2,
+   "min": {
+    "date": "2026-10-28",
+    "price": 182600
+   },
+   "max": {
+    "date": "2026-10-25",
+    "price": 191900
+   },
+   "mean": 187250,
+   "median": 187250,
+   "first": {
+    "date": "2026-10-25",
+    "price": 191900
+   },
+   "last": {
+    "date": "2026-10-28",
+    "price": 182600
+   },
+   "change": -9300,
+   "change_pct": -4.8,
+   "volatility_pct": null,
+   "city": "옌타이",
+   "section": "SEC2",
+   "major": "중국",
+   "sub": "단거리·해안",
+   "monthly_means": [
+    [
+     "2026-10",
+     187250
+    ]
+   ]
+  }
+ }
+}
