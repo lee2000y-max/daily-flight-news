@@ -15,8 +15,12 @@
   5. 월요일엔 김포 출발을 모든 공항으로 조회해 새 노선을 로그에 보고(`🆕`).
 - `flights_data.json` v2: `schemaVersion`, `latestDate`, `availableDates`(최근 14발행일), `status`(날짜별 발행 수), `flights`(1위 + `alt` 2위), `failed`, `historicalSeries`(영구 이력에서 계산).
 - `history_store.py` / `data/history/YYYY-MM.csv`: 영구 이력(1위만). `build_reports.py` / `data/reports/`: 월간·분기·연간 리포트.
-- `probe_route.py` + `.github/workflows/probe_live_price.yml`: 특정 노선 진단(수동 실행, 입력 route).
+- `probe_route.py` + `.github/workflows/probe_live_price.yml`: 특정 노선 진단(수동 실행, 입력 route, mode=route).
 - `.github/workflows/daily_flights.yml`: 매일 07:30 KST. 수동 실행 입력 `only_cities`, `dry_run`. 브랜치에서 실행하면 그 브랜치에 커밋.
+  - `collect` 잡: 도시를 4묶음(`SHARD_INDEX`::4)으로 나눠 서로 다른 서버에서 동시 수집(`MODE=collect` → `shard_out/shard_N.json`).
+  - `publish` 잡: 묶음 결과를 합쳐 저장(`MODE=merge`). 발행일은 묶음들이 쓴 날짜 중 다수결(자정 경계 대비). 결과가 없는 묶음의 도시는 `failed`에 기록. 발행 0건이면 저장하지 않고 실패.
+  - `publish`는 `!cancelled()` 조건. 실행을 취소하면 저장도 하지 않는다(`always()`로 바꾸지 말 것).
+- `check_site.py`: 로컬에서 사이트를 띄워 데스크톱·모바일 화면 검사(카드 수, 구글 버튼, 금지어, 콘솔 오류) 후 스크린샷. `probe_live_price.yml`을 `mode=site`로 실행하면 `preview/screenshots` 브랜치에 올린다.
 
 ## 알아 둘 함정
 - fli는 0.9.0으로 고정. 0.10부터는 구글이 달력 API에 브라우저 서명을 요구해 날짜마다 페이지를 받으므로 수십 배 느림.
@@ -24,6 +28,7 @@
 - fli 항공사 목록이 오래됨(예: 9G를 "9G Rail"로 표기). `AIRLINE_KO`에 없는 코드는 코드로 표시한다.
 - 달력 API가 막히면 예비 수단: 실제 브라우저(Playwright)로 구글 항공권을 열면 화면이 보내는 `GetCalendarPicker`/`GetCalendarGraph` 응답에 원화 가격이 들어 있음(2026-11-02 실측 확인, 브랜치 `spike/calendar`의 `probe_calendar.py`).
 - 구글 시트 동기화와 Gemini 노트는 v2에서 제거됨.
+- 한 서버에서 수백 번 연속 조회하면 구글 응답이 크게 느려짐(0.16초 → 3.4초/회, 2026-11-02 실측). 그래서 4묶음 병렬 수집. 스레드 병렬은 fli 내부 병렬과 엉켜 멈췄으므로 묶음 안에서는 순차 조회.
 
 ## 절대 규칙
 1. 가격·항공사·편명·시각은 그날 실제 조회값만. 기준가·이월·추정·고정값 금지. 조회 못 하면 그 노선은 발행하지 않고 사유를 남긴다.
