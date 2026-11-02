@@ -27,7 +27,7 @@ import sys
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from routes import CITY_MASTER, ORIGINS, GMP_DESTINATIONS, CITIES_58_MASTER  # noqa: F401  (CITIES_58_MASTER: build_reports 호환)
+from routes import BEST_SEASONS, CITY_MASTER, ORIGINS, GMP_DESTINATIONS, CITIES_58_MASTER  # noqa: F401  (CITIES_58_MASTER: build_reports 호환)
 
 DATA_JSON_PATH = "flights_data.json"
 SCHEMA_VERSION = 2
@@ -37,6 +37,8 @@ NIGHTS = range(2, 9)          # 2박3일 ~ 8박9일
 MAX_LEAVE_DAYS = 5
 ALT_MIN_GAP_DAYS = 3          # 2위는 1위와 출발일이 3일 이상 떨어져야 함
 DETAIL_CANDIDATES = 6         # 1·2위를 상세 검색으로 확인할 때 시도하는 최대 후보 수
+LEAVE_SAVER_MIN_NIGHTS = 3    # LEAVE SAVER·1면 B: 3박 이상
+LEAVE_SAVER_MAX_LEAVE = 1     #                   연차 1일 이하
 EMPTY_RETRY_SLEEP = 8          # 상세 검색 결과 0건일 때 재시도 전 대기(초, 회차마다 배수)
 DATE_SEARCH_DELAY = 0.1       # 날짜 검색 사이 대기(초)
 # 병렬 처리는 쓰지 않는다: fli 내부 병렬 처리와 겹쳐 전체 실행이 멈춘 적이 있음(2026-11-02)
@@ -82,7 +84,7 @@ def kr_holidays():
     if _HOLIDAYS is None:
         import holidays  # type: ignore
         y = kst_today().year
-        _HOLIDAYS = holidays.country_holidays("KR", years=[y, y + 1])
+        _HOLIDAYS = holidays.country_holidays("KR", years=[y, y + 1], language="ko")  # 이름을 한국어로(기본은 영어)
     return _HOLIDAYS
 
 
@@ -288,11 +290,24 @@ def schedule_label(dep: datetime.date, ret: datetime.date) -> str:
     return f"{dep:%Y.%m.%d}({wd[dep.weekday()]})~{ret:%m.%d}({wd[ret.weekday()]}) ({n}박 {n + 1}일)"
 
 
+def trip_holidays(dep: datetime.date, ret: datetime.date) -> List[str]:
+    """일정 안에 든 한국 공휴일 이름(중복 제거, 날짜순)."""
+    hol = kr_holidays()
+    names: List[str] = []
+    for i in range((ret - dep).days + 1):
+        d = dep + datetime.timedelta(days=i)
+        n = hol.get(d)
+        if n and n not in names:
+            names.append(str(n))
+    return names
+
+
 def trip_fields(c: Dict[str, Any]) -> Dict[str, Any]:
     dep, ret = c["dep"].isoformat(), c["ret"].isoformat()
     out = {"origin": c["origin"], "dest": c["dest"], "depDate": dep, "retDate": ret,
            "nights": c["nights"], "leaveDays": c["leave"], "price": c["price"],
-           "dates": schedule_label(c["dep"], c["ret"])}
+           "dates": schedule_label(c["dep"], c["ret"]),
+           "holidays": trip_holidays(c["dep"], c["ret"])}
     out.update(links(c["origin"], c["dest"], dep, ret))
     return out
 
@@ -393,6 +408,14 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
     row["alt"] = trip_fields(alt) if alt else None
     if row["alt"] is not None:
         row["alt"]["verified"] = bool(alt.get("detail"))
+    # 1면 B(연차 효율)용: 3박 이상 + 연차 1일 이하 일정 중 최저가(날짜 검색 실제 가격, 항공편 정보 없음)
+    ls = next((c for c in cands if c["nights"] >= LEAVE_SAVER_MIN_NIGHTS and c["leave"] <= LEAVE_SAVER_MAX_LEAVE), None)
+    if ls:
+        same = next((v for v in verified if (v["origin"], v["dest"], v["dep"], v["ret"]) == (ls["origin"], ls["dest"], ls["dep"], ls["ret"])), None)
+        row["leaveSaver"] = dict(trip_fields(same or ls), source="detail" if same else "calendar")
+    else:
+        row["leaveSaver"] = None
+    row["bestSeasons"] = [{"months": m, "label": lb} for m, lb in BEST_SEASONS.get(meta["code"], [])]
     return row, None
 
 
