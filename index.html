@@ -1205,6 +1205,11 @@
           return null;
         },
 
+        climateNote() {
+          const yrs = String(this.climateMeta.period || '').match(/(\d{4})\D+(\d{4})/);
+          return `평년 기온·강수: NASA POWER${yrs ? ` ${yrs[1]}~${yrs[2]}년 평균` : ''}(도시 중심 격자값).`;
+        },
+
         candidatesF(flights) {
           // 출발월이 그 도시 제철(기후 평년값) + 가격이 같은 면(지면) 오늘 중앙값 이하
           const bySec = {};
@@ -1228,12 +1233,12 @@
             const hasClimate = season.temp != null;
             return {
               type: 'F', code: f.code, city: f.city,
-              headline: `${f.city}, ${month}월 ${season.label}의 계절 — 왕복 ${p}`,
+              headline: season.label === '쾌적한 날씨' ? `${f.city}, 날씨 좋은 ${month}월 — 왕복 ${p}` : `${f.city}, ${month}월 ${season.label}의 계절 — 왕복 ${p}`,
               dek: `${f.dates}${hasClimate ? ` · ${month}월 평년 기온 ${season.temp}℃, 강수 ${season.precip}mm` : ''} · ${secName} 오늘 가격 중앙값보다 ${pct > 0 ? pct + '% 낮음' : '같은 수준'}`,
               figures: hasClimate
                 ? [{ k: `${month}월 평년 기온`, v: `${Math.round(season.temp)}℃` }, { k: '지면 중앙값 대비', v: pct > 0 ? `-${pct}%` : '0%' }, { k: '왕복', v: p }]
                 : [{ k: '출발', v: `${month}월` }, { k: '지면 중앙값 대비', v: pct > 0 ? `-${pct}%` : '0%' }, { k: '왕복', v: p }],
-              note: hasClimate ? `기후 평년값: ${this.climateMeta.source || ''} ${this.climateMeta.period || ''}`.trim() : '',
+              note: hasClimate ? this.climateNote() : '',
               url: f.googleUrl || '',
               board: { city: f.city, origin: f.origin, dep: f.depDate, nights: f.nights, price: f.price }
             };
