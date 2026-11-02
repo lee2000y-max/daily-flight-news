@@ -30,6 +30,7 @@ import json
 import os
 import re
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
@@ -41,10 +42,21 @@ OUT = os.path.join("data", "crowd_index.json")
 UA = {"User-Agent": "Mozilla/5.0 (compatible; boarding-pass-times/1.0; +https://lee2000y-max.github.io/daily-flight-news/)"}
 
 
-def get(url: str, data: bytes = None, headers: dict = None) -> bytes:
-    req = urllib.request.Request(url, data=data, headers={**UA, **(headers or {})})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        return r.read()
+def get(url: str, data: bytes = None, headers: dict = None, tries: int = 3) -> bytes:
+    """요청 1회. 공공데이터포털은 가끔 응답이 늦어(2026-11-03 시간 초과) 연결 오류만 몇 번 다시 시도한다(HTTP 오류는 바로 올림)."""
+    import time
+    last = None
+    for k in range(tries):
+        req = urllib.request.Request(url, data=data, headers={**UA, **(headers or {})})
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                return r.read()
+        except urllib.error.HTTPError:
+            raise
+        except Exception as e:
+            last = e
+            time.sleep(5 * (k + 1))
+    raise last
 
 
 def download_csv() -> bytes:
