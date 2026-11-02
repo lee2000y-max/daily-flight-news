@@ -6,36 +6,31 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
-      - name: 0) 실제 수집 함수로 10개 노선 시험
+      - name: A) fli 날짜 검색 실측
         continue-on-error: true
         run: |
-          python -m venv vc
-          vc/bin/pip install -q "fast-flights==2.2" "primp==0.6.2"
-          vc/bin/python probe_live_price.py collect
-          vc/bin/python probe_live_price.py gl
+          python -m venv vf
+          vf/bin/pip install -q flights
+          vf/bin/pip show flights | head -2
+          vf/bin/python probe_calendar.py fli
 
-      - name: 1) 구글 항공권 페이지 접근 확인
-        continue-on-error: true
-        run: python probe_live_price.py access
-
-      - name: 2) fast-flights 2.x 시험
+      - name: B) 브라우저로 달력 가격 응답 캡처
         continue-on-error: true
         run: |
-          python -m venv v2
-          v2/bin/pip install "fast-flights==2.2" "primp==0.6.2"
-          v2/bin/python probe_live_price.py v2
+          python -m venv vb
+          vb/bin/pip install -q "fast-flights==2.2" "primp==0.6.2" playwright
+          vb/bin/python -m playwright install --with-deps chromium > /dev/null
+          vb/bin/python probe_calendar.py browser
 
-      - name: 3) fast-flights 3.x 시험 (KRW 지정)
-        continue-on-error: true
-        run: |
-          python -m venv v3
-          v3/bin/pip install --pre fast-flights
-          v3/bin/pip show fast-flights | head -3
-          v3/bin/python probe_live_price.py v3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: probe-out
+          path: probe_out/
