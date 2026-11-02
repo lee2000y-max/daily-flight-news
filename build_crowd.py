@@ -15,7 +15,7 @@
   - 자료의 '공항'은 IATA 코드, '월'은 "01월", '년도'는 "2026년" 형식(2026-11-03 확인).
 
 네이버 데이터랩 검색어 트렌드(선택, 2026-11-03 추가)
-  - GitHub Secrets NAVER_CLIENT_ID / NAVER_CLIENT_SECRET이 있으면 최근 8주 "○○ 여행·항공권" 검색량을 더한다.
+  - GitHub Secrets NAVER_CLIENT_ID / NAVER_CLIENT_SECRET(네이버 클라우드 API HUB 또는 개발자센터 키)이 있으면 최근 8주 "○○ 여행·항공권" 검색량을 더한다.
   - 요청마다 기준 키워드(도쿄)를 함께 넣어 도시 간 비교가 되게 한다(요청당 도시 4개 + 기준 1개).
   - 호출 수: 실행 1번에 약 15회. 사용자가 정한 월 한도 30,000회(NAVER_MONTHLY_LIMIT)에 한참 못 미치게
     실행당 상한(NAVER_MAX_CALLS_PER_RUN=40)을 둔다. 주 1회 실행 기준 월 약 60회.
@@ -84,7 +84,11 @@ def download_csv() -> bytes:
     raise RuntimeError("CSV를 받지 못함")
 
 
-NAVER_URL = "https://openapi.naver.com/v1/datalab/search"
+# 네이버 키는 두 종류가 있다. 사용자 키는 네이버 클라우드 'NAVER API HUB' 형식(Client ID 10자, 2026-11-03 확인)
+NAVER_ENDPOINTS = [
+    ("https://naverapihub.apigw.ntruss.com/search-trend/v1/search", "X-NCP-APIGW-API-KEY-ID", "X-NCP-APIGW-API-KEY"),
+    ("https://openapi.naver.com/v1/datalab/search", "X-Naver-Client-Id", "X-Naver-Client-Secret"),   # 네이버 개발자센터 키
+]
 NAVER_MONTHLY_LIMIT = 30000        # 사용자 설정 월 한도(무료). 이 스크립트는 실행당 아래 상한만 쓴다
 NAVER_MAX_CALLS_PER_RUN = 40
 SHORT_NAME = {"BKK": "방콕", "CTS": "삿포로", "SIN": "싱가포르", "TAG": "보홀", "DPS": "발리", "BWN": "브루나이"}
@@ -103,6 +107,7 @@ def search_interest() -> dict:
     anchor = "NRT"
     others = [c for c in name if c != anchor]
     out, calls = {}, 0
+    endpoint = None
     for i in range(0, len(others), 4):
         if calls >= NAVER_MAX_CALLS_PER_RUN:
             print(f"네이버 호출 상한({NAVER_MAX_CALLS_PER_RUN}회) 도달, 나머지 생략")
@@ -112,12 +117,22 @@ def search_interest() -> dict:
             "startDate": start.isoformat(), "endDate": end.isoformat(), "timeUnit": "week",
             "keywordGroups": [{"groupName": c, "keywords": [f"{name[c]} 여행", f"{name[c]} 항공권"]} for c in group],
         }).encode("utf-8")
-        try:
-            calls += 1
-            d = json.loads(get(NAVER_URL, data=body, headers={
-                "X-Naver-Client-Id": cid, "X-Naver-Client-Secret": sec, "Content-Type": "application/json"}))
-        except Exception as e:
-            print(f"네이버 요청 실패: {type(e).__name__}: {str(e)[:160]}")
+        d = None
+        for ep in ([endpoint] if endpoint else NAVER_ENDPOINTS):
+            url, hid, hsec = ep
+            try:
+                calls += 1
+                d = json.loads(get(url, data=body, headers={hid: cid, hsec: sec, "Content-Type": "application/json"}))
+                if endpoint is None:
+                    print(f"네이버 API: {url}")
+                endpoint = ep
+                break
+            except Exception as e:
+                print(f"네이버 요청 실패({url.split('/')[2]}): {type(e).__name__}: {str(e)[:160]}")
+        if d is None:
+            if endpoint is None and calls >= 4:
+                print("네이버 인증이 두 방식 모두 실패 → 검색량 보정 생략")
+                break
             continue
         avg = {}
         for res in d.get("results", []):
