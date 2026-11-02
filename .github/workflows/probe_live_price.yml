@@ -13,21 +13,12 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: A) fli 날짜 검색 실측
+      - name: A2) fli 0.9.0 직항 필터·전수 소요 시간·상세 가격
         continue-on-error: true
         run: |
           python -m venv vf
-          vf/bin/pip install -q flights
-          vf/bin/pip show flights | head -2
-          vf/bin/python probe_calendar.py fli
-
-      - name: B) 브라우저로 달력 가격 응답 캡처
-        continue-on-error: true
-        run: |
-          python -m venv vb
-          vb/bin/pip install -q "fast-flights==2.2" "primp==0.6.2" playwright
-          vb/bin/python -m playwright install --with-deps chromium > /dev/null
-          vb/bin/python probe_calendar.py browser
+          vf/bin/pip install -q "flights==0.9.0"
+          vf/bin/python probe_calendar.py fli2
 
       - uses: actions/upload-artifact@v4
         if: always()
