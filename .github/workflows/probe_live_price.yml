@@ -8,7 +8,7 @@ on:
         required: false
         default: 'OKA'
       mode:
-        description: 'route(노선 진단) 또는 site(화면 검증·스크린샷)'
+        description: 'route(노선 진단) · site(화면 검증·스크린샷) · climate(기후 평년값 갱신·커밋)'
         required: false
         default: 'route'
 
@@ -40,7 +40,7 @@ jobs:
           exit $rc
 
       - name: 노선 진단
-        if: github.event.inputs.mode != 'site'
+        if: github.event.inputs.mode == 'route' || github.event.inputs.mode == ''
         env:
           ROUTE: ${{ github.event.inputs.route }}
         run: |
@@ -49,3 +49,18 @@ jobs:
           sed -i 's/"OKA": "Naha Airport",/"OKA": "Naha Airport (Okinawa)",/' "$F"
           # 입력 예: "OIT" 또는 "OIT 2026-12-30 2027-01-05" 또는 "GMP-HND 2026-12-04 2026-12-07"
           python probe_route.py $ROUTE
+
+      - name: 기후 평년값 갱신(data/climate_normals.json 커밋)
+        if: github.event.inputs.mode == 'climate'
+        env:
+          PYTHONUTF8: '1'
+          PYTHONUNBUFFERED: '1'
+        run: |
+          python build_climate.py
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/climate_normals.json
+          if git diff --staged --quiet; then echo "변경 없음"; exit 0; fi
+          git commit -m "Update climate normals"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
