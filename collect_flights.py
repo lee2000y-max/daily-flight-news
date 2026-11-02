@@ -159,7 +159,7 @@ def _leg_info(fr) -> Dict[str, Any]:
     code = first.airline.name.lstrip("_")
     return {
         "airlineCode": code,
-        "airline": AIRLINE_KO.get(code, first.airline.value),
+        "airline": AIRLINE_KO.get(code, f"{code}편"),  # fli 항공사 목록이 오래돼 모르는 코드는 이름 대신 코드로 표시
         "flightNo": f"{code}{first.flight_number}",
         "dep": first.departure_datetime.strftime("%H:%M"),
         "arr": last.arrival_datetime.strftime("%H:%M"),
@@ -239,6 +239,10 @@ def collect_city(meta: Dict[str, Any], today: datetime.date, full_gmp: bool = Fa
                 time.sleep(DATE_SEARCH_DELAY)
             if org == "GMP" and raw > before and dst not in GMP_DESTINATIONS:
                 gmp_found.append(dst)
+    if raw == 0 and errors < calls and not meta.get("_retried"):
+        # 일시적인 빈 응답 대비: 잠시 후 1회 다시 조회
+        time.sleep(5)
+        return collect_city(dict(meta, _retried=True), today, full_gmp)
     cands.sort(key=lambda c: (c["price"], c["leave"], c["dep"], c["origin"] != "ICN"))
     diag = ""
     if raw == 0 and errors < calls:
@@ -333,6 +337,10 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
         verified.sort(key=lambda v: (v["price"], v["leave"], v["dep"]))
         first = verified[0]
         alt = next((v for v in verified[1:] if abs((v["dep"] - first["dep"]).days) >= ALT_MIN_GAP_DAYS), None)
+        if alt is None:
+            # 상세 확인된 2위가 없으면 날짜 검색의 실제 가격 중 1위 이상인 일정(출발일 3일 이상 차이)을 쓴다
+            alt = next((c for c in cands if abs((c["dep"] - first["dep"]).days) >= ALT_MIN_GAP_DAYS
+                        and c["price"] >= first["price"]), None)
         detail = first["detail"]
     elif errors and len(errors) == tried:
         # 상세 조회가 모두 오류: 날짜 검색의 실제 가격으로 발행(항공편 정보 없이)
