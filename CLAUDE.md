@@ -13,13 +13,16 @@
      상세 미확인 2위는 날짜 검색 가격 중 1위 이상만. 상세가 모두 오류이거나 모두 빈 결과(0건)면 날짜 검색 가격으로 발행(항공편 정보 없음, `detailError`에 사유). 경유만 나오면 발행하지 않음.
   4. 직항 0건·조건 불일치·조회 오류 도시는 발행하지 않고 `failed`에 사유 기록.
   5. 월요일엔 김포 출발을 모든 공항으로 조회해 새 노선을 로그에 보고(`🆕`).
-- `flights_data.json` v2: `schemaVersion`, `latestDate`, `availableDates`(최근 14발행일), `status`(날짜별 발행 수), `flights`(1위 + `alt` 2위), `failed`, `historicalSeries`(영구 이력에서 계산).
-- `history_store.py` / `data/history/YYYY-MM.csv`: 영구 이력(1위만). `build_reports.py` / `data/reports/`: 월간·분기·연간 리포트.
+- `flights_data.json` v2: `schemaVersion`, `latestDate`, `availableDates`(최근 14발행일), `status`(날짜별 발행 수), `flights`(1위 + `alt` 2위 + `leaveSaver` 연차 절약 일정 + `holidays` + `bestSeasons`), `failed`, `historicalSeries`(영구 이력 live만, `fsc` 포함), `climate`(월 기후 평년값), `crowd`(쏠림 지수, 파일 있을 때만).
+- `history_store.py` / `data/history/YYYY-MM.csv`: 영구 이력(1위만). 열: date,code,price,source,dep,ret,airline,fsc(2026-11 airline·fsc 추가). `build_reports.py` / `data/reports/`: 월간·분기·연간 리포트.
 - `probe_route.py` + `.github/workflows/probe_live_price.yml`: 특정 노선 진단(수동 실행, 입력 route, mode=route).
 - `.github/workflows/daily_flights.yml`: 매일 07:30 KST. 수동 실행 입력 `only_cities`, `dry_run`. 브랜치에서 실행하면 그 브랜치에 커밋.
   - `collect` 잡: 도시를 8묶음(`SHARD_INDEX`::8)으로 나눠 서로 다른 서버에서 동시 수집(`MODE=collect` → `shard_out/shard_N.json`).
   - `publish` 잡: 묶음 결과를 합쳐 저장(`MODE=merge`). 발행일은 묶음들이 쓴 날짜 중 다수결(자정 경계 대비). 결과가 없는 묶음의 도시는 `failed`에 기록. 발행 0건이면 저장하지 않고 실패.
   - `publish`는 `!cancelled()` 조건. 실행을 취소하면 저장도 하지 않는다(`always()`로 바꾸지 말 것).
+- 화면 판정(index.html): 1면 A·C와 스탬프 1·3·6·7은 실조회 이력이 필요 일수(30·7·14) 쌓인 뒤에만 켜짐(`hasHistory`). D는 `data/crowd_index.json`(level 1~5)이 있어야 켜짐.
+- `build_climate.py` → `data/climate_normals.json`(NASA POWER 월 평균기온·강수, 키 없음). 진단 워크플로 `mode=climate`로 갱신·커밋.
+- `monthly.html`: `data/reports/monthly/*.json` 월간지(이전 수집기 기록이나 부분 관측 달은 '참고용'). `feed.xml`: 수집 때 생성되는 RSS.
 - `check_site.py`: 로컬에서 사이트를 띄워 데스크톱·모바일 화면 검사(카드 수, 구글 버튼, 금지어, 콘솔 오류) 후 스크린샷. `probe_live_price.yml`을 `mode=site`로 실행하면 `preview/screenshots` 브랜치에 올린다.
 
 ## 알아 둘 함정
