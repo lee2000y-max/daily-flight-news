@@ -122,6 +122,21 @@ def upsert_observations(observations: Iterable[Dict[str, Any]]) -> Dict[str, int
     return {"accepted": accepted, "skipped": skipped, "changed": changed}
 
 
+def remove_observations(date: str, codes: Iterable[str]) -> int:
+    """그날(date) 지정 도시들의 관측을 지운다(같은 날 재실행에서 발행되지 않은 도시 정리용)."""
+    codes = set(codes)
+    if not codes or not _DATE_RE.match(date):
+        return 0
+    ym = date[:7]
+    rows = read_month(ym)
+    drop = [k for k in rows if k[0] == date and k[1] in codes]
+    for k in drop:
+        del rows[k]
+    if drop:
+        write_month(ym, rows)
+    return len(drop)
+
+
 def iter_all() -> Iterator[Dict[str, Any]]:
     for ym in months_available():
         rows = read_month(ym)
