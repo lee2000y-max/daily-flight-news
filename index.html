@@ -629,15 +629,15 @@
                 <div class="text-[11px] font-bold text-[#5C5549] mb-0.5">왕복 직항 최저가 <span x-show="item.origin === 'GMP'" class="ml-1 px-1 rounded-sm bg-[#1E3A5F] text-white">김포 출발</span></div>
                 <div class="flex items-baseline gap-2">
                   <span class="font-serif-kr text-2xl sm:text-3xl font-black text-[#1E1B18] tracking-tight" x-text="formatPrice(item.price)"></span>
-                  <span x-show="item.sellers && item.sellers.items.length > 1" class="text-xs font-mono-flap font-bold text-[#5C5549]"
-                    :title="'구글 플라이트 판매처별 가격(' + (item.sellers ? item.sellers.checkedAt : '') + ' 조회)'"
-                    x-text="item.sellers ? '~' + formatPrice(item.sellers.items[item.sellers.items.length - 1].price) : ''"></span>
                   <span 
                     x-show="item.diff !== 0"
                     class="text-xs font-mono-flap font-bold px-1.5 py-0.5 rounded-sm"
                     :class="item.diff < 0 ? 'bg-emerald-900/10 text-emerald-800' : 'bg-rose-900/10 text-rose-800'"
                     x-text="formatDiff(item.diff)"></span>
                 </div>
+                <div x-show="item.sellers && item.sellers.items.length > 1" class="text-[11px] font-mono-flap font-bold text-[#5C5549] mt-0.5"
+                  :title="'구글 플라이트 판매처별 가격(' + (item.sellers ? item.sellers.checkedAt : '') + ' 조회)'"
+                  x-text="item.sellers ? '~ ' + formatPrice(item.sellers.items[item.sellers.items.length - 1].price) + ' (판매처 ' + item.sellers.items.length + '곳)' : ''"></div>
               </div>
 
               <!-- 미니 운임 추이 스파크라인 ('최근 가격 변동' + 가장 좌측 과거 시작 가격 숫자 병기) -->
