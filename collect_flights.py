@@ -669,8 +669,15 @@ def main() -> None:
             except Exception as e:
                 print(f"판매처 결과 읽기 실패 {name}: {e}")
         for r in published:
-            if r["code"] in got:
-                r["sellers"] = got[r["code"]]
+            sv = got.get(r["code"])
+            if not sv or not sv.get("items"):
+                continue
+            lo = min(x["price"] for x in sv["items"])
+            # 판매처 최저가가 카드 가격과 5% 넘게 다르면 다른 편을 읽었을 가능성이 커 싣지 않는다(2026-11-03 도쿄 281,300 vs 300,300)
+            if abs(lo - r["price"]) > r["price"] * 0.05:
+                print(f"   판매처 제외 {r['city']}: 카드 {r['price']:,} vs 판매처 최저 {lo:,}")
+                continue
+            r["sellers"] = sv
         print(f"🏷️ 판매처 정보 {sum(1 for r in published if r.get('sellers'))}/{len(published)}개 도시")
     cities = all_cities
     print_summary(published, failed, len(cities))
