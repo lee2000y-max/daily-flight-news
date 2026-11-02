@@ -391,6 +391,8 @@
         <span>발행처: <strong class="text-[#1E1B18]">보딩패스 타임즈 항공편집국</strong> (ICN GATEWAY DESK)</span>
         <span class="hidden md:inline">|</span>
         <span class="hidden md:inline">매일 아침 정기 발행</span>
+        <span class="hidden md:inline">|</span>
+        <span x-show="currentStatus.total" x-cloak>오늘 발행 <strong class="text-[#1E1B18]" x-text="currentStatus.published + '/' + currentStatus.total"></strong>개 도시 · <span x-text="(currentStatus.generatedAt || '').slice(11) + ' 발행'"></span></span>
       </div>
       <div class="flex items-center gap-2 mt-1 sm:mt-0">
         <label for="editionDateSelect" class="font-bold text-[#1E1B18]">🗓️ 발행호(기준일) 선택:</label>
@@ -424,7 +426,7 @@
           </div>
           <div class="text-xs text-[#4A433B]">
             <div class="font-masthead font-bold text-[#1E1B18] tracking-wider">EST. 2026 · SEOUL ICN</div>
-            <div class="text-[11px] text-[#5C5549]">세계 58개 직항 도시 운임 관측소</div>
+            <div class="text-[11px] text-[#5C5549]" x-text="'인천·김포 출발 직항 ' + (currentStatus.total || '') + '개 도시 운임 관측소'"></div>
             <div class="text-[11px] font-mono-flap font-bold text-[#1E3A5F] mt-0.5">37°27'N 126°26'E</div>
           </div>
         </div>
@@ -441,7 +443,7 @@
           </h1>
           <div class="inline-flex items-center gap-1.5 bg-[#FAF7F0] border border-[#8C8275] px-3.5 py-1 rounded-full text-xs text-[#3E3932] shadow-sm">
             <span>✒️</span>
-            <span><strong>보딩패스 타임즈 항공편집국 발행</strong> · 매일 아침 58개 직항 노선 최저가·수하물·황금 스케줄 종합 신문</span>
+            <span><strong>보딩패스 타임즈 항공편집국 발행</strong> · 매일 아침 인천·김포 출발 직항 노선 최저가·황금 스케줄 종합 신문</span>
           </div>
         </div>
 
@@ -513,7 +515,7 @@
         </template>
       </div>
 
-      <!-- 검색창 및 빠른 조건 스위치 (황금스케줄, 수하물 포함, 정렬) -->
+      <!-- 검색창 및 빠른 조건 스위치 (황금스케줄, 정렬) -->
       <div class="mt-2.5 pt-2.5 border-t border-[#D5CBB8] flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
         <!-- 좌측: 검색 입력 -->
         <div class="relative flex-1 max-w-md">
@@ -535,10 +537,6 @@
             <input type="checkbox" x-model="onlyGoldenSchedule" class="accent-[#2C2620]" />
             <span class="font-semibold text-[#2C2620]">🌅 오전 출발 황금스케줄만</span>
           </label>
-          <label class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-sm bg-[#F2ECE1] border border-[#C7BBA6] cursor-pointer select-none">
-            <input type="checkbox" x-model="onlyFreeBaggage" class="accent-[#2C2620]" />
-            <span class="font-semibold text-[#2C2620]">🧳 무료 위탁수하물 포함만</span>
-          </label>
           <select 
             x-model="sortBy"
             class="bg-[#FAF7F0] border border-[#8C8275] rounded-sm px-2.5 py-1.5 text-xs font-bold text-[#1E1B18]">
@@ -552,7 +550,7 @@
   </section>
 
   <!-- ===================================================================== -->
-  <!-- 4. 신문 지면 섹션 헤더 & 58개 도시 보딩패스 기사 카드 그리드 -->
+  <!-- 4. 신문 지면 섹션 헤더 & 도시별 보딩패스 기사 카드 그리드 -->
   <!-- ===================================================================== -->
   <main class="max-w-7xl mx-auto px-4">
     <!-- 현재 지면 요약 바 -->
@@ -569,10 +567,15 @@
       </div>
     </div>
 
+    <!-- 데이터 불러오기 상태 -->
+    <div x-show="loadState !== 'ok'" x-cloak class="newspaper-card p-10 text-center my-6">
+      <p class="font-serif-kr text-lg font-bold text-[#3E3932]" x-text="loadState === 'loading' ? '오늘자 지면을 불러오는 중입니다…' : '오늘자 지면을 불러오지 못했습니다. 잠시 후 새로고침해 주세요.'"></p>
+    </div>
+
     <!-- 검색 결과 없음 안내 -->
-    <div x-show="filteredFlights.length === 0" x-cloak class="newspaper-card p-12 text-center my-6">
+    <div x-show="loadState === 'ok' && filteredFlights.length === 0" x-cloak class="newspaper-card p-12 text-center my-6">
       <p class="font-serif-kr text-lg font-bold text-[#3E3932] mb-1">해당 조건에 부합하는 직항 노선 기사가 없습니다.</p>
-      <p class="text-xs text-[#5C5549] mb-4">검색어나 세부 카테고리, 오전 출발/수하물 필터를 초기화해 보세요.</p>
+      <p class="text-xs text-[#5C5549] mb-4">검색어나 세부 카테고리, 오전 출발 필터를 초기화해 보세요.</p>
       <button 
         type="button"
         @click="resetFilters()"
@@ -610,7 +613,7 @@
                   style="background-color: var(--badge-sub);"
                   x-text="getTaxonomy(item.code).sub"></span>
               </div>
-              <span class="font-mono-flap text-[11px] font-bold text-[#5C5549]" x-text="'ICN ✈ ' + item.code"></span>
+              <span class="font-mono-flap text-[11px] font-bold text-[#5C5549]" x-text="item.origin + ' ✈ ' + item.dest"></span>
             </div>
 
             <!-- 도시명 & 왕복 최저가 헤드라인 -->
@@ -625,7 +628,7 @@
             <!-- 가격 및 직전호 등락 & 최근 가격 변동 그래프 (가장 좌측 과거 가격 숫자 표기) -->
             <div class="flex items-end justify-between gap-2 mb-3.5 pb-2.5 border-b border-[#D5CBB8]/80">
               <div>
-                <div class="text-[11px] font-bold text-[#5C5549] mb-0.5">왕복 직항 최저가</div>
+                <div class="text-[11px] font-bold text-[#5C5549] mb-0.5">왕복 직항 최저가 <span x-show="item.origin === 'GMP'" class="ml-1 px-1 rounded-sm bg-[#1E3A5F] text-white">김포 출발</span></div>
                 <div class="flex items-baseline gap-2">
                   <span class="font-serif-kr text-2xl sm:text-3xl font-black text-[#1E1B18] tracking-tight" x-text="formatPrice(item.price)"></span>
                   <span 
@@ -662,26 +665,38 @@
               </div>
             </div>
 
-            <!-- 베이지 양피지(#F2ECE1) 운항 정보 요약 박스 -->
+            <!-- 베이지 양피지(#F2ECE1) 운항 정보 요약 박스: 모두 오늘 실제 조회값 -->
             <div class="rounded-sm p-3 text-xs space-y-1.5 border border-[#DFD5C3]" style="background-color: var(--box-bg);">
               <div class="flex items-start justify-between gap-2">
-                <span class="text-[#5C5549] font-semibold shrink-0">📅 추천 일정</span>
+                <span class="text-[#5C5549] font-semibold shrink-0">📅 최저가 일정</span>
                 <span class="font-bold text-[#1E1B18] text-right" x-text="item.dates"></span>
               </div>
-              <div class="flex items-start justify-between gap-2">
+              <div class="flex items-start justify-between gap-2" x-show="item.airline">
                 <span class="text-[#5C5549] font-semibold shrink-0">✈️ 운항 편명</span>
-                <span class="font-bold text-[#1E1B18] text-right" x-text="item.airline"></span>
+                <span class="font-bold text-[#1E1B18] text-right" x-text="item.airline + (item.flightNos ? ' (' + item.flightNos + ')' : '')"></span>
               </div>
-              <div class="flex items-start justify-between gap-2">
+              <div class="flex items-start justify-between gap-2" x-show="item.schedule">
                 <span class="text-[#5C5549] font-semibold shrink-0">🕒 출도착 시각</span>
                 <span class="font-mono-flap font-semibold text-[#2C2620] text-right text-[11px]" x-text="item.schedule"></span>
               </div>
-              <div class="flex items-start justify-between gap-2 pt-1 border-t border-[#E2D9C8]">
-                <span class="text-[#5C5549] font-semibold shrink-0">🧳 수하물 규정</span>
-                <span 
-                  class="font-bold text-right"
-                  :class="hasFreeBaggage(item.baggage) ? 'text-[#215E42]' : 'text-[#8C5828]'"
-                  x-text="item.baggage"></span>
+              <div class="flex items-start justify-between gap-2" x-show="!item.airline">
+                <span class="text-[#5C5549] font-semibold shrink-0">✈️ 운항 편명</span>
+                <span class="text-[#7A7164] text-right">오늘 상세 조회 실패 · 가격은 실제 조회값</span>
+              </div>
+              <!-- 다른 일정 제안(2위): 가격 추이·이력에는 포함하지 않음 -->
+              <div class="pt-1.5 border-t border-[#E2D9C8]" x-show="item.alt">
+                <div class="flex items-start justify-between gap-2">
+                  <span class="text-[#5C5549] font-semibold shrink-0">💡 다른 일정 제안</span>
+                  <span class="text-right">
+                    <span class="font-bold text-[#1E1B18]" x-text="item.alt ? formatPrice(item.alt.price) : ''"></span>
+                    <span class="block text-[11px] text-[#5C5549]" x-text="item.alt ? item.alt.dates + (item.alt.origin === 'GMP' ? ' · 김포 출발' : '') : ''"></span>
+                  </span>
+                </div>
+                <div class="flex justify-end gap-2 mt-1 text-[11px]" x-show="item.alt">
+                  <a x-show="item.alt && item.alt.googleUrl" :href="item.alt ? item.alt.googleUrl : '#'" target="_blank" rel="noopener noreferrer" class="underline text-[#1E3A5F] font-semibold">구글</a>
+                  <a :href="item.alt ? item.alt.naverUrl : '#'" target="_blank" rel="noopener noreferrer" class="underline text-[#1E3A5F] font-semibold">네이버</a>
+                  <a :href="item.alt ? item.alt.skyUrl : '#'" target="_blank" rel="noopener noreferrer" class="underline text-[#1E3A5F] font-semibold">스카이스캐너</a>
+                </div>
               </div>
             </div>
           </div>
@@ -700,29 +715,39 @@
 
               <!-- 기울어진 여권 입국 도장(Passport Stamp) 배지 -->
               <div 
+                x-show="getPassportStamp(item)"
                 class="passport-stamp shrink-0 text-[10px] leading-tight"
-                :style="'color:' + getPassportStamp(item).color">
-                <span x-text="getPassportStamp(item).top"></span>
-                <span class="text-[9px] font-normal opacity-90" x-text="'ICN✈' + item.code"></span>
+                :style="'color:' + (getPassportStamp(item) || {}).color">
+                <span x-text="(getPassportStamp(item) || {}).top"></span>
+                <span class="text-[9px] font-normal opacity-90" x-text="item.origin + '✈' + item.dest"></span>
               </div>
             </div>
 
-            <!-- 하단 예약 바로가기 버튼 2종 -->
-            <div class="grid grid-cols-2 gap-2">
+            <!-- 하단 예약 바로가기 버튼 3종 (구글 플라이트 = 가격 출처) -->
+            <div class="grid grid-cols-3 gap-2">
+              <a 
+                :href="item.googleUrl || '#'" 
+                x-show="item.googleUrl"
+                target="_blank" 
+                rel="noopener noreferrer"
+                class="py-2 px-2 rounded-sm bg-[#1E3A5F] hover:bg-[#16304F] text-[#FAF7F0] text-xs font-bold text-center transition flex items-center justify-center gap-1 shadow-sm">
+                <span>구글 플라이트</span>
+                <span class="text-[10px] opacity-80">↗</span>
+              </a>
               <a 
                 :href="item.naverUrl" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                class="py-2 px-3 rounded-sm bg-[#2C2620] hover:bg-[#1E1B18] text-[#FAF7F0] text-xs font-bold text-center transition flex items-center justify-center gap-1 shadow-sm">
-                <span>🟢 네이버 항공권</span>
+                class="py-2 px-2 rounded-sm bg-[#2C2620] hover:bg-[#1E1B18] text-[#FAF7F0] text-xs font-bold text-center transition flex items-center justify-center gap-1 shadow-sm">
+                <span>네이버</span>
                 <span class="text-[10px] opacity-80">↗</span>
               </a>
               <a 
                 :href="item.skyUrl" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                class="py-2 px-3 rounded-sm bg-[#EFECE4] hover:bg-[#E2DDD0] text-[#1E1B18] border border-[#8C8275] text-xs font-bold text-center transition flex items-center justify-center gap-1">
-                <span>🔵 스카이스캐너</span>
+                class="py-2 px-2 rounded-sm bg-[#EFECE4] hover:bg-[#E2DDD0] text-[#1E1B18] border border-[#8C8275] text-xs font-bold text-center transition flex items-center justify-center gap-1">
+                <span>스카이스캐너</span>
                 <span class="text-[10px] opacity-80">↗</span>
               </a>
             </div>
@@ -736,16 +761,28 @@
   <!-- ===================================================================== -->
   <!-- 5. 하단 신문 판권(Colophon) 푸터 -->
   <!-- ===================================================================== -->
+  <!-- 오늘 발행하지 못한 노선과 사유 -->
+  <section class="max-w-7xl mx-auto px-4 mt-10" x-show="currentFailed.length > 0" x-cloak>
+    <div class="border-t-2 border-[#2C2620] pt-3">
+      <h2 class="font-serif-kr text-base font-black text-[#1E1B18] mb-2">오늘 발행하지 못한 노선 (<span x-text="currentFailed.length"></span>)</h2>
+      <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1 text-xs text-[#3E3932]">
+        <template x-for="f in currentFailed" :key="f.code">
+          <li><strong x-text="f.city"></strong> <span class="font-mono-flap text-[#7A7164]" x-text="'(' + f.code + ')'"></span> — <span x-text="f.reason"></span></li>
+        </template>
+      </ul>
+    </div>
+  </section>
+
   <footer class="max-w-7xl mx-auto px-4 mt-14">
     <div class="double-rule-top pt-6 pb-8 text-center text-xs text-[#5C5549] space-y-1.5">
       <div class="font-masthead font-bold text-sm text-[#1E1B18] tracking-widest">
         THE BOARDING PASS TIMES · 보딩패스 타임즈 항공편집국
       </div>
       <p>
-        본 조간지는 매일 아침 인천국제공항(ICN) 출발 58개 전 직항 도시의 기준일 시점 왕복 최저가 운임과 수하물 규정을 자동 취재하여 발행됩니다.
+        본 조간지는 매일 아침 인천·김포 출발 직항 노선을 발행일 기준 2주~2개월 뒤, 주말을 낀 2박3일~8박9일 일정 전체에서 조회해 실제 왕복 최저가로 발행합니다.
       </p>
       <p class="text-[11px] text-[#7A7164]">
-        ※ 항공권 운임은 실시간 좌석 상황에 따라 변동될 수 있으므로, 카드 하단의 네이버 항공권 및 스카이스캐너 링크에서 최종 발권 운임을 확인하시기 바랍니다.
+        ※ 운임은 조회 시점 가격이며 좌석 상황에 따라 바뀝니다. 카드 하단 구글 플라이트·네이버·스카이스캐너 링크에서 최종 운임을 확인하세요. 수하물 포함 여부는 항공사 운임 규정을 확인하세요.
       </p>
     </div>
   </footer>
@@ -762,7 +799,9 @@
         activeSubcategory: 'ALL',
         searchQuery: '',
         onlyGoldenSchedule: false,
-        onlyFreeBaggage: false,
+        loadState: 'loading',
+        failedByDate: {},
+        statusByDate: {},
         sortBy: 'section_order',
 
         // 상단 스플릿 플랩 전광판 상태 (좌측 플랩: '도시명 (공항코드)'만, 우측 노란 텍스트: '금액'만)
@@ -916,94 +955,88 @@
 
         // 상단 스플릿 플랩 전광판 5선 (플랩보드: '도시명 (공항코드)'만, 우측 노란 텍스트: '금액'만 표기)
         flapSlots: [
-          { badge: '🏆 LOWEST FARE', badgeClass: 'bg-amber-400 text-[#181614]', cityText: '옌타이 (YNT)', priceText: '₩177,800' },
-          { badge: '📉 BIGGEST DROP', badgeClass: 'bg-emerald-400 text-[#181614]', cityText: '오사카 간사이 (KIX)', priceText: '₩291,400' },
-          { badge: '🇯🇵 JAPAN PICK', badgeClass: 'bg-sky-400 text-[#181614]', cityText: '사가 (HSG)', priceText: '₩210,200' },
-          { badge: '🌴 RESORT DEAL', badgeClass: 'bg-rose-400 text-[#181614]', cityText: '나트랑 (CXR)', priceText: '₩211,600' },
-          { badge: '🌅 GOLDEN TIME', badgeClass: 'bg-amber-300 text-[#181614]', cityText: '후쿠오카 (FUK)', priceText: '₩269,400' }
+          { badge: '📰 TODAY', badgeClass: 'bg-amber-400 text-[#181614]', cityText: '오늘자 지면 준비 중', priceText: '' }
         ],
 
         allEditionsData: {},
 
         normalizeFlightRecord(raw, historicalSeries = {}) {
-          const code = raw.code || (raw.city && raw.city.match(/\(([A-Z]{3})\)/)?.[1]) || 'ICN';
-          const cleanCity = (raw.city || '').replace(/\s*\([A-Z]{3}\)\s*$/, '').trim();
-          const rowDate = raw.date || raw.editionDate || '';
-
-          // 운임 추이: 해당 발행일 이전(포함) 값만 사용
+          const code = raw.code;
+          const rowDate = raw.date || '';
+          // 가격 추이: 영구 이력(1위 실가격)에서 이 발행일까지의 값만 사용. 2위는 포함하지 않음
           const series = historicalSeries && historicalSeries[code];
-          let prices;
+          let prices = [];
           if (series && Array.isArray(series.prices)) {
-            prices = (Array.isArray(series.dates) && series.dates.length === series.prices.length && rowDate)
-              ? series.prices.filter((_, i) => series.dates[i] <= rowDate)
-              : series.prices;
-          } else {
-            prices = raw.history || [raw.price];
+            const ds = Array.isArray(series.fullDates) ? series.fullDates : series.dates;
+            prices = series.prices.filter((_, i) => !rowDate || !ds || String(ds[i]) <= rowDate);
           }
-          if (!Array.isArray(prices) || prices.length === 0) prices = [raw.price];
-
-          const isSheetFormat = Boolean(raw.timeSlot !== undefined || raw.notes !== undefined);
-
+          if (prices.length === 0) prices = [Number(raw.price) || 0];
+          const prev = prices.length >= 2 ? prices[prices.length - 2] : null;
           return {
             code: code,
-            city: cleanCity || code,
-            editionDate: rowDate || this.selectedDate,
+            city: raw.city || code,
+            editionDate: rowDate,
             price: Number(raw.price) || 0,
-            diff: Number(raw.priceDiff !== undefined ? raw.priceDiff : (raw.diff || 0)) || 0,
-            dates: isSheetFormat ? (raw.schedule || '') : (raw.dates || raw.schedule || ''),
+            diff: prev !== null ? (Number(raw.price) || 0) - prev : 0,
+            origin: raw.origin || 'ICN',
+            dest: raw.dest || code,
+            dates: raw.dates || '',
+            nights: raw.nights || 0,
+            leaveDays: raw.leaveDays,
             airline: raw.airline || '',
-            schedule: isSheetFormat ? (raw.timeSlot || '') : (raw.schedule || raw.timeSlot || ''),
-            baggage: raw.baggage || '',
-            note: raw.notes || raw.note || '',
+            flightNos: raw.flightNos || '',
+            schedule: raw.timeSlot || '',
+            outbound: raw.outbound || null,
+            inbound: raw.inbound || null,
+            isFSC: Boolean(raw.isFSC),
+            note: raw.note || '',
+            googleUrl: raw.googleUrl || '',
             naverUrl: raw.naverUrl || '#',
             skyUrl: raw.skyUrl || '#',
+            alt: raw.alt || null,
             history: prices.slice(-5)
           };
         },
 
         ingestExternalPayload(extData) {
-          if (!extData || typeof extData !== 'object') return;
-          const payload = extData.payload || extData;
-          const hist = payload.historicalSeries || extData.historicalSeries || {};
+          if (!extData || typeof extData !== 'object' || extData.schemaVersion !== 2) return false;
+          const hist = extData.historicalSeries || {};
           const fresh = {};
-
-          const rows = Array.isArray(payload.flights) ? payload.flights : [];
-          rows.forEach(row => {
-            const d = row && (row.date || row.editionDate);
-            if (!d) return;
-            if (!fresh[d]) fresh[d] = [];
-            fresh[d].push(this.normalizeFlightRecord(row, hist));
+          (Array.isArray(extData.flights) ? extData.flights : []).forEach(row => {
+            if (!row || !row.date || !row.code) return;
+            if (row.section) {
+              this.taxonomyMap[row.code] = { section: row.section, major: row.major, sub: row.sub, order: row.order };
+            }
+            if (!fresh[row.date]) fresh[row.date] = [];
+            fresh[row.date].push(this.normalizeFlightRecord(row, hist));
           });
-
-          if (payload.editions && typeof payload.editions === 'object') {
-            Object.entries(payload.editions).forEach(([dKey, arr]) => {
-              if (Array.isArray(arr) && arr.length > 0) {
-                fresh[dKey] = arr.map(item => this.normalizeFlightRecord(item, hist));
-              }
-            });
-          }
-
-          const allDates = Object.keys(fresh).sort((a, b) => b.localeCompare(a));
-          if (allDates.length === 0) return;
-
-          // 실제 데이터가 있으면 미리보기 시드를 완전히 대체
+          const failed = {};
+          (Array.isArray(extData.failed) ? extData.failed : []).forEach(f => {
+            if (!f || !f.date) return;
+            if (!failed[f.date]) failed[f.date] = [];
+            failed[f.date].push(f);
+          });
+          const dates = (Array.isArray(extData.availableDates) && extData.availableDates.length)
+            ? extData.availableDates.slice()
+            : Object.keys(fresh).sort((a, b) => b.localeCompare(a));
+          if (dates.length === 0) return false;
+          dates.forEach(d => { if (!fresh[d]) fresh[d] = []; });
           this.allEditionsData = fresh;
-          this.availableDates = allDates;
-          const latest = payload.latestDate || extData.latestDate;
-          this.selectedDate = fresh[latest] ? latest : allDates[0];
+          this.failedByDate = failed;
+          this.statusByDate = extData.status || {};
+          this.availableDates = dates;
+          this.selectedDate = fresh[extData.latestDate] ? extData.latestDate : dates[0];
           this.refreshFlapSlotsFromData(this.currentEditionFlights);
+          return true;
         },
 
         async initNewsroom() {
-          this.buildSeedEditions();
           try {
             const res = await fetch('./flights_data.json?t=' + Date.now(), { cache: 'no-store' });
-            if (res.ok) {
-              const extData = await res.json();
-              this.ingestExternalPayload(extData);
-            }
+            const ok = res.ok && this.ingestExternalPayload(await res.json());
+            this.loadState = ok ? 'ok' : 'error';
           } catch (e) {
-            // 로컬 미리보기 환경
+            this.loadState = 'error';
           }
 
           this.refreshFlapSlotsFromData(this.currentEditionFlights);
@@ -1094,7 +1127,7 @@
           const jpPick = byPrice.find(f => this.getTaxonomy(f.code).section === 'SEC1') || byPrice[0];
           const seaPick = byPrice.find(f => this.getTaxonomy(f.code).section === 'SEC3') || byPrice[0];
           const goldenPick = byPrice.find(
-            f => this.isMorningDeparture(f.schedule) && this.hasFreeBaggage(f.baggage)
+            f => this.isGoldenSchedule(f)
           ) || byPrice[0];
 
           const lowest = byPrice[0];
@@ -1157,91 +1190,12 @@
           this.triggerSplitFlapTransition(this.flapSlots[this.currentFlapIndex]);
         },
 
-        buildSeedEditions() {
-          const edition20261029 = [
-            { code: 'KIX', city: '오사카 간사이', price: 291400, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '진에어 (LJ231/LJ232)', schedule: '출국 07:55→09:40 / 귀국 11:00→13:00', baggage: '15kg 무료 위탁 기본 포함', depD: '20261113', retD: '20261116', note: '간사이공항 귀국 수속 혼잡을 감안해 출발 2시간 30분 전 공항 도착 권장', history: [323700, 285800, 296200, 291400] },
-            { code: 'FUK', city: '후쿠오카', price: 269400, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '진에어 (LJ261/LJ262)', schedule: '출국 07:15→08:40 / 귀국 09:50→11:15', baggage: '15kg 무료 위탁 기본 포함', depD: '20261114', retD: '20261117', note: '후쿠오카공항에서 하카타역까지 지하철 2정거장(5분)으로 도심 접근성 최고', history: [339600, 290700, 274200, 269400] },
-            { code: 'NRT', city: '도쿄 나리타', price: 304000, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '제주항공 (7C1102/7C1101)', schedule: '출국 06:00→08:25 / 귀국 11:50→14:30', baggage: 'FLYBAG 15kg 포함', depD: '20261112', retD: '20261116', note: '도심 이동용 스카이라이너 또는 나리타 익스프레스(N\'EX) 사전 예매 시 할인 혜택', history: [343873, 304569, 308800, 304000] },
-            { code: 'CTS', city: '삿포로 신치토세', price: 354600, diff: 16800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '진에어 (LJ301/LJ302)', schedule: '출국 08:20→11:05 / 귀국 12:20→15:05', baggage: '15kg 무료 위탁 기본 포함', depD: '20261120', retD: '20261123', note: '동절기 설경 및 화이트 일루미네이션 시즌으로 방한 부츠·아이젠 준비 권장', history: [332100, 487100, 468196, 337800, 354600] },
-            { code: 'NGO', city: '나고야', price: 295600, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '진에어 (LJ269/LJ270)', schedule: '출국 07:35→09:30 / 귀국 18:25→20:35', baggage: '15kg 무료 위탁 기본 포함', depD: '20261121', retD: '20261124', note: '지브리 파크 및 나바나노사토 일루미네이션 방문 시 사전 예약 권장', history: [321500, 301500, 300400, 295600] },
-            { code: 'OKA', city: '오키나와', price: 376200, diff: 16800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '진에어 (LJ341/LJ342)', schedule: '출국 09:45→12:15 / 귀국 13:00→15:30', baggage: '15kg 무료 위탁 기본 포함', depD: '20261119', retD: '20261123', note: '온화한 기후로 렌터카 해안 드라이브 및 츄라우미 수족관 관람에 최적', history: [416900, 359400, 376200] },
-            { code: 'HSG', city: '사가', price: 210200, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '티웨이항공 (TW295/TW296)', schedule: '출국 07:45→09:10 / 귀국 10:10→11:40', baggage: '스마트운임 15kg 포함 (특가 미포함)', depD: '20261113', retD: '20261116', note: '우레시노·다케오 온천 및 후쿠오카 텐진 연계 리무진 버스 시간표 사전 확인 필수', history: [203200, 228300, 215000, 210200] },
-            { code: 'TAK', city: '다카마쓰', price: 246800, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '에어서울 (RS741/RS742)', schedule: '출국 08:45→10:30 / 귀국 11:30→13:15', baggage: '할인운임 15kg 포함 (특가 미포함)', depD: '20261114', retD: '20261117', note: '나오시마·쇼도시마 세토내해 예술섬 페리 운항표 및 무료 공항 리무진 쿠폰 확인', history: [266500, 256800, 251600, 246800] },
-            { code: 'FSZ', city: '시즈오카', price: 260800, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '제주항공 (7C1601/7C1602)', schedule: '출국 07:05→09:00 / 귀국 10:20→12:15', baggage: 'FLYBAG 15kg 포함 (FLY 미포함)', depD: '20261112', retD: '20261116', note: '후지산 조망 희망 시 출국편 좌측 창가(A열), 귀국편 우측 창가(F열) 좌석 지정 권장', history: [278700, 278300, 265600, 260800] },
-            { code: 'KOJ', city: '가고시마', price: 294400, diff: -4800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '제주항공 (7C1821/7C1822)', schedule: '출국 10:05→11:45 / 귀국 12:35→14:25', baggage: 'FLYBAG 15kg 포함 (FLY 미포함)', depD: '20261120', retD: '20261123', note: '사쿠라지마 화산섬 페리 및 이부스키 검은 모래찜질 온천 이동 시 엔화 소액권 지참', history: [293300, 303200, 299200, 294400] },
-            { code: 'OIT', city: '오이타', price: 319400, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '제주항공 (7C1811/7C1812)', schedule: '출국 10:00→11:45 / 귀국 12:50→14:35', baggage: 'FLYBAG 15kg 포함 (FLY 미포함)', depD: '20261121', retD: '20261124', note: '벳푸·유후인 온천 직행 공항 리무진 버스 시간표 및 료칸 송영 서비스 사전 확인', history: [343300, 359970, 324200, 319400] },
-            { code: 'YGJ', city: '요나고', price: 225000, diff: -4800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '에어서울 (RS745/RS746)', schedule: '출국 12:40→14:05 / 귀국 15:05→16:45', baggage: '할인운임 15kg 포함 (특가 미포함)', depD: '20261119', retD: '20261123', note: '돗토리 사구·미즈키 시게루 로드·마쓰에성 이동 시 산인 패스 활용 추천', history: [251900, 220000, 229800, 225000] },
-            { code: 'KKJ', city: '기타큐슈', price: 298600, diff: 16800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '진에어 (LJ367/LJ368)', schedule: '출국 07:15→08:45 / 귀국 09:45→11:15', baggage: '15kg 무료 위탁 기본 포함', depD: '20261113', retD: '20261116', note: '고쿠라역까지 공항버스 35분, 모지코 레트로 및 시모노세키 가라토 시장 당일 코스 최적', history: [308900, 314000, 281800, 298600] },
-            { code: 'SDJ', city: '센다이', price: 386600, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '아시아나항공 (OZ152/OZ151)', schedule: '출국 09:35→11:45 / 귀국 12:45→15:10', baggage: '무료 위탁수하물 23kg 1개 포함 (FSC)', depD: '20261114', retD: '20261117', note: '일본 3대 절경 마쓰시마 유람선 및 긴잔 온천·자오 수빙 연계 여행 추천', history: [396200, 391400, 386600] },
-            { code: 'MYJ', city: '마쓰야마', price: 265200, diff: 16800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '제주항공 (7C1701/7C1702)', schedule: '출국 07:35→09:10 / 귀국 10:00→11:35', baggage: 'FLYBAG 15kg 포함', depD: '20261112', retD: '20261116', note: '한국인 여행객 대상 마쓰야마 공항 무료 셔틀버스 및 도고온천 쿠폰북 수령 필수', history: [248400, 265200] },
-            { code: 'HIJ', city: '히로시마', price: 269200, diff: -4800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '제주항공 (7C1502/7C1501)', schedule: '출국 07:45→09:30 / 귀국 10:30→12:20', baggage: 'FLYBAG 15kg 포함', depD: '20261120', retD: '20261123', note: '미야지마 이쓰쿠시마 신사 해상 도리이 관람 시 만조·간조 시간표 사전 확인 권장', history: [274000, 269200] },
-            { code: 'KMJ', city: '구마모토', price: 288800, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '티웨이항공 (TW275/TW276)', schedule: '출국 07:50→09:25 / 귀국 10:25→12:00', baggage: '스마트운임 15kg 포함', depD: '20261121', retD: '20261124', note: '아소산 화구 참관 가능 여부(화산가스 경보) 및 구로카와 온천 버스 사전 예약 필수', history: [293600, 288800] },
-            { code: 'NGS', city: '나가사키', price: 304800, diff: -4800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '대한항공 (KE797/KE798)', schedule: '출국 08:00→09:30 / 귀국 10:40→12:20', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261119', retD: '20261123', note: '이나사야마 전망대 야경 및 하우스텐보스 테마파크 연계 이동 시 공항 페리 활용 추천', history: [309600, 304800] },
-            { code: 'KMQ', city: '코마쓰', price: 350400, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '대한항공 (KE775/KE776)', schedule: '출국 07:55→09:40 / 귀국 10:50→12:50', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261113', retD: '20261116', note: '가나자와 겐로쿠엔 정원 및 시라카와고 합장촌 투어 이동에 가장 편리한 관문 공항', history: [355200, 350400] },
-            { code: 'AOJ', city: '아오모리', price: 388400, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '대한항공 (KE767/KE768)', schedule: '출국 10:05→12:30 / 귀국 13:30→16:30', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261114', retD: '20261117', note: '오이라세 계류·도와다호 및 핫코다산 로프웨이 관람 시 JR 도호쿠 패스 연계 추천', history: [393200, 388400] },
-            { code: 'AKJ', city: '아사히카와', price: 419000, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '아시아나항공 (OZ158/OZ157)', schedule: '출국 11:15→14:00 / 귀국 15:00→18:20', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261112', retD: '20261116', note: '비에이·후라노 설원 투어 및 아사히야마 동물원 펭귄 산책 관람 시 신치토세보다 이동 시간 대폭 단축', history: [423800, 419000] },
+        get currentFailed() {
+          return this.failedByDate[this.selectedDate] || [];
+        },
 
-            { code: 'TAO', city: '칭다오', price: 205200, diff: 16800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '진에어 (LJ725/LJ726)', schedule: '출국 08:30→09:05 / 귀국 10:05→12:40', baggage: '15kg 무료 위탁 기본 포함', depD: '20261112', retD: '20261116', note: '비행시간 1시간 30분 초단거리 노선, 중국 무비자 입국 요건 및 알리페이 한국 카드 사전 연동 필수', history: [237100, 188400, 205200] },
-            { code: 'PVG', city: '상하이 푸둥', price: 263200, diff: -4800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '중국동방항공 (MU5042/MU5041)', schedule: '출국 08:55→10:05 / 귀국 17:45→20:45', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261120', retD: '20261123', note: '와이탄 야경 및 상하이 디즈니랜드 방문 시 공식 앱 사전 다운로드 및 여권 지참 필수', history: [428300, 268000, 263200] },
-            { code: 'PKX', city: '베이징 다싱', price: 283800, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '중국남방항공 (CZ316/CZ315)', schedule: '출국 11:25→12:35 / 귀국 15:30→18:25', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261121', retD: '20261124', note: '자금성(고궁박물원) 및 만리장성 입장권은 방문 7일 전 위챗 미니프로그램 사전 예약 필수', history: [296300, 288600, 283800] },
-            { code: 'YNT', city: '옌타이', price: 177800, diff: -4800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '진에어 (LJ741/LJ742)', schedule: '출국 15:35→16:25 / 귀국 17:25→20:00', baggage: '15kg 무료 위탁 기본 포함', depD: '20261119', retD: '20261123', note: '비행시간 1시간 15분 최단거리 가성비 노선으로 장유 와이너리 및 펑라이각 관광 추천', history: [191900, 182600, 177800] },
-            { code: 'DLC', city: '다롄', price: 207400, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '중국남방항공 (CZ676/CZ675)', schedule: '출국 12:00→12:15 / 귀국 08:45→11:00', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261113', retD: '20261116', note: '동방수성 베네치아 수로 및 성해광장 야경 명소로 짧은 주말 미식 여행에 최적', history: [206100, 212200, 207400] },
-            { code: 'HGH', city: '항저우', price: 288400, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '중국동방항공 (MU5044/MU5043)', schedule: '출국 12:55→14:15 / 귀국 08:40→11:55', baggage: '무료 위탁수하물 23kg 1개 포함 (FSC)', depD: '20261114', retD: '20261117', note: '서호 유람선·송성가무쇼 및 우전 수향마을 1박 연계 코스로 인기가 높은 노선', history: [310000, 293200, 288400] },
-            { code: 'XIY', city: '시안', price: 415000, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '아시아나항공 (OZ347/OZ348)', schedule: '출국 21:40→00:45(+1) / 귀국 01:50→06:05', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261112', retD: '20261116', note: '진시황 병마용갱·화청지 장한가 공연 및 시안 성벽 야경 투어 사전 예약 권장', history: [419800, 415000] },
-            { code: 'DYG', city: '장가계', price: 398600, diff: 16800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '에어서울 (RS811/RS812)', schedule: '출국 12:25→15:20 / 귀국 16:20→20:30', baggage: '할인운임 15kg 포함', depD: '20261120', retD: '20261123', note: '천문산 케이블카·원가계 엘리베이터 대기 시간을 줄이기 위해 VIP 패스트트랙 티켓 사전 확인', history: [381800, 398600] },
-            { code: 'CAN', city: '광저우', price: 326600, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '중국남방항공 (CZ338/CZ337)', schedule: '출국 10:55→13:55 / 귀국 16:20→20:55', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261121', retD: '20261124', note: '겨울철 온화한 기후와 정통 딤섬 미식 여행, 주강 나이트 크루즈 코스로 추천', history: [331400, 326600] },
-            { code: 'HRB', city: '하얼빈', price: 325200, diff: 16800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '아시아나항공 (OZ339/OZ340)', schedule: '출국 12:40→14:00 / 귀국 15:05→18:20', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261119', retD: '20261123', note: '빙설대세계 축제 및 성 소피아 성당 관람 시 영하 25도 대비 발열 내의·방한 용품 철저히 준비', history: [308400, 325200] },
-
-            { code: 'DAD', city: '다낭', price: 216600, diff: 16800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '에어서울 (RS511/RS512)', schedule: '출국 20:20→23:05 / 귀국 00:05→06:40', baggage: '할인운임 15kg 포함 (특가 미포함)', depD: '20261120', retD: '20261123', note: '귀국편 자정 출발 스케줄로 마지막 날 마사지 샵 짐 보관 및 공항 샌딩 패키지 활용 추천', history: [207506, 207390, 207390, 199800, 216600] },
-            { code: 'CXR', city: '나트랑', price: 211600, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '에어서울 (RS525/RS526)', schedule: '출국 20:10→23:20 / 귀국 00:20→07:15', baggage: '할인운임 15kg 포함 (특가 미포함)', depD: '20261121', retD: '20261124', note: '깜란 국제공항에서 나트랑 시내까지 차량 40분 소요되므로 심야 도착 픽업 차량 사전 예약 권장', history: [207171, 214290, 216400, 211600] },
-            { code: 'PQC', city: '푸꾸옥', price: 296200, diff: 16800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '비엣젯항공 (VJ975/VJ974)', schedule: '출국 02:10→06:00 / 귀국 17:45→00:55(+1)', baggage: '기내 7kg 포함 (위탁수하물 사전 추가 권장)', depD: '20261119', retD: '20261123', note: '45일 무비자 입국 가능, 건기 해양 액티비티 최적기이며 새벽 도착 모닝 투어 활용 추천', history: [277401, 309867, 317859, 279400, 296200] },
-            { code: 'HAN', city: '하노이', price: 290200, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '제주항공 (7C2801/7C2802)', schedule: '출국 21:10→00:20(+1) / 귀국 01:45→07:55', baggage: 'FLYBAG 15kg 포함', depD: '20261113', retD: '20261116', note: '11월~3월 하노이는 선선한 건기로 기찻길 마을·하롱베이 크루즈 투어 최적기이나 얇은 외투 지참 권장', history: [299900, 299900, 309247, 295000, 290200] },
-            { code: 'SGN', city: '호치민', price: 322800, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '비엣젯항공 (VJ863/VJ862)', schedule: '출국 11:40→15:10 / 귀국 02:35→09:40', baggage: 'Eco 기내 7kg 포함 (사전 수하물 추가 권장)', depD: '20261114', retD: '20261117', note: '떤선녓 국제공항 출국 심사 대기열이 매우 길어 귀국 시 최소 3시간 전 공항 도착 필수', history: [329518, 329067, 353208, 327600, 322800] },
-            { code: 'HPH', city: '하이퐁', price: 334800, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '비엣젯항공 (VJ925/VJ926)', schedule: '출국 07:15→10:40 / 귀국 23:55→06:15(+1)', baggage: 'Eco 기내 7kg 포함 (Deluxe 20kg 선택 권장)', depD: '20261112', retD: '20261116', note: '하롱베이 선착장 및 깟바섬까지 고속도로로 45분 거리여서 북부 크루즈 여행 시 하노이보다 이동 편리', history: [406893, 339600, 334800] },
-            { code: 'DLI', city: '달랏', price: 327400, diff: -4800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '제주항공 (7C2903/7C2904)', schedule: '출국 20:30→23:50 / 귀국 00:50→07:55', baggage: 'FLYBAG 15kg 포함', depD: '20261120', retD: '20261123', note: '해발 1,500m 고원 도시로 연중 봄 날씨이나 야간 기온이 12~15도로 내려가므로 긴팔 가디건 필수', history: [332200, 327400] },
-            { code: 'BKK', city: '방콕 수완나품', price: 384200, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '제주항공 (7C2201/7C2202)', schedule: '출국 19:30→23:40 / 귀국 01:00→08:35', baggage: 'FLYBAG 15kg 포함', depD: '20261113', retD: '20261116', note: '수완나품(BKK)과 돈므앙(DMK) 공항 코드 혼동 주의 및 심야 도착 그랩/볼트 픽업 위치 확인', history: [494300, 492045, 492045, 389000, 384200] },
-            { code: 'CNX', city: '치앙마이', price: 416800, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '진에어 (LJ007/LJ008)', schedule: '출국 18:00→22:30 / 귀국 23:40→06:50(+1)', baggage: '15kg 무료 위탁 기본 포함', depD: '20261114', retD: '20261117', note: '11월~2월 건기는 치앙마이 최고 성수기로 올드시티·님만해민 숙소 조기 예약 권장', history: [421600, 416800] },
-            { code: 'HKT', city: '푸켓', price: 420800, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '진에어 (LJ023/LJ024)', schedule: '출국 17:35→22:30 / 귀국 23:45→07:50(+1)', baggage: '15kg 무료 위탁 기본 포함', depD: '20261112', retD: '20261116', note: '건기 시즌 피피섬·시밀란섬 호핑투어 최적기이며 공항-빠통 비치 미니밴/택시 사전 예약 추천', history: [425600, 420800] },
-            { code: 'CEB', city: '세부', price: 240400, diff: -4800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '진에어 (LJ025/LJ026)', schedule: '출국 19:45→23:30 / 귀국 01:25→06:50', baggage: '15kg 무료 위탁 기본 포함', depD: '20261120', retD: '20261123', note: '출발 72시간 이내 필리핀 이트래블(eTravel) 무료 QR코드 발급 필수 (유료 대행 사이트 주의)', history: [245200, 240400] },
-            { code: 'TAG', city: '보홀 팡라오', price: 268400, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '제주항공 (7C2455/7C2456)', schedule: '출국 20:25→00:05(+1) / 귀국 01:05→06:45', baggage: 'FLYBAG 15kg 포함', depD: '20261121', retD: '20261124', note: '발리카삭 거북이 스노클링 투어 사전 예약 및 필리핀 eTravel 입국 QR코드 사전 등록 필수', history: [273200, 268400] },
-            { code: 'CRK', city: '클락', price: 229000, diff: -4800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '진에어 (LJ031/LJ032)', schedule: '출국 21:15→00:20(+1) / 귀국 01:35→06:30', baggage: '15kg 무료 위탁 기본 포함', depD: '20261119', retD: '20261123', note: '피나투보 화산 지프 투어 및 푸닝 온천·골프 리조트 이동 시 클락 공항 공식 픽업 차량 이용 권장', history: [233800, 229000] },
-            { code: 'BKI', city: '코타키나발루', price: 307600, diff: 16800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '진에어 (LJ061/LJ062)', schedule: '출국 18:10→22:30 / 귀국 23:40→06:00(+1)', baggage: '15kg 무료 위탁 기본 포함', depD: '20261113', retD: '20261116', note: '입국 3일 전 말레이시아 디지털 입국카드(MDAC) 온라인 등록 필수, 탄중아루 선셋 및 반딧불 투어 추천', history: [290800, 307600] },
-            { code: 'SIN', city: '싱가포르 창이', price: 376600, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '티웨이항공 (TW171/TW172)', schedule: '출국 19:00→00:45(+1) / 귀국 02:15→09:50', baggage: '스마트운임 15kg 포함', depD: '20261114', retD: '20261117', note: '입국 3일 전 싱가포르 전자입국신고서(SG Arrival Card) 작성 필수 및 창이공항 쥬얼 폭포 운영 시간 확인', history: [381400, 376600] },
-            { code: 'VTE', city: '비엔티안', price: 457800, diff: -4800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '제주항공 (7C4303/7C4304)', schedule: '출국 19:10→22:45 / 귀국 23:45→06:45(+1)', baggage: 'FLYBAG 15kg 포함', depD: '20261119', retD: '20261123', note: '11월~2월 건기 진입으로 방비엥 블루라군·카약 및 루앙프라방 고속철도 여행 최적기', history: [919300, 878244, 724300, 462600, 457800] },
-            { code: 'BWN', city: '반다르스리베가완', price: 677400, diff: -4800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '로열브루나이항공 (BI652/BI651)', schedule: '출국 11:50→16:35 / 귀국 02:05→08:35', baggage: '무료 위탁수하물 20kg 포함 (FSC)', depD: '20261113', retD: '20261116', note: '30일 무비자 입국 가능, 7성급 엠파이어 호텔 호캉스 추천 및 주류 반입 시 세관 신고 규정 확인', history: [894100, 649500, 677000, 682200, 677400] },
-            { code: 'GUM', city: '괌', price: 305400, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '진에어 (LJ913/LJ914)', schedule: '출국 09:15→14:45 / 귀국 16:00→19:55', baggage: '무료 위탁수하물 23kg 1개 기본 포함', depD: '20261114', retD: '20261117', note: '출발 72시간 전 괌 전자 세관신고서 및 G-CNMI ETA(또는 유효 ESTA) 사전 발급 필수', history: [310200, 305400] },
-            { code: 'SPN', city: '사이판', price: 329000, diff: -4800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '제주항공 (7C3402/7C3401)', schedule: '출국 10:10→15:35 / 귀국 16:40→20:30', baggage: 'FLYBAG 23kg 포함', depD: '20261112', retD: '20261116', note: '마나가하섬 스노클링 및 그로토 투어 명소, 출발 전 G-CNMI ETA 사전 전자여행허가 등록 필수', history: [333800, 329000] },
-            { code: 'DPS', city: '발리 덴파사르', price: 537600, diff: 16800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '제주항공 (7C5301/7C5302)', schedule: '출국 15:40→21:50 / 귀국 23:05→07:10(+1)', baggage: 'FLYBAG 15kg 포함 (대한항공·가루다 23kg)', depD: '20261120', retD: '20261123', note: 'LCC 취항으로 발리 직항 운임 대폭 인하, 전자도착비자(e-VOA) 및 발리 관광세 온라인 사전 납부 권장', history: [520800, 537600] },
-
-            { code: 'UBN', city: '울란바토르', price: 452200, diff: 16800, dates: '2026.11.12(목)~11.16(월) (4박 5일)', airline: '제주항공 (7C5203/7C5204)', schedule: '출국 08:20→11:10 / 귀국 12:10→16:10', baggage: 'FLYBAG 15kg 포함 (FSC 23kg)', depD: '20261112', retD: '20261116', note: '신월(그믐) 주간 달빛 없는 은하수 관측 최적기이나 야간 영하권 한파에 대비한 방한 장비 필수', history: [417102, 472102, 472102, 435400, 452200] },
-            { code: 'ALA', city: '알마티', price: 980200, diff: -4800, dates: '2026.11.20(금)~11.23(월) (3박 4일)', airline: '에어아스타나 (KC910/KC909)', schedule: '출국 11:15→15:35 / 귀국 01:10→09:45', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261120', retD: '20261123', note: '대한민국 여권 30일 무비자 입국 가능, 톈산 산맥 침불락 스키 리조트 및 차른 캐니언 투어 추천', history: [1097100, 1047300, 1047300, 985000, 980200] },
-            { code: 'TAS', city: '타슈켄트', price: 1194800, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '대한항공 (KE941/KE942)', schedule: '출국 15:55→19:40 / 귀국 21:10→07:25(+1)', baggage: '무료 위탁수하물 23kg 포함 (FSC)', depD: '20261121', retD: '20261124', note: '30일 무비자 입국 가능, 사마르칸트 고속열차(아프로시압) 사전 예매 및 호텔 거주등록증 출국 시까지 보관 필수', history: [1347300, 1297300, 1297200, 1199600, 1194800] },
-
-            { code: 'TPE', city: '타이베이 타오위안', price: 288400, diff: -4800, dates: '2026.11.21(토)~11.24(화) (3박 4일)', airline: '스쿠트항공 (TR897/TR896)', schedule: '출국 22:30→00:15(+1) / 귀국 17:10→20:45', baggage: '기내 10kg 포함 (FlyBag 20kg 선택 가능)', depD: '20261121', retD: '20261124', note: '출국 1~7일 전 대만 관광청 온라인 여행지원금(Lucky Land) 추첨 신청 및 온라인 입국신고서 작성 필수', history: [321865, 337719, 337719, 293200, 288400] },
-            { code: 'KHH', city: '가오슝', price: 276000, diff: -4800, dates: '2026.11.19(목)~11.23(월) (4박 5일)', airline: '티웨이항공 (TW671/TW672)', schedule: '출국 11:25→13:25 / 귀국 14:25→18:10', baggage: '스마트운임 15kg 포함', depD: '20261119', retD: '20261123', note: '겨울에도 20~25도의 따뜻한 날씨로 보얼예술특구·치진섬 자전거 여행 및 컨딩 당일치기 추천', history: [280800, 276000] },
-            { code: 'HKG', city: '홍콩', price: 274600, diff: 16800, dates: '2026.11.13(금)~11.16(월) (3박 4일)', airline: '홍콩익스프레스 (UO619/UO618)', schedule: '출국 08:15→11:15 / 귀국 17:50→22:20', baggage: 'Lite 기내 7kg 포함 (위탁수하물 옵션 확인)', depD: '20261113', retD: '20261116', note: '옥토퍼스 카드 모바일 앱 충전 및 공항철도(AEL) 그룹 티켓 사전 할인 예매 추천', history: [257800, 274600] },
-            { code: 'MFM', city: '마카오', price: 256600, diff: -4800, dates: '2026.11.14(토)~11.17(화) (3박 4일)', airline: '제주항공 (7C2001/7C2002)', schedule: '출국 11:00→14:00 / 귀국 15:00→19:35', baggage: 'FLYBAG 15kg 포함', depD: '20261114', retD: '20261117', note: '코타이 스트립 주요 호텔 무료 셔틀버스 운행 노선 및 홍콩 페리·강주아오 대교 버스 연계 확인', history: [261400, 256600] }
-          ];
-
-          const attachLinks = (list, dateStr, priceOffset = 0) => {
-            return list.map(item => {
-              const skyDep = item.depD.slice(2);
-              const skyRet = item.retD.slice(2);
-              const finalPrice = item.price + priceOffset;
-              return {
-                ...item,
-                editionDate: dateStr,
-                price: finalPrice,
-                naverUrl: `https://flight.naver.com/flights/international/ICN-${item.code}-${item.depD}/${item.code}-ICN-${item.retD}?adult=1&fareType=Y`,
-                skyUrl: `https://www.skyscanner.co.kr/transport/flights/icn/${item.code.toLowerCase()}/${skyDep}/${skyRet}/`
-              };
-            });
-          };
-
-          // 미리보기용 시드는 10/29 호 1개만 둡니다. (과거 호를 임의 가격으로 만들어 보여주지 않음)
-          this.allEditionsData = { '2026-10-29': attachLinks(edition20261029, '2026-10-29', 0) };
-          this.availableDates = ['2026-10-29'];
-          this.selectedDate = '2026-10-29';
+        get currentStatus() {
+          return this.statusByDate[this.selectedDate] || {};
         },
 
         get currentEditionFlights() {
@@ -1295,9 +1249,6 @@
             list = list.filter(f => this.isMorningDeparture(f.schedule));
           }
 
-          if (this.onlyFreeBaggage) {
-            list = list.filter(f => this.hasFreeBaggage(f.baggage));
-          }
 
           if (this.sortBy === 'price_asc') {
             list.sort((a, b) => a.price - b.price);
@@ -1320,7 +1271,6 @@
           this.activeSubcategory = 'ALL';
           this.searchQuery = '';
           this.onlyGoldenSchedule = false;
-          this.onlyFreeBaggage = false;
           this.sortBy = 'section_order';
         },
 
@@ -1344,7 +1294,7 @@
         },
 
         getLandmarkCaption(code) {
-          return (this.landmarkMeta[code] && this.landmarkMeta[code].caption) || '인천(ICN) 직항 취항 노선';
+          return (this.landmarkMeta[code] && this.landmarkMeta[code].caption) || '인천·김포 직항 취항 노선';
         },
 
         isMorningDeparture(scheduleStr) {
@@ -1355,26 +1305,23 @@
           return hour >= 6 && hour < 12;
         },
 
-        hasFreeBaggage(baggageStr) {
-          if (!baggageStr) return false;
-          // 괄호 안 선택 옵션/부가 설명은 판정에서 제외
-          const core = String(baggageStr).replace(/\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim();
-          if (/^[^,]*미포함/.test(core)) return false;            // 기본 운임에 위탁 미포함
-          if (core.includes('기내') && !core.includes('위탁')) return false; // 기내 반입만 포함
-          return /(15|20|23)\s*kg/.test(core);
+        isGoldenSchedule(item) {
+          // 가는 편 06~11시 출발 + 오는 편 15시 이후 출발 (실제 조회 시각 기준)
+          const o = item && item.outbound, b = item && item.inbound;
+          if (!o || !b || !o.dep || !b.dep) return false;
+          const oh = parseInt(o.dep.slice(0, 2), 10), bh = parseInt(b.dep.slice(0, 2), 10);
+          return oh >= 6 && oh <= 11 && bh >= 15;
         },
 
         getPassportStamp(item) {
-          if (item.price <= 230000) {
+          // P0: SUPER DEAL(23만 원 이하, 사용자 확정)과 황금 스케줄만. 조건이 없으면 스탬프 없음(DIRECT PASS 폐지)
+          if (item.price > 0 && item.price <= 230000) {
             return { top: '🔥 SUPER DEAL', color: '#B8332A' };
           }
-          if (item.diff <= -30000) {
-            return { top: '📉 PRICE DROP', color: '#215E42' };
-          }
-          if (this.isMorningDeparture(item.schedule) && this.hasFreeBaggage(item.baggage)) {
+          if (this.isGoldenSchedule(item)) {
             return { top: '🌅 GOLDEN PICK', color: '#1E3A5F' };
           }
-          return { top: '🛂 DIRECT PASS', color: '#5C5549' };
+          return null;
         },
 
         formatPrice(val) {

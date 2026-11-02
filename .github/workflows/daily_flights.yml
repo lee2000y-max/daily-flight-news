@@ -1,9 +1,22 @@
 name: Daily Flight News Collector
 
+# 도시를 8묶음으로 나눠 서로 다른 실행 서버에서 동시에 수집한 뒤(collect), 결과를 합쳐 저장한다(publish).
+# 한 서버에서 수백 번 연속 조회하면 구글이 응답을 크게 늦추기 때문(2026-11-02 실측: 0.16초 → 3.4초/회,
+# 2026-11-03 4묶음에서도 한 묶음이 7분째부터 상세 검색 빈 결과 → 8묶음).
+
 on:
   schedule:
     - cron: '30 22 * * *'   # 매일 07:30 KST (GitHub cron은 UTC 기준)
   workflow_dispatch:
+    inputs:
+      only_cities:
+        description: '일부 도시만 수집(예: KIX,FUK). 비우면 전체'
+        required: false
+        default: ''
+      dry_run:
+        description: '1이면 저장·커밋하지 않고 결과만 출력'
+        required: false
+        default: '0'
 
 permissions:
   contents: write
@@ -13,9 +26,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  collect-and-publish:
+  collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -28,21 +45,74 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          # 실조회용(실패해도 이월 가격으로 계속 진행) / Gemini는 ENABLE_GEMINI_NOTES=1 일 때만 사용
-          # primp 1.x 는 fast-flights 2.2 가 쓰는 chrome_126 프로필을 지원하지 않아 구버전으로 고정
-          pip install "fast-flights==2.2" "primp==0.6.2" || echo "::warning::fast-flights 설치 실패 - 이월/기준가로 진행"
-          pip install google-genai || echo "::warning::google-genai 설치 실패 - Gemini 노트 생략"
+          # flights==0.9.0: 구글 항공권 달력 API를 쓰는 마지막 판(0.10부터는 날짜마다 페이지 1개를 받아 매우 느림)
+          # fast-flights·primp: 구글 항공권 링크(tfs) 생성용
+          pip install "flights==0.9.0" "holidays>=0.50" "fast-flights==2.2" "primp==0.6.2"
 
-      - name: Collect 58 flights
+      - name: Patch fli airport aliases
+        run: |
+          # fli 0.9.0은 영문 이름이 같은 공항을 하나로 합쳐 버려 오키나와(OKA)가 인도네시아 NAH로 조회됨
+          F=$(python -c "import fli.models.airport as a; print(a.__file__)")
+          sed -i 's/"OKA": "Naha Airport",/"OKA": "Naha Airport (Okinawa)",/' "$F"
+          python - <<'PY'
+          from fli.models import Airport
+          import routes
+          codes = set(routes.ORIGINS) | {a for c in routes.CITY_MASTER for a in c["airports"]}
+          bad = [(c, Airport[c].name) for c in sorted(codes) if Airport[c].name != c]
+          assert not bad, f"fli가 다른 공항으로 바꾸는 코드: {bad}"
+          print("공항 코드 확인 완료:", len(codes), "개")
+          PY
+
+      - name: Collect shard
         env:
           PYTHONUTF8: '1'
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          APPS_SCRIPT_WEBHOOK_URL: ${{ secrets.APPS_SCRIPT_WEBHOOK_URL }}
-          WEBAPP_URL: ${{ secrets.APPS_SCRIPT_WEBHOOK_URL }}
-          SYNC_SECRET_KEY: ${{ secrets.SYNC_SECRET_KEY }}
+          PYTHONUNBUFFERED: '1'
+          MODE: collect
+          SHARD_INDEX: ${{ matrix.shard }}
+          SHARD_COUNT: '8'
+          ONLY_CITIES: ${{ github.event.inputs.only_cities }}
+        run: python collect_flights.py
+
+      - name: Upload shard result
+        uses: actions/upload-artifact@v4
+        with:
+          name: shard-${{ matrix.shard }}
+          path: shard_out/
+          retention-days: 3
+
+  publish:
+    needs: collect
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Download shard results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: shard-*
+          path: shard_out
+          merge-multiple: true
+
+      - name: Merge and save
+        env:
+          PYTHONUTF8: '1'
+          PYTHONUNBUFFERED: '1'
+          MODE: merge
+          FAIL_ON_LOW_LIVE: '1'           # 발행 도시가 절반 미만이면 이 단계를 실패로 표시(이메일 알림)
+          ONLY_CITIES: ${{ github.event.inputs.only_cities }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
         run: python collect_flights.py
 
       - name: Commit and push data
+        if: ${{ !cancelled() && github.event.inputs.dry_run != '1' }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
@@ -51,6 +121,7 @@ jobs:
             echo "변경 사항 없음"
           else
             git commit -m "Update flights data and history"
-            git pull --rebase origin main
-            git push
+            # 수집 중에 같은 브랜치에 데이터가 바뀌었으면 이번 수집 결과를 우선(-X theirs = 재적용하는 이 커밋)
+            git pull --rebase -X theirs origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
           fi

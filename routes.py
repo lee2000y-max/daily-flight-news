@@ -1,0 +1,78 @@
+# -*- coding: utf-8 -*-
+"""
+노선(도시) 마스터. 가격·항공사·시각·수하물처럼 날마다 바뀌는 값은 넣지 않는다(docs/PLAN.md 2-3).
+
+- code: 도시 키(영구 이력·랜드마크 이미지와 연결). 대표 공항 코드를 쓴다.
+- airports: 그 도시의 도착 공항들. 수집기는 ICN·GMP 출발로 모든 공항을 조회해 직항이 있는 것만 쓴다.
+- note: 현지 메모(가격과 무관한 안내).
+"""
+
+ORIGINS = ["ICN", "GMP"]
+
+# 김포 국제선 도착 공항(2026년 정리 글 기준). 매일은 이 목록만 조회하고,
+# 월요일에는 모든 공항을 김포 출발로 다시 훑어 새 노선을 찾는다(collect_flights.py).
+GMP_DESTINATIONS = {"HND", "KIX", "NGO", "TSA", "KHH", "PEK", "PKX", "SHA"}
+
+CITY_MASTER = [
+    {"code": "KIX", "city": "오사카", "airports": ["KIX"], "section": "SEC1", "major": "일본", "sub": "대도시", "order": 1, "note": "간사이공항 귀국 수속 혼잡을 감안해 출발 2시간 30분 전 공항 도착 권장"},
+    {"code": "FUK", "city": "후쿠오카", "airports": ["FUK"], "section": "SEC1", "major": "일본", "sub": "대도시", "order": 2, "note": "후쿠오카공항에서 하카타역까지 지하철 2정거장(5분)으로 도심 접근성 최고"},
+    {"code": "NRT", "city": "도쿄", "airports": ["NRT", "HND"], "section": "SEC1", "major": "일본", "sub": "대도시", "order": 3, "note": "도심 이동용 스카이라이너 또는 나리타 익스프레스(N'EX) 사전 예매 시 할인 혜택"},
+    {"code": "CTS", "city": "삿포로 신치토세", "airports": ["CTS"], "section": "SEC1", "major": "일본", "sub": "홋카이도·오키나와", "order": 4, "note": "동절기 설경 및 화이트 일루미네이션 시즌으로 방한 부츠·아이젠 준비 권장"},
+    {"code": "NGO", "city": "나고야", "airports": ["NGO"], "section": "SEC1", "major": "일본", "sub": "대도시", "order": 5, "note": "지브리 파크 및 나바나노사토 일루미네이션 방문 시 사전 예약 권장"},
+    {"code": "OKA", "city": "오키나와", "airports": ["OKA"], "section": "SEC1", "major": "일본", "sub": "홋카이도·오키나와", "order": 6, "note": "온화한 기후로 렌터카 해안 드라이브 및 츄라우미 수족관 관람에 최적"},
+    {"code": "HSG", "city": "사가", "airports": ["HSG"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 7, "note": "우레시노·다케오 온천 및 후쿠오카 텐진 연계 리무진 버스 시간표 사전 확인 필수"},
+    {"code": "TAK", "city": "다카마쓰", "airports": ["TAK"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 8, "note": "나오시마·쇼도시마 세토내해 예술섬 페리 운항표 및 무료 공항 리무진 쿠폰 확인"},
+    {"code": "FSZ", "city": "시즈오카", "airports": ["FSZ"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 9, "note": "후지산 조망 희망 시 출국편 좌측 창가(A열), 귀국편 우측 창가(F열) 좌석 지정 권장"},
+    {"code": "KOJ", "city": "가고시마", "airports": ["KOJ"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 10, "note": "사쿠라지마 화산섬 페리 및 이부스키 검은 모래찜질 온천 이동 시 엔화 소액권 지참"},
+    {"code": "OIT", "city": "오이타", "airports": ["OIT"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 11, "note": "벳푸·유후인 온천 직행 공항 리무진 버스 시간표 및 료칸 송영 서비스 사전 확인"},
+    {"code": "YGJ", "city": "요나고", "airports": ["YGJ"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 12, "note": "돗토리 사구·미즈키 시게루 로드·마쓰에성 이동 시 산인 패스 활용 추천"},
+    {"code": "KKJ", "city": "기타큐슈", "airports": ["KKJ"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 13, "note": "고쿠라역까지 공항버스 35분, 모지코 레트로 및 시모노세키 가라토 시장 당일 코스 최적"},
+    {"code": "SDJ", "city": "센다이", "airports": ["SDJ"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 14, "note": "일본 3대 절경 마쓰시마 유람선 및 긴잔 온천·자오 수빙 연계 여행 추천"},
+    {"code": "MYJ", "city": "마쓰야마", "airports": ["MYJ"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 15, "note": "한국인 여행객 대상 마쓰야마 공항 무료 셔틀버스 및 도고온천 쿠폰북 수령 필수"},
+    {"code": "HIJ", "city": "히로시마", "airports": ["HIJ"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 16, "note": "미야지마 이쓰쿠시마 신사 해상 도리이 관람 시 만조·간조 시간표 사전 확인 권장"},
+    {"code": "KMJ", "city": "구마모토", "airports": ["KMJ"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 17, "note": "아소산 화구 참관 가능 여부(화산가스 경보) 및 구로카와 온천 버스 사전 예약 필수"},
+    {"code": "NGS", "city": "나가사키", "airports": ["NGS"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 18, "note": "이나사야마 전망대 야경 및 하우스텐보스 테마파크 연계 이동 시 공항 페리 활용 추천"},
+    {"code": "KMQ", "city": "코마쓰", "airports": ["KMQ"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 19, "note": "가나자와 겐로쿠엔 정원 및 시라카와고 합장촌 투어 이동에 가장 편리한 관문 공항"},
+    {"code": "AOJ", "city": "아오모리", "airports": ["AOJ"], "section": "SEC1", "major": "일본", "sub": "소도시·온천", "order": 20, "note": "오이라세 계류·도와다호 및 핫코다산 로프웨이 관람 시 JR 도호쿠 패스 연계 추천"},
+    {"code": "AKJ", "city": "아사히카와", "airports": ["AKJ"], "section": "SEC1", "major": "일본", "sub": "홋카이도·오키나와", "order": 21, "note": "비에이·후라노 설원 투어 및 아사히야마 동물원 펭귄 산책 관람 시 신치토세보다 이동 시간 대폭 단축"},
+    {"code": "DAD", "city": "다낭", "airports": ["DAD"], "section": "SEC3", "major": "동남아", "sub": "베트남 휴양", "order": 22, "note": "귀국편 자정 출발 스케줄로 마지막 날 마사지 샵 짐 보관 및 공항 샌딩 패키지 활용 추천"},
+    {"code": "CXR", "city": "나트랑", "airports": ["CXR"], "section": "SEC3", "major": "동남아", "sub": "베트남 휴양", "order": 23, "note": "깜란 국제공항에서 나트랑 시내까지 차량 40분 소요되므로 심야 도착 픽업 차량 사전 예약 권장"},
+    {"code": "PQC", "city": "푸꾸옥", "airports": ["PQC"], "section": "SEC3", "major": "동남아", "sub": "베트남 휴양", "order": 24, "note": "45일 무비자 입국 가능, 건기 해양 액티비티 최적기이며 새벽 도착 모닝 투어 활용 추천"},
+    {"code": "HAN", "city": "하노이", "airports": ["HAN"], "section": "SEC3", "major": "동남아", "sub": "베트남 도시", "order": 25, "note": "11월~3월 하노이는 선선한 건기로 하롱베이 크루즈 및 닌빈 투어 최적기이나 얇은 외투 지참 권장"},
+    {"code": "SGN", "city": "호치민", "airports": ["SGN"], "section": "SEC3", "major": "동남아", "sub": "베트남 도시", "order": 26, "note": "떤선녓 국제공항 출국 심사 대기열이 매우 길어 귀국 시 최소 3시간 전 공항 도착 필수"},
+    {"code": "HPH", "city": "하이퐁", "airports": ["HPH"], "section": "SEC3", "major": "동남아", "sub": "베트남 도시", "order": 27, "note": "하롱베이 선착장 및 깟바섬까지 고속도로로 45분 거리여서 북부 크루즈 여행 시 하노이보다 이동 편리"},
+    {"code": "DLI", "city": "달랏", "airports": ["DLI"], "section": "SEC3", "major": "동남아", "sub": "베트남 휴양", "order": 28, "note": "해발 1,500m 고원 도시로 연중 봄 날씨이나 야간 기온이 12~15도로 내려가므로 긴팔 가디건 필수"},
+    {"code": "TPE", "city": "타이베이", "airports": ["TPE", "TSA"], "section": "SEC5", "major": "중화권", "sub": "대만", "order": 29, "note": "출국 1~7일 전 대만 관광청 온라인 여행지원금(Lucky Land) 추첨 신청 및 온라인 입국신고서 작성 필수"},
+    {"code": "KHH", "city": "가오슝", "airports": ["KHH"], "section": "SEC5", "major": "중화권", "sub": "대만", "order": 30, "note": "겨울에도 20~25도의 따뜻한 날씨로 보얼예술특구·치진섬 자전거 여행 및 컨딩 당일치기 추천"},
+    {"code": "HKG", "city": "홍콩", "airports": ["HKG"], "section": "SEC5", "major": "중화권", "sub": "홍콩·마카오", "order": 31, "note": "옥토퍼스 카드 모바일 앱 충전 및 공항철도(AEL) 그룹 티켓 사전 할인 예매 추천"},
+    {"code": "MFM", "city": "마카오", "airports": ["MFM"], "section": "SEC5", "major": "중화권", "sub": "홍콩·마카오", "order": 32, "note": "코타이 스트립 주요 호텔 무료 셔틀버스 운행 노선 및 홍콩 페리·강주아오 대교 버스 연계 확인"},
+    {"code": "TAO", "city": "칭다오", "airports": ["TAO"], "section": "SEC2", "major": "중국", "sub": "단거리·해안", "order": 33, "note": "비행시간 1시간 30분 초단거리 노선, 중국 무비자 입국 요건 및 알리페이 한국 카드 사전 연동 필수"},
+    {"code": "PVG", "city": "상하이", "airports": ["PVG", "SHA"], "section": "SEC2", "major": "중국", "sub": "대도시", "order": 34, "note": "와이탄 야경 및 상하이 디즈니랜드 방문 시 공식 앱 사전 다운로드 및 여권 지참 필수"},
+    {"code": "PKX", "city": "베이징", "airports": ["PKX", "PEK"], "section": "SEC2", "major": "중국", "sub": "대도시", "order": 35, "note": "자금성(고궁박물원) 및 만리장성 입장권은 방문 7일 전 위챗 미니프로그램 사전 예약 필수"},
+    {"code": "YNT", "city": "옌타이", "airports": ["YNT"], "section": "SEC2", "major": "중국", "sub": "단거리·해안", "order": 36, "note": "비행시간 1시간 15분 최단거리 가성비 노선으로 장유 와이너리 및 펑라이각 관광 추천"},
+    {"code": "DLC", "city": "다롄", "airports": ["DLC"], "section": "SEC2", "major": "중국", "sub": "단거리·해안", "order": 37, "note": "동방수성 베네치아 수로 및 성해광장 야경 명소로 짧은 주말 미식 여행에 최적"},
+    {"code": "HGH", "city": "항저우", "airports": ["HGH"], "section": "SEC2", "major": "중국", "sub": "문화·절경", "order": 38, "note": "서호 유람선·송성가무쇼 및 우전 수향마을 1박 연계 코스로 인기가 높은 노선"},
+    {"code": "XIY", "city": "시안", "airports": ["XIY"], "section": "SEC2", "major": "중국", "sub": "문화·절경", "order": 39, "note": "진시황 병마용갱·화청지 장한가 공연 및 시안 성벽 야경 투어 사전 예약 권장"},
+    {"code": "DYG", "city": "장가계", "airports": ["DYG"], "section": "SEC2", "major": "중국", "sub": "문화·절경", "order": 40, "note": "천문산 케이블카·원가계 엘리베이터 대기 시간을 줄이기 위해 VIP 패스트트랙 티켓 사전 확인"},
+    {"code": "CAN", "city": "광저우", "airports": ["CAN"], "section": "SEC2", "major": "중국", "sub": "대도시", "order": 41, "note": "겨울철 온화한 기후와 정통 딤섬 미식 여행, 주강 나이트 크루즈 코스로 추천"},
+    {"code": "HRB", "city": "하얼빈", "airports": ["HRB"], "section": "SEC2", "major": "중국", "sub": "문화·절경", "order": 42, "note": "빙설대세계 축제 및 성 소피아 성당 관람 시 영하 25도 대비 발열 내의·방한 용품 철저히 준비"},
+    {"code": "BKK", "city": "방콕 수완나품", "airports": ["BKK"], "section": "SEC3", "major": "동남아", "sub": "태국 도시·감성", "order": 43, "note": "수완나품(BKK)과 돈므앙(DMK) 공항 코드 혼동 주의 및 심야 도착 그랩/볼트 픽업 위치 확인"},
+    {"code": "CNX", "city": "치앙마이", "airports": ["CNX"], "section": "SEC3", "major": "동남아", "sub": "태국 도시·감성", "order": 44, "note": "11월~2월 건기는 치앙마이 최고 성수기로 올드시티·님만해민 숙소 조기 예약 권장"},
+    {"code": "HKT", "city": "푸켓", "airports": ["HKT"], "section": "SEC3", "major": "동남아", "sub": "태국 휴양", "order": 45, "note": "건기 시즌 피피섬·시밀란섬 호핑투어 최적기이며 공항-빠통 비치 미니밴/택시 사전 예약 추천"},
+    {"code": "CEB", "city": "세부", "airports": ["CEB"], "section": "SEC3", "major": "동남아", "sub": "필리핀 휴양", "order": 46, "note": "출발 72시간 이내 필리핀 이트래블(eTravel) 무료 QR코드 발급 필수 (유료 대행 사이트 주의)"},
+    {"code": "TAG", "city": "보홀 팡라오", "airports": ["TAG"], "section": "SEC3", "major": "동남아", "sub": "필리핀 휴양", "order": 47, "note": "발리카삭 거북이 스노클링 투어 사전 예약 및 필리핀 eTravel 입국 QR코드 사전 등록 필수"},
+    {"code": "CRK", "city": "클락", "airports": ["CRK"], "section": "SEC3", "major": "동남아", "sub": "필리핀 휴양", "order": 48, "note": "피나투보 화산 지프 투어 및 푸닝 온천·골프 리조트 이동 시 클락 공항 공식 픽업 차량 이용 권장"},
+    {"code": "BKI", "city": "코타키나발루", "airports": ["BKI"], "section": "SEC3", "major": "동남아", "sub": "인기 휴양섬", "order": 49, "note": "입국 3일 전 말레이시아 디지털 입국카드(MDAC) 온라인 등록 필수, 탄중아루 선셋 및 반딧불 투어 추천"},
+    {"code": "SIN", "city": "싱가포르 창이", "airports": ["SIN"], "section": "SEC3", "major": "동남아", "sub": "도시·이색", "order": 50, "note": "입국 3일 전 싱가포르 전자입국신고서(SG Arrival Card) 작성 필수 및 창이공항 쥬얼 폭포 운영 시간 확인"},
+    {"code": "UBN", "city": "울란바토르", "airports": ["UBN"], "section": "SEC4", "major": "중앙아시아", "sub": "초원·이색", "order": 51, "note": "신월(그믐) 주간 달빛 없는 은하수 관측 최적기이나 야간 영하권 한파에 대비한 방한 장비 필수"},
+    {"code": "ALA", "city": "알마티", "airports": ["ALA"], "section": "SEC4", "major": "중앙아시아", "sub": "실크로드·자연", "order": 52, "note": "대한민국 여권 30일 무비자 입국 가능, 톈산 산맥 침불락 스키 리조트 및 차른 캐니언 투어 추천"},
+    {"code": "TAS", "city": "타슈켄트", "airports": ["TAS"], "section": "SEC4", "major": "중앙아시아", "sub": "실크로드·자연", "order": 53, "note": "30일 무비자 입국 가능, 사마르칸트 고속열차(아프로시압) 사전 예매 및 호텔 거주등록증 출국 시까지 보관 필수"},
+    {"code": "VTE", "city": "비엔티안", "airports": ["VTE"], "section": "SEC3", "major": "동남아", "sub": "도시·이색", "order": 54, "note": "11월~2월 건기 진입으로 방비엥 블루라군·카약 및 루앙프라방 고속철도 여행 최적기"},
+    {"code": "BWN", "city": "반다르스리베가완", "airports": ["BWN"], "section": "SEC3", "major": "동남아", "sub": "도시·이색", "order": 55, "note": "30일 무비자 입국 가능, 7성급 엠파이어 호텔 호캉스 추천 및 주류 반입 시 세관 신고 규정 확인"},
+    {"code": "GUM", "city": "괌", "airports": ["GUM"], "section": "SEC3", "major": "동남아", "sub": "남태평양 휴양", "order": 56, "note": "출발 72시간 전 괌 전자 세관신고서 및 G-CNMI ETA(또는 유효 ESTA) 사전 발급 필수"},
+    {"code": "SPN", "city": "사이판", "airports": ["SPN"], "section": "SEC3", "major": "동남아", "sub": "남태평양 휴양", "order": 57, "note": "마나가하섬 스노클링 및 그로토 투어 명소, 출발 전 G-CNMI ETA 사전 전자여행허가 등록 필수"},
+    {"code": "DPS", "city": "발리 덴파사르", "airports": ["DPS"], "section": "SEC3", "major": "동남아", "sub": "인기 휴양섬", "order": 58, "note": "LCC 취항으로 발리 직항 운임 대폭 인하, 전자도착비자(e-VOA) 및 발리 관광세 온라인 사전 납부 권장"},
+]
+
+# build_reports.py 호환용 이름
+CITIES_58_MASTER = CITY_MASTER

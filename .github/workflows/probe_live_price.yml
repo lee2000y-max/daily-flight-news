@@ -2,6 +2,18 @@ name: Probe live price (진단용, 수동 실행)
 
 on:
   workflow_dispatch:
+    inputs:
+      route:
+        description: '진단할 도착 공항 코드(mode=route)'
+        required: false
+        default: 'OKA'
+      mode:
+        description: 'route(노선 진단) 또는 site(화면 검증·스크린샷)'
+        required: false
+        default: 'route'
+
+permissions:
+  contents: write
 
 jobs:
   probe:
@@ -12,30 +24,28 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-
-      - name: 0) 실제 수집 함수로 10개 노선 시험
-        continue-on-error: true
+      - name: 화면 검증·스크린샷
+        if: github.event.inputs.mode == 'site'
         run: |
-          python -m venv vc
-          vc/bin/pip install -q "fast-flights==2.2" "primp==0.6.2"
-          vc/bin/python probe_live_price.py collect
-          vc/bin/python probe_live_price.py gl
+          pip install -q playwright
+          python -m playwright install --with-deps chromium > /dev/null
+          python check_site.py; rc=$?
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -q --orphan preview/screenshots
+          git rm -rq --cached . > /dev/null
+          git add -f screenshots
+          git commit -qm "화면 검증 스크린샷 (${GITHUB_REF_NAME})"
+          git push -qf origin HEAD:preview/screenshots
+          exit $rc
 
-      - name: 1) 구글 항공권 페이지 접근 확인
-        continue-on-error: true
-        run: python probe_live_price.py access
-
-      - name: 2) fast-flights 2.x 시험
-        continue-on-error: true
+      - name: 노선 진단
+        if: github.event.inputs.mode != 'site'
+        env:
+          ROUTE: ${{ github.event.inputs.route }}
         run: |
-          python -m venv v2
-          v2/bin/pip install "fast-flights==2.2" "primp==0.6.2"
-          v2/bin/python probe_live_price.py v2
-
-      - name: 3) fast-flights 3.x 시험 (KRW 지정)
-        continue-on-error: true
-        run: |
-          python -m venv v3
-          v3/bin/pip install --pre fast-flights
-          v3/bin/pip show fast-flights | head -3
-          v3/bin/python probe_live_price.py v3
+          pip install -q "flights==0.9.0" "fast-flights==2.2" "primp==0.6.2"
+          F=$(python -c "import fli.models.airport as a; print(a.__file__)")
+          sed -i 's/"OKA": "Naha Airport",/"OKA": "Naha Airport (Okinawa)",/' "$F"
+          # 입력 예: "OIT" 또는 "OIT 2026-12-30 2027-01-05" 또는 "GMP-HND 2026-12-04 2026-12-07"
+          python probe_route.py $ROUTE
