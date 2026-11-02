@@ -73,8 +73,17 @@ def _read_booking(page) -> List[Dict[str, Any]]:
         is_airline = name.endswith("Airline")
         if is_airline:
             name = name[: -len("Airline")].strip()
-        m = next((PRICE_RE.search(x) for x in rows[k:k + 6] if PRICE_RE.search(x)), None)
-        if m:
+        # 가격은 이 판매처 줄부터 다음 'Book with' 전까지에서, 수하물·요금 안내 문구가 아닌 줄의 첫 원화 값
+        nxt = next((j for j in range(k + 1, len(rows)) if rows[j].lower().startswith("book with")), min(len(rows), k + 6))
+        m = None
+        for x in rows[k:nxt]:
+            low = x.lower()
+            if any(w in low for w in ("bag", "fee", "cheaper", "less", "save", "carry-on")):
+                continue
+            m = PRICE_RE.search(x)
+            if m:
+                break
+        if m and int(m.group(1).replace(",", "")) >= 30000:   # 왕복 직항 운임이 3만 원 미만일 수는 없음(수수료·수하물 금액 오인 방지)
             out.append({"name": name, "price": int(m.group(1).replace(",", "")), "airline": is_airline})
     return out
 
