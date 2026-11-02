@@ -28,7 +28,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional, Tuple
 
-from routes import CITY_MASTER, ORIGINS, CITIES_58_MASTER  # noqa: F401  (CITIES_58_MASTER: build_reports 호환)
+from routes import CITY_MASTER, ORIGINS, GMP_DESTINATIONS, CITIES_58_MASTER  # noqa: F401  (CITIES_58_MASTER: build_reports 호환)
 
 DATA_JSON_PATH = "flights_data.json"
 SCHEMA_VERSION = 2
@@ -37,8 +37,9 @@ WINDOW_START, WINDOW_END = 14, 60
 NIGHTS = range(2, 9)          # 2박3일 ~ 8박9일
 MAX_LEAVE_DAYS = 5
 ALT_MIN_GAP_DAYS = 3          # 2위는 1위와 출발일이 3일 이상 떨어져야 함
-DETAIL_CANDIDATES = 3         # 상세 검색에서 직항 확인 실패 시 다음 후보로 넘어가는 횟수
-DATE_SEARCH_DELAY = 0.15      # 날짜 검색 사이 대기(초)
+DETAIL_CANDIDATES = 6         # 1·2위를 상세 검색으로 확인할 때 시도하는 최대 후보 수
+DATE_SEARCH_DELAY = 0.1       # 날짜 검색 사이 대기(초)
+CITY_WORKERS = 3              # 도시 단위 병렬 처리 수
 DETAIL_WORKERS = 3
 KST = datetime.timezone(datetime.timedelta(hours=9))
 
@@ -52,6 +53,8 @@ AIRLINE_KO = {
     "MH": "말레이시아항공", "D7": "에어아시아X", "SQ": "싱가포르항공", "TR": "스쿠트", "GA": "가루다인도네시아",
     "OM": "몽골항공", "KC": "에어아스타나", "HY": "우즈베키스탄항공", "QV": "라오항공", "BI": "로열브루나이항공",
     "UA": "유나이티드항공", "HO": "준야오항공", "8L": "럭키항공", "GS": "톈진항공", "JD": "베이징캐피털항공",
+    "9C": "춘추항공", "VZ": "타이 비엣젯", "AK": "에어아시아", "FD": "타이 에어아시아", "QZ": "인도네시아 에어아시아",
+    "XJ": "타이 에어아시아X", "SL": "타이 라이언에어", "DD": "녹에어", "BL": "퍼시픽항공", "7G": "스타플라이어",
 }
 FSC = {"KE", "OZ", "JL", "NH", "CI", "BR", "CX", "MU", "CZ", "CA", "FM", "TG", "PR", "MH", "SQ", "GA",
        "VN", "OM", "KC", "HY", "BI", "UA", "QV", "NX", "SC"}
@@ -122,7 +125,7 @@ def links(org: str, dst: str, dep: str, ret: str) -> Dict[str, str]:
 # ------------------------------------------------------------------------------
 # 1) 날짜 검색
 # ------------------------------------------------------------------------------
-def date_search(org: str, dst: str, nights: int, today: datetime.date) -> List[Tuple[datetime.date, datetime.date, int]]:
+def date_search(org: str, dst: str, nights: int, today: datetime.date, nonstop: bool = True) -> List[Tuple[datetime.date, datetime.date, int]]:
     """직항 왕복 (출발일, 귀국일, 가격원) 목록. 실패하면 예외."""
     from fli.models import Airport, DateSearchFilters, FlightSegment, MaxStops, PassengerInfo, TripType
     from fli.search import SearchDates
@@ -136,7 +139,7 @@ def date_search(org: str, dst: str, nights: int, today: datetime.date) -> List[T
             FlightSegment(departure_airport=[[B, 0]], arrival_airport=[[A, 0]],
                           travel_date=(d0 + datetime.timedelta(days=nights)).isoformat()),
         ],
-        stops=MaxStops.NON_STOP, from_date=d0.isoformat(), to_date=d1.isoformat(), duration=nights)
+        stops=MaxStops.NON_STOP if nonstop else MaxStops.ANY, from_date=d0.isoformat(), to_date=d1.isoformat(), duration=nights)
     res = SearchDates().search(f, currency="KRW", language="en") or []
     out = []
     for r in res:
@@ -165,8 +168,8 @@ def _leg_info(fr) -> Dict[str, Any]:
     }
 
 
-def detail_search(org: str, dst: str, dep: datetime.date, ret: datetime.date) -> Optional[Dict[str, Any]]:
-    """직항 왕복 최저가 1건의 실제 정보. 직항이 없으면 None, 조회 오류는 예외."""
+def detail_search(org: str, dst: str, dep: datetime.date, ret: datetime.date) -> Tuple[Optional[Dict[str, Any]], str]:
+    """(직항 왕복 최저가 1건의 실제 정보 또는 None, 진단 문구). 조회 오류는 1회 재시도 후 예외."""
     from fli.models import Airport, FlightSearchFilters, FlightSegment, MaxStops, PassengerInfo, SortBy, TripType
     from fli.search import SearchFlights
     A, B = getattr(Airport, org), getattr(Airport, dst)
@@ -177,31 +180,48 @@ def detail_search(org: str, dst: str, dep: datetime.date, ret: datetime.date) ->
             FlightSegment(departure_airport=[[B, 0]], arrival_airport=[[A, 0]], travel_date=ret.isoformat()),
         ],
         stops=MaxStops.NON_STOP, sort_by=SortBy.CHEAPEST)
-    res = SearchFlights().search(f, top_n=2, currency="KRW", language="en") or []
-    best = None
+    res = None
+    for attempt in range(2):
+        try:
+            res = SearchFlights().search(f, top_n=3, currency="KRW", language="en") or []
+            break
+        except Exception:
+            if attempt == 1:
+                raise
+            time.sleep(2)
+    best, total, non_tuple, with_stops, no_price = None, 0, 0, 0, 0
     for it in res:
+        total += 1
         if not isinstance(it, tuple) or len(it) != 2:
+            non_tuple += 1
             continue
         out, back = it
         if out.stops != 0 or back.stops != 0:
+            with_stops += 1
+            continue
+        if out.price is None or out.price <= 0:
+            no_price += 1
             continue
         price = int(round(out.price))
-        if price <= 0:
-            continue
         if best is None or price < best["price"]:
             best = {"price": price, "outbound": _leg_info(out), "inbound": _leg_info(back)}
-    return best
+    diag = f"결과 {total}건(왕복 아님 {non_tuple}, 경유 {with_stops}, 가격 없음 {no_price})"
+    return best, diag
 
 
 # ------------------------------------------------------------------------------
 # 도시 단위 처리
 # ------------------------------------------------------------------------------
-def collect_city(meta: Dict[str, Any], today: datetime.date) -> Dict[str, Any]:
+def collect_city(meta: Dict[str, Any], today: datetime.date, full_gmp: bool = False) -> Dict[str, Any]:
     """도시 하나의 후보 일정 수집. {'candidates': [...], 'errors': n, 'calls': n, 'raw': n}"""
     cands, errors, calls, raw = [], 0, 0, 0
     last_err = ""
+    gmp_found = []
     for org in ORIGINS:
         for dst in meta["airports"]:
+            if org == "GMP" and not full_gmp and dst not in GMP_DESTINATIONS:
+                continue
+            before = raw
             for n in NIGHTS:
                 calls += 1
                 try:
@@ -217,8 +237,19 @@ def collect_city(meta: Dict[str, Any], today: datetime.date) -> Dict[str, Any]:
                         cands.append({"origin": org, "dest": dst, "dep": dep, "ret": ret,
                                       "nights": (ret - dep).days, "leave": leave, "price": price})
                 time.sleep(DATE_SEARCH_DELAY)
+            if org == "GMP" and raw > before and dst not in GMP_DESTINATIONS:
+                gmp_found.append(dst)
     cands.sort(key=lambda c: (c["price"], c["leave"], c["dep"], c["origin"] != "ICN"))
-    return {"candidates": cands, "errors": errors, "calls": calls, "raw": raw, "lastError": last_err}
+    diag = ""
+    if raw == 0 and errors < calls:
+        # 직항 결과가 0건일 때만: 경유 허용 조회 1회로 '노선 자체가 조회되는지' 확인(진단용, 발행에는 쓰지 않음)
+        try:
+            any_rows = date_search("ICN", meta["airports"][0], 3, today, nonstop=False)
+            diag = f"진단: ICN→{meta['airports'][0]} 3박 경유 포함 조회 {len(any_rows)}건"
+        except Exception as e:
+            diag = f"진단 조회 오류 {type(e).__name__}"
+    return {"candidates": cands, "errors": errors, "calls": calls, "raw": raw, "lastError": last_err,
+            "newGmp": gmp_found, "diag": diag}
 
 
 def pick_alt(cands: List[Dict[str, Any]], first: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -243,41 +274,10 @@ def trip_fields(c: Dict[str, Any]) -> Dict[str, Any]:
     return out
 
 
-def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
-    """(발행 행, 실패 행) 중 하나를 돌려준다."""
-    base = {"date": today_str, "code": meta["code"], "city": meta["city"]}
-    cands = found["candidates"]
-    if not cands:
-        if found["errors"] == found["calls"]:
-            reason = f"조회 오류({found['lastError']})"
-        elif found["raw"] == 0:
-            reason = "탐색 기간(D+14~60) 내 ICN·GMP 직항 없음"
-        else:
-            reason = "주말 포함·연차 5일 이하 조건에 맞는 직항 일정 없음"
-        return None, dict(base, reason=reason)
-
-    chosen, detail, detail_error = None, None, ""
-    for c in cands[:DETAIL_CANDIDATES]:
-        try:
-            d = detail_search(c["origin"], c["dest"], c["dep"], c["ret"])
-        except Exception as e:
-            detail_error = f"{type(e).__name__}: {str(e)[:120]}"
-            chosen, detail = c, None   # 상세 조회 오류: 날짜 검색의 실제 가격으로 발행(항공편 정보 없이)
-            break
-        if d is not None:
-            chosen, detail = c, d
-            break
-    if chosen is None:
-        return None, dict(base, reason="상세 조회에서 직항 확인 실패")
-
-    row = dict(base)
-    row.update({k: meta[k] for k in ("section", "major", "sub", "order")})
-    row["note"] = meta.get("note", "")
-    row["priceSource"] = "live"
+def _apply_detail(row: Dict[str, Any], detail: Optional[Dict[str, Any]]) -> None:
     if detail:
-        chosen = dict(chosen, price=detail["price"])
-        row["outbound"], row["inbound"] = detail["outbound"], detail["inbound"]
         ob, ib = detail["outbound"], detail["inbound"]
+        row["outbound"], row["inbound"] = ob, ib
         row["airline"] = ob["airline"] if ob["airline"] == ib["airline"] else f"{ob['airline']} / {ib['airline']}"
         row["flightNos"] = f"{ob['flightNo']} / {ib['flightNo']}"
         row["timeSlot"] = f"출국 {ob['dep']}→{ob['arr']} / 귀국 {ib['dep']}→{ib['arr']}"
@@ -285,10 +285,73 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
     else:
         row["outbound"] = row["inbound"] = None
         row["airline"], row["flightNos"], row["timeSlot"], row["isFSC"] = "", "", "", False
-        row["detailError"] = detail_error
-    row.update(trip_fields(chosen))
-    alt = pick_alt(cands, chosen)
+
+
+def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
+    """(발행 행, 실패 행) 중 하나를 돌려준다.
+
+    날짜 검색 후보를 가격순으로 상세 검색해 '직항이 실제로 확인된 일정'을 모은다.
+    1위 = 확인된 일정 중 최저가, 2위 = 1위와 출발일이 3일 이상 떨어진 확인된 일정 중 최저가.
+    화면 가격은 상세 검색 가격이다. 상세 검색이 오류로만 끝나면 날짜 검색 가격으로 발행(항공편 정보 없이).
+    """
+    base = {"date": today_str, "code": meta["code"], "city": meta["city"]}
+    cands = found["candidates"]
+    if not cands:
+        if found["calls"] and found["errors"] == found["calls"]:
+            reason = f"조회 오류({found['lastError']})"
+        elif found["raw"] == 0:
+            reason = "탐색 기간(D+14~60) 내 ICN·GMP 직항 없음"
+        else:
+            reason = "주말 포함·연차 5일 이하 조건에 맞는 직항 일정 없음"
+        return None, dict(base, reason=reason, diag=found.get("diag", ""))
+
+    verified: List[Dict[str, Any]] = []
+    errors: List[str] = []
+    diags: List[str] = []
+    tried = 0
+    for c in cands:
+        if tried >= DETAIL_CANDIDATES:
+            break
+        # 이미 확인된 1위 후보와 출발일이 같은 후보는 2위가 될 수 없으므로 건너뜀(1위 확인 전에는 모두 시도)
+        if verified and all(abs((c["dep"] - v["dep"]).days) < ALT_MIN_GAP_DAYS for v in verified):
+            continue
+        tried += 1
+        try:
+            d, diag = detail_search(c["origin"], c["dest"], c["dep"], c["ret"])
+        except Exception as e:
+            errors.append(f"{type(e).__name__}: {str(e)[:80]}")
+            continue
+        if d is None:
+            diags.append(f"{c['dep']}~{c['ret']} {diag}")
+            continue
+        verified.append(dict(c, price=d["price"], detail=d))
+        if len(verified) >= 2 and any(abs((x["dep"] - y["dep"]).days) >= ALT_MIN_GAP_DAYS
+                                      for x in verified for y in verified):
+            break
+
+    if verified:
+        verified.sort(key=lambda v: (v["price"], v["leave"], v["dep"]))
+        first = verified[0]
+        alt = next((v for v in verified[1:] if abs((v["dep"] - first["dep"]).days) >= ALT_MIN_GAP_DAYS), None)
+        detail = first["detail"]
+    elif errors and len(errors) == tried:
+        # 상세 조회가 모두 오류: 날짜 검색의 실제 가격으로 발행(항공편 정보 없이)
+        first, detail = cands[0], None
+        alt = pick_alt(cands, first)
+    else:
+        return None, dict(base, reason="상세 조회에서 직항 확인 실패", diag=" | ".join(diags[:3]))
+
+    row = dict(base)
+    row.update({k: meta[k] for k in ("section", "major", "sub", "order")})
+    row["note"] = meta.get("note", "")
+    row["priceSource"] = "live"
+    _apply_detail(row, detail)
+    if detail is None:
+        row["detailError"] = errors[-1] if errors else ""
+    row.update(trip_fields(first))
     row["alt"] = trip_fields(alt) if alt else None
+    if row["alt"] is not None:
+        row["alt"]["verified"] = bool(alt.get("detail"))
     return row, None
 
 
@@ -337,15 +400,22 @@ def main() -> None:
     dry = os.environ.get("DRY_RUN", "").strip() == "1"
     print(f"📰 [{today_str}] {len(cities)}개 도시 수집 시작 (출발 {', '.join(ORIGINS)} · D+{WINDOW_START}~{WINDOW_END} · 2~8박 · 직항)")
 
+    full_gmp = today.weekday() == 0 or os.environ.get("FULL_GMP_SCAN", "").strip() == "1"
+    if full_gmp:
+        print("🔎 오늘은 김포 출발 전체 공항을 다시 확인합니다(월요일 정기 점검)")
     t0 = time.time()
-    found = {}
+    with ThreadPoolExecutor(max_workers=CITY_WORKERS) as ex:
+        found_list = list(ex.map(lambda m: collect_city(m, today, full_gmp), cities))
+    found = {m["code"]: f for m, f in zip(cities, found_list)}
     for i, m in enumerate(cities, 1):
-        found[m["code"]] = collect_city(m, today)
         f = found[m["code"]]
         best = f["candidates"][0] if f["candidates"] else None
         print(f" · [{i:02d}/{len(cities)}] {m['city']} ({m['code']}): 날짜 검색 {f['calls']}회(오류 {f['errors']}), "
               f"조건 통과 {len(f['candidates'])}건" + (f", 최저 {best['price']:,}원 {best['origin']}→{best['dest']} {best['dep']}~{best['ret']}" if best else ""))
     print(f"⏱️ 날짜 검색 {time.time() - t0:.0f}초")
+    new_gmp = sorted({d for f in found.values() for d in f.get("newGmp", [])})
+    if new_gmp:
+        print(f"🆕 김포 직항 목록에 없는 공항에서 김포 직항 발견: {', '.join(new_gmp)} → routes.py GMP_DESTINATIONS에 추가 검토")
 
     t1 = time.time()
     with ThreadPoolExecutor(max_workers=DETAIL_WORKERS) as ex:
@@ -359,7 +429,7 @@ def main() -> None:
         alt = f" | 2위 {r['alt']['price']:,}원 {r['alt']['depDate']}" if r.get("alt") else ""
         print(f" ✓ {r['city']}: {r['price']:,}원 {r['origin']}→{r['dest']} {r['dates']} {r['airline']} {r['timeSlot']}{tag}{alt}")
     for f in failed:
-        print(f" ✗ {f['city']}: {f['reason']}")
+        print(f" ✗ {f['city']}: {f['reason']}" + (f" [{f['diag']}]" if f.get("diag") else ""))
     print(f"📌 발행 {len(published)}/{len(cities)}개 도시, 미발행 {len(failed)}개")
 
     if dry:

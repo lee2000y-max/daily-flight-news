@@ -9,6 +9,10 @@
 
 ORIGINS = ["ICN", "GMP"]
 
+# 김포 국제선 도착 공항(2026년 정리 글 기준). 매일은 이 목록만 조회하고,
+# 월요일에는 모든 공항을 김포 출발로 다시 훑어 새 노선을 찾는다(collect_flights.py).
+GMP_DESTINATIONS = {"HND", "KIX", "NGO", "TSA", "KHH", "PEK", "PKX", "SHA"}
+
 CITY_MASTER = [
     {"code": "KIX", "city": "오사카", "airports": ["KIX"], "section": "SEC1", "major": "일본", "sub": "대도시", "order": 1, "note": "간사이공항 귀국 수속 혼잡을 감안해 출발 2시간 30분 전 공항 도착 권장"},
     {"code": "FUK", "city": "후쿠오카", "airports": ["FUK"], "section": "SEC1", "major": "일본", "sub": "대도시", "order": 2, "note": "후쿠오카공항에서 하카타역까지 지하철 2정거장(5분)으로 도심 접근성 최고"},
