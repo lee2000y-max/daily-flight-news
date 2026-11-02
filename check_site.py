@@ -72,6 +72,8 @@ with sync_playwright() as p:
         overflow = page.evaluate("document.documentElement.scrollWidth - window.innerWidth")
         if overflow > 0:
             problems.append(f"{name}: 가로 넘침 {overflow}px")
+        page.evaluate("window.scrollTo(0, 0)")
+        page.screenshot(path=f"screenshots/{name}_top.png")
         if fp.count():
             fp.screenshot(path=f"screenshots/{name}_front.png")
         g = page.locator("article.newspaper-card a:has-text('구글 플라이트')")
@@ -93,7 +95,6 @@ with sync_playwright() as p:
             problems.append(f"{name}: 콘솔 오류 {errors[:3]}")
         if expected_failed and "오늘 발행하지 못한 노선" not in body:
             problems.append(f"{name}: 미발행 목록 미표시")
-        page.screenshot(path=f"screenshots/{name}_top.png")
         page.screenshot(path=f"screenshots/{name}_full.png", full_page=True)
         page.close()
     b.close()

@@ -165,11 +165,15 @@
     }
     .fp-head {
       display: none;
+      padding: 0 0 4px;
+    }
+    /* 머리글 칸 너비 = 그 열의 글자판 수 × (판 너비 + 간격). 글자 크기만 작게 */
+    .fp-hcell { width: calc(var(--n) * 1.11em); }
+    .fp-htext {
       font-family: 'Noto Sans KR', sans-serif;
       font-size: 11px;
       letter-spacing: 0.08em;
       color: #9E9585;
-      padding: 0 0 6px;
     }
     .fp-row {
       display: grid;
@@ -401,7 +405,7 @@
       <div class="border-t border-[#2C2620] bg-[#EFECE4] p-2 sm:p-4">
         <div class="fp-board" role="table" aria-label="오늘의 1면 전광판">
           <div class="fp-head" role="row" aria-hidden="true">
-            <span style="grid-area:type">유형</span><span style="grid-area:city">도시</span><span style="grid-area:origin">출발</span><span style="grid-area:sched">일정</span><span style="grid-area:price;justify-self:end">왕복 가격</span>
+            <span class="fp-hcell" style="grid-area:type;--n:4"><span class="fp-htext">유형</span></span><span class="fp-hcell" style="grid-area:city;--n:7"><span class="fp-htext">도시</span></span><span class="fp-hcell" style="grid-area:origin;--n:3"><span class="fp-htext">출발</span></span><span class="fp-hcell" style="grid-area:sched;--n:8"><span class="fp-htext">일정</span></span><span class="fp-hcell" style="grid-area:price;--n:10;justify-self:end;text-align:right"><span class="fp-htext">왕복 가격</span></span>
           </div>
           <template x-for="(row, r) in board.rows" :key="r">
             <div class="fp-row" role="row" :aria-label="row.aria">
