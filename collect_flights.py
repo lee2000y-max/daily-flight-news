@@ -606,6 +606,24 @@ def main() -> None:
     all_cities = [m for m in CITY_MASTER if not only or m["code"] in only]
     dry = os.environ.get("DRY_RUN", "").strip() == "1"
 
+    if mode == "sellers":
+        # 판매처별 가격: API 조회를 하지 않은 새 서버에서 실행(같은 서버에서 수백 번 조회한 뒤에는 구글이 확인 화면을 띄움, 2026-11-03 실측)
+        import sellers
+        idx = int(os.environ.get("SHARD_INDEX", "0"))
+        path = f"shard_out/shard_{idx}.json"
+        if not os.path.exists(path):
+            print(f"묶음 결과 없음: {path}")
+            return
+        with open(path, encoding="utf-8") as f:
+            res = json.load(f)
+        t1 = time.time()
+        got = sellers.collect_sellers(res.get("published", []), budget_sec=float(os.environ.get("SELLERS_BUDGET", "600")))
+        os.makedirs("sellers_out", exist_ok=True)
+        with open(f"sellers_out/sellers_{idx}.json", "w", encoding="utf-8") as f:
+            json.dump(got, f, ensure_ascii=False)
+        print(f"🏷️ 판매처 {len(got)}/{len(res.get('published', []))}개 도시, {time.time() - t1:.0f}초")
+        return
+
     if mode in ("", "collect"):
         cities = all_cities
         if mode == "collect":
@@ -614,15 +632,6 @@ def main() -> None:
             print(f"🧩 묶음 {idx + 1}/{cnt}: {len(cities)}개 도시")
         print(f"📰 [{today_str}] {len(cities)}개 도시 수집 시작 (출발 {', '.join(ORIGINS)} · D+{WINDOW_START}~{WINDOW_END} · 2~8박 · 직항)")
         res = collect_phase(cities, today)
-        if os.environ.get("SELLERS", "").strip() == "1" and res["published"]:
-            # 판매처별 가격(구글 예약 옵션, 실제 화면 값). 실패한 도시는 비워 둔다
-            import sellers
-            t1 = time.time()
-            got = sellers.collect_sellers(res["published"], budget_sec=float(os.environ.get("SELLERS_BUDGET", "600")))
-            for r in res["published"]:
-                if r["code"] in got:
-                    r["sellers"] = got[r["code"]]
-            print(f"🏷️ 판매처 {len(got)}/{len(res['published'])}개 도시, {time.time() - t1:.0f}초")
         if mode == "collect":
             os.makedirs("shard_out", exist_ok=True)
             with open(f"shard_out/shard_{idx}.json", "w", encoding="utf-8") as f:
@@ -652,6 +661,17 @@ def main() -> None:
             if m["code"] not in seen:
                 failed.append({"date": today_str, "code": m["code"], "city": m["city"], "reason": "수집 작업 실패(해당 묶음 결과 없음)"})
         print(f"🧩 묶음 결과 합치기: 수집된 도시 {len(seen)}/{len(all_cities)}")
+        got = {}
+        for name in sorted(os.listdir("sellers_out")) if os.path.isdir("sellers_out") else []:
+            try:
+                with open(os.path.join("sellers_out", name), encoding="utf-8") as f:
+                    got.update(json.load(f))
+            except Exception as e:
+                print(f"판매처 결과 읽기 실패 {name}: {e}")
+        for r in published:
+            if r["code"] in got:
+                r["sellers"] = got[r["code"]]
+        print(f"🏷️ 판매처 정보 {sum(1 for r in published if r.get('sellers'))}/{len(published)}개 도시")
     cities = all_cities
     print_summary(published, failed, len(cities))
 
