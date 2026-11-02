@@ -19,6 +19,7 @@ jobs:
           python -m venv vc
           vc/bin/pip install -q "fast-flights==2.2" "primp==0.6.2"
           vc/bin/python probe_live_price.py collect
+          vc/bin/python probe_live_price.py gl
 
       - name: 1) 구글 항공권 페이지 접근 확인
         continue-on-error: true

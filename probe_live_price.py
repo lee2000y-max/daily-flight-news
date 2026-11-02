@@ -91,6 +91,26 @@ def probe_collect():
     print(f"결과: {ok}/{len(codes)} 성공")
 
 
+def probe_gl():
+    """같은 노선·날짜를 판매 국가(gl) 없이 / gl=KR 로 조회해 가격 차이를 비교합니다."""
+    import collect_flights as cf
+    import fast_flights.core as core
+    orig = core.fetch
+    codes = ["KIX", "FUK", "NRT", "DAD", "BKK", "TPE"]
+    for gl in ("", "KR"):
+        def patched(params, _gl=gl):
+            params = dict(params)
+            if _gl:
+                params["gl"] = _gl
+            return orig(params)
+        core.fetch = patched
+        for i, code in enumerate(codes):
+            s = cf.build_schedule_window(i)
+            p = cf.fetch_live_price(code, s["dep_yyyymmdd"], s["ret_yyyymmdd"])
+            print(f"[gl={gl or '없음'} {code}] {s['schedule']} → {('%s원' % format(p, ',')) if p else '실패'}")
+    core.fetch = orig
+
+
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "access"
-    {"access": probe_access, "v2": probe_v2, "v3": probe_v3, "collect": probe_collect}[mode]()
+    {"access": probe_access, "v2": probe_v2, "v3": probe_v3, "collect": probe_collect, "gl": probe_gl}[mode]()
