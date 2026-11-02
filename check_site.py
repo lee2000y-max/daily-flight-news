@@ -76,6 +76,20 @@ with sync_playwright() as p:
         page.screenshot(path=f"screenshots/{name}_top.png")
         if fp.count():
             fp.screenshot(path=f"screenshots/{name}_front.png")
+        if name == "desktop":
+            try:
+                with page.expect_download(timeout=15000) as dl:
+                    page.locator("article.newspaper-card button:has-text('공유 이미지')").first.click()
+                path = dl.value.path()
+                size = os.path.getsize(path)
+                dl.value.save_as("screenshots/share_sample.png")
+                print(f"   공유 이미지: {dl.value.suggested_filename} {size:,}바이트")
+                if size < 20000:
+                    problems.append("desktop: 공유 이미지가 너무 작음")
+            except Exception as e:
+                problems.append(f"desktop: 공유 이미지 저장 실패 {type(e).__name__}")
+            fx_rows = page.locator("section[aria-labelledby='fxTitle'] li").count()
+            print(f"   환율 박스 {fx_rows}종")
         g = page.locator("article.newspaper-card a:has-text('구글 플라이트')")
         g_count = g.count()
         g_href = g.first.get_attribute("href") if g_count else ""

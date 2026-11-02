@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>THE BOARDING PASS TIMES | 데일리 최저가 항공권 소식</title>
   <link rel="alternate" type="application/rss+xml" title="보딩패스 타임즈" href="./feed.xml" />
+  <meta name="description" content="매일 아침 인천·김포 출발 직항 노선의 실제 왕복 최저가를 신문처럼 정리합니다." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="THE BOARDING PASS TIMES · 데일리 최저가 항공권 소식" />
+  <meta property="og:description" content="매일 아침 인천·김포 출발 직항 노선의 실제 왕복 최저가" />
+  <meta property="og:url" content="https://lee2000y-max.github.io/daily-flight-news/" />
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Alpine.js -->
@@ -760,6 +765,10 @@
                 <span>스카이스캐너</span>
                 <span class="text-[10px] opacity-80">↗</span>
               </a>
+            </div>
+            <div class="flex justify-end mt-2">
+              <button type="button" @click="shareCard(item)"
+                class="text-[11px] font-bold text-[#5C5549] underline hover:text-[#1E1B18]">🖼️ 공유 이미지</button>
             </div>
           </div>
 
@@ -1665,6 +1674,55 @@
           if (!t) return '';
           const k = new Date(t + 9 * 3600 * 1000).toISOString();
           return `기준 ${k.slice(0, 10)} ${k.slice(11, 16)} (한국 시각)`;
+        },
+
+        // 카드 공유 이미지(1080×1350 PNG). 휴대폰은 공유 창, 그 외에는 파일 저장. 값은 모두 카드와 같은 오늘 실제 조회값
+        async shareCard(item) {
+          try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
+          const W = 1080, H = 1350, c = document.createElement('canvas');
+          c.width = W; c.height = H;
+          const g = c.getContext('2d');
+          const serif = "'Noto Serif KR', serif", sans = "'Noto Sans KR', sans-serif", mono = "'JetBrains Mono', monospace";
+          g.fillStyle = '#EFECE4'; g.fillRect(0, 0, W, H);
+          g.fillStyle = '#FAF7F0'; g.fillRect(60, 60, W - 120, H - 120);
+          g.strokeStyle = '#2C2620'; g.lineWidth = 4; g.strokeRect(60, 60, W - 120, H - 120);
+          g.textAlign = 'center'; g.fillStyle = '#3E3932';
+          g.font = `700 30px ${serif}`; g.fillText('THE BOARDING PASS TIMES', W / 2, 150);
+          g.fillStyle = '#1E1B18'; g.font = `900 64px ${serif}`; g.fillText('데일리 최저가 항공권 소식', W / 2, 240);
+          g.fillStyle = '#5C5549'; g.font = `500 28px ${sans}`; g.fillText(this.formatDateKorean(item.editionDate || this.selectedDate), W / 2, 295);
+          g.fillStyle = '#2C2620'; g.fillRect(120, 330, W - 240, 4); g.fillRect(120, 342, W - 240, 2);
+          g.textAlign = 'left';
+          g.fillStyle = '#5C5549'; g.font = `700 34px ${mono}`; g.fillText(`${item.origin} ✈ ${item.dest}`, 120, 430);
+          g.fillStyle = '#1E1B18'; g.font = `900 104px ${serif}`; g.fillText(item.city, 120, 560);
+          g.fillStyle = '#5C5549'; g.font = `600 32px ${sans}`; g.fillText('왕복 직항 최저가', 120, 650);
+          g.fillStyle = '#B8332A'; g.font = `900 120px ${serif}`; g.fillText(this.formatPrice(item.price), 120, 780);
+          g.fillStyle = '#F2ECE1'; g.fillRect(120, 840, W - 240, 250);
+          g.fillStyle = '#1E1B18'; g.font = `700 34px ${sans}`;
+          const lines = [`📅 ${item.dates}`, item.airline ? `✈️ ${item.airline}${item.flightNos ? ' (' + item.flightNos + ')' : ''}` : '', item.schedule ? `🕒 ${item.schedule}` : ''].filter(Boolean);
+          lines.forEach((t, i) => {
+            let txt = t;
+            while (g.measureText(txt).width > W - 300 && txt.length > 4) txt = txt.slice(0, -2);
+            if (txt !== t) txt += '…';
+            g.fillText(txt, 150, 905 + i * 70);
+          });
+          g.fillStyle = '#5C5549'; g.font = `500 26px ${sans}`;
+          g.fillText('발행일 아침 실제 조회 가격 · 좌석 상황에 따라 바뀔 수 있음', 120, 1170);
+          g.fillStyle = '#1E3A5F'; g.font = `700 28px ${mono}`;
+          g.fillText('lee2000y-max.github.io/daily-flight-news', 120, 1230);
+          const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+          if (!blob) return;
+          const name = `boarding-pass-times_${item.editionDate || this.selectedDate}_${item.code}.png`;
+          const file = new File([blob], name, { type: 'image/png' });
+          try {
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({ files: [file], title: `${item.city} 왕복 ${this.formatPrice(item.price)}` });
+              return;
+            }
+          } catch (e) { if (e && e.name === 'AbortError') return; }
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob); a.download = name;
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(() => URL.revokeObjectURL(a.href), 4000);
         },
 
         priceBar(item) {
