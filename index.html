@@ -1330,8 +1330,11 @@
           flights.forEach(f => { const sec = this.getTaxonomy(f.code).section; (bySec[sec] = bySec[sec] || []).push(f.price); });
           const median = arr => { const a = [...arr].sort((x, y) => x - y); const n = a.length; return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2; };
           const out = [];
+          const byMonth = (this.crowdMeta && this.crowdMeta.months) || {};
           flights.forEach(f => {
-            const c = this.crowd[f.code];
+            // 출발월 자료가 있으면 그 달 순위, 없으면 자료 기간 전체 순위
+            const month = String(parseInt(String(f.depDate).slice(5, 7), 10));
+            const c = (byMonth[month] && byMonth[month][f.code] != null) ? { level: byMonth[month][f.code] } : this.crowd[f.code];
             if (!c || !(c.level <= 2)) return;
             const ref = this.hasHistory(f, 14) && f.stats.median30 ? f.stats.median30 : median(bySec[this.getTaxonomy(f.code).section] || [f.price]);
             if (f.price <= ref) out.push({ f, level: c.level, ratio: f.price / ref });
@@ -1342,9 +1345,9 @@
             return {
               type: 'D', code: f.code, city: f.city,
               headline: `붐비지 않는 ${f.city}, 왕복 ${p}`,
-              dek: `${f.dates} · 한국인 쏠림 지수 ${level}단계(5단계 중 낮을수록 한적) · ${this.originLabel(f.origin)} 출발 직항`,
+              dek: `${f.dates} · 쏠림 지수 ${level}단계(5단계 중 낮을수록 한적) · ${this.originLabel(f.origin)} 출발 직항`,
               figures: [{ k: '쏠림 지수', v: `${level}/5` }, { k: '일정', v: `${f.nights}박 ${f.nights + 1}일` }, { k: '왕복', v: p }],
-              note: `쏠림 지수는 최근 통계 기준이며 실시간이 아닙니다${this.crowdMeta.basis ? ' (' + this.crowdMeta.basis + ')' : ''}.`,
+              note: `쏠림 지수는 최근 통계 기준이며 실시간이 아닙니다${this.crowdMeta.basis ? ' (' + this.crowdMeta.basis + (this.crowdMeta.period ? ', ' + this.crowdMeta.period + '년' : '') + ', 외국인 포함)' : ''}.`,
               url: f.googleUrl || '',
               board: { city: f.city, origin: f.origin, dep: f.depDate, nights: f.nights, price: f.price }
             };

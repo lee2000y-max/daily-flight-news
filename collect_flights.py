@@ -534,7 +534,8 @@ def load_crowd() -> Dict[str, Any]:
     try:
         with open(os.path.join("data", "crowd_index.json"), "r", encoding="utf-8") as f:
             d = json.load(f)
-        return {"basis": d.get("basis", ""), "period": d.get("period", ""), "cities": d.get("cities", {})}
+        return {"basis": d.get("basis", ""), "period": d.get("period", ""), "cities": d.get("cities", {}),
+                "months": d.get("months", {})}
     except Exception:
         return {}
 

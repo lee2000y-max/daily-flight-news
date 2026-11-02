@@ -11,6 +11,8 @@
   - 인천 출발(도착_출발=출발) 여객 운항의 유임승객 수를 도착 공항 → 도시로 묶어 월별로 더한다.
   - 도시의 '월별 출발 여객'을 그 달 전체 도시 중 순위로 5단계(1=가장 한적 … 5=가장 붐빔)로 나눈다(20%씩).
   - 김포 출발은 이 자료에 없다(인천공항 자료). 인천 출발 규모로 대표한다.
+  - 여객 수에는 외국인도 포함된다(국적 구분 없음). '한국인 쏠림'의 근사치로 쓴다.
+  - 자료의 '공항'은 IATA 코드, '월'은 "01월", '년도'는 "2026년" 형식(2026-11-03 확인).
 
 결과: data/crowd_index.json
   {"basis": "...", "period": "...", "months": {"1": {code: level}, ...}, "cities": {code: {"level": 연간 단계, "pax": 연간 여객}}}
@@ -111,9 +113,9 @@ def main() -> int:
         if not city:
             continue
         try:
-            n = int(float(str(r.get("유임승객(명)") or r.get("유임승객") or "0").replace(",", "")))
-            mon = int(r.get("월"))
-            years.add(str(r.get("년도")))
+            n = int(float(str(r.get("유임승객(명)") or r.get("유임승객") or "0").replace(",", "").strip() or 0))
+            mon = int(re.sub(r"\D", "", r.get("월") or ""))
+            years.add(re.sub(r"\D", "", r.get("년도") or ""))
         except (TypeError, ValueError):
             continue
         pax_m[(city, mon)] = pax_m.get((city, mon), 0) + n
