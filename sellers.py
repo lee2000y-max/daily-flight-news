@@ -54,7 +54,12 @@ def _pick(page, dep_hhmm: str) -> bool:
 
 
 def _read_booking(page) -> List[Dict[str, Any]]:
-    page.wait_for_timeout(4000)
+    # 예약 옵션이 늦게 뜨는 경우가 있어 'Book with' 문구가 보일 때까지 최대 15초 기다린다(2026-11-03: 4초 고정 대기로 14곳 놓침)
+    try:
+        page.get_by_text(re.compile(r"^Book with", re.I)).first.wait_for(timeout=15000)
+    except Exception:
+        pass
+    page.wait_for_timeout(800)
     body = page.inner_text("body")
     i = body.find("Booking options")
     if i < 0:

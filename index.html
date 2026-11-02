@@ -1739,7 +1739,8 @@
         sellersText(item) {
           const s = item && item.sellers;
           if (!s) return '';
-          return s.items.map(x => `${x.name}${x.airline ? '(항공사)' : ''} ${this.formatPrice(x.price)}`).join(' · ');
+          return s.items.map(x => `${x.name}${x.airline ? '(항공사)' : ''} ${this.formatPrice(x.price)}`).join(' · ')
+            + (s.checkedAt ? ` · ${s.checkedAt} 조회` : '');
         },
 
         priceBar(item) {
