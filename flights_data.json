@@ -326,17 +326,7 @@
      ],
      "label": "단풍"
     }
-   ],
-   "sellers": {
-    "items": [
-     {
-      "name": "Jeju Air",
-      "price": 300300,
-      "airline": true
-     }
-    ],
-    "checkedAt": "08:39"
-   }
+   ]
   },
   {
    "date": "2026-11-03",
@@ -2689,22 +2679,7 @@
      ],
      "label": "건기"
     }
-   ],
-   "sellers": {
-    "items": [
-     {
-      "name": "Jin Air",
-      "price": 420537,
-      "airline": true
-     },
-     {
-      "name": "Jin Air",
-      "price": 444600,
-      "airline": true
-     }
-    ],
-    "checkedAt": "08:40"
-   }
+   ]
   },
   {
    "date": "2026-11-03",
@@ -3084,17 +3059,7 @@
      ],
      "label": "선선한 건기"
     }
-   ],
-   "sellers": {
-    "items": [
-     {
-      "name": "Hong Kong Express",
-      "price": 15400,
-      "airline": true
-     }
-    ],
-    "checkedAt": "08:39"
-   }
+   ]
   },
   {
    "date": "2026-11-03",
