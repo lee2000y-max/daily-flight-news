@@ -170,9 +170,16 @@ def _leg_info(fr) -> Dict[str, Any]:
         "flightNo": f"{code}{first.flight_number}",
         "dep": first.departure_datetime.strftime("%H:%M"),
         "arr": last.arrival_datetime.strftime("%H:%M"),
+        "arrDayOffset": (last.arrival_datetime.date() - first.departure_datetime.date()).days,  # 다음 날 도착이면 1
         "durationMin": int(fr.duration) if getattr(fr, "duration", None) else int(sum(l.duration for l in legs)),
         "stops": int(fr.stops),
     }
+
+
+def _arr(leg: Dict[str, Any]) -> str:
+    """도착 시각. 출발 다음 날 도착이면 '(+1)'을 붙인다."""
+    n = int(leg.get("arrDayOffset") or 0)
+    return leg["arr"] + (f"(+{n})" if n > 0 else "")
 
 
 def detail_search(org: str, dst: str, dep: datetime.date, ret: datetime.date) -> Tuple[Optional[Dict[str, Any]], str]:
@@ -296,7 +303,7 @@ def _apply_detail(row: Dict[str, Any], detail: Optional[Dict[str, Any]]) -> None
         row["outbound"], row["inbound"] = ob, ib
         row["airline"] = ob["airline"] if ob["airline"] == ib["airline"] else f"{ob['airline']} / {ib['airline']}"
         row["flightNos"] = f"{ob['flightNo']} / {ib['flightNo']}"
-        row["timeSlot"] = f"출국 {ob['dep']}→{ob['arr']} / 귀국 {ib['dep']}→{ib['arr']}"
+        row["timeSlot"] = f"출국 {ob['dep']}→{_arr(ob)} / 귀국 {ib['dep']}→{_arr(ib)}"
         row["isFSC"] = ob["airlineCode"] in FSC and ib["airlineCode"] in FSC
     else:
         row["outbound"] = row["inbound"] = None
@@ -420,7 +427,8 @@ def series_from_history(codes: List[str]) -> Dict[str, Dict[str, List[Any]]]:
     import history_store
     per: Dict[str, List[Tuple[str, int]]] = {}
     for r in history_store.iter_all():
-        if r["code"] in codes:
+        # 화면 추이는 v2 수집기 실조회(live)만. 이전 수집기(sheet, 2026-10)는 탐색 조건이 달라 섞지 않는다(파일에는 보존)
+        if r["code"] in codes and r.get("source") == "live":
             per.setdefault(r["code"], []).append((r["date"], r["price"]))
     return {c: {"fullDates": [d for d, _ in sorted(v)], "dates": [d for d, _ in sorted(v)],
                 "prices": [p for _, p in sorted(v)]} for c, v in per.items()}
