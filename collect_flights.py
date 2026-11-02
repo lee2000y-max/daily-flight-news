@@ -105,7 +105,7 @@ DATA_JSON_PATH = "flights_data.json"
 HISTORY_DAYS = 14                 # flights_data.json(사이트 일간지 화면용) 에 담을 최근 발행일 수. 전체 이력은 data/history 에 별도 누적
 LIVE_PRICE_BUDGET_SEC = 8 * 60    # 실조회에 쓸 최대 시간(초). 초과하면 나머지는 이월/기준가
 LIVE_PRICE_DELAY_SEC = 1.0        # 실조회 사이 대기(차단 방지)
-LIVE_FAIL_LIMIT = 5               # 오늘 한 건도 성공하지 못한 채 연속 N회 실패하면 실조회를 중단(로그/시간 낭비 방지)
+LIVE_FAIL_LIMIT = 8               # 오늘 한 건도 성공하지 못한 채 연속 N회 실패하면 실조회를 중단(로그/시간 낭비 방지)
 KST = datetime.timezone(datetime.timedelta(hours=9))
 
 
@@ -148,7 +148,6 @@ def build_schedule_window(idx: int) -> Dict[str, str]:
 # 가격 확보 (fast-flights 2.2 KRW 파라미터 주입 + USD 실시간 환율 폴백)
 # ------------------------------------------------------------------------------
 _USD_TO_KRW_CACHE: Optional[float] = None
-_CORE_PATCHED: bool = False
 
 
 def get_usd_to_krw_rate() -> float:
@@ -172,27 +171,6 @@ def get_usd_to_krw_rate() -> float:
         print(f"[안내] 실시간 환율 조회 실패, 기본 환율(1,390원) 사용: {e}")
     _USD_TO_KRW_CACHE = 1390.0
     return _USD_TO_KRW_CACHE
-
-
-def _ensure_fast_flights_krw_patch() -> None:
-    """fast-flights 2.2 내부 fetch 호출 시 curr=KRW, hl=ko 파라미터를 주입합니다."""
-    global _CORE_PATCHED
-    if _CORE_PATCHED:
-        return
-    try:
-        import fast_flights.core as ff_core  # type: ignore
-        orig_fetch = getattr(ff_core, "fetch", None)
-        if callable(orig_fetch):
-            def patched_fetch(params: dict):
-                if isinstance(params, dict):
-                    params = dict(params)
-                    params.setdefault("curr", "KRW")
-                    params["hl"] = "ko"
-                return orig_fetch(params)
-            ff_core.fetch = patched_fetch
-            _CORE_PATCHED = True
-    except Exception:
-        pass
 
 
 def parse_krw(text: Any) -> Optional[int]:
@@ -224,14 +202,36 @@ def parse_krw(text: Any) -> Optional[int]:
     return None
 
 
+_DIAG_PRINTED = 0
+
+
+def _print_diag(code: str, flights: List[Any]) -> None:
+    """원인 파악용: 하루 2개 노선까지만 응답 일부를 로그에 남깁니다."""
+    global _DIAG_PRINTED
+    if _DIAG_PRINTED >= 2:
+        return
+    _DIAG_PRINTED += 1
+    kinds: Dict[str, int] = {}
+    for f in flights:
+        k = repr(getattr(f, "stops", None))
+        kinds[k] = kinds.get(k, 0) + 1
+    print(f"   [진단] {code}: stops 분포 {dict(list(kinds.items())[:6])}")
+    for f in flights[:3]:
+        print(f"   [진단] {code}: name={getattr(f, 'name', '?')!r} dep={getattr(f, 'departure', '?')!r} "
+              f"stops={getattr(f, 'stops', '?')!r} price={getattr(f, 'price', '?')!r}")
+
+
 def fetch_live_price(code: str, dep_yyyymmdd: str, ret_yyyymmdd: str) -> Optional[int]:
     """
-    fast-flights(2.x)로 ICN↔code 왕복 직항 최저가(원)를 조회합니다. 실패하면 None 과 함께 원인을 한 줄 출력합니다.
-    fetch_mode 는 "common"(직접 요청)만 씁니다.
+    fast-flights 2.2 로 ICN↔code 왕복 직항 최저가(원)를 조회합니다. 실패하면 None 과 원인 한 줄을 출력합니다.
+
+    - 원화: 라이브러리 기본 기능인 get_flights_from_filter(currency="KRW") 를 씁니다.
+    - 언어: 라이브러리가 hl=en 으로 요청하고 영어 문구 "Nonstop" 으로 직항을 판별하므로 언어를 바꾸면 안 됩니다.
+      (hl=ko 를 넣으면 경유 표시가 한국어로 와서 모든 항공편이 'Unknown' 으로 판정돼 실조회가 0건이 됩니다)
+    - 직항: max_stops=0 으로 구글에서 직항만 받아 오고, 응답의 경유 표시도 다시 확인합니다.
     """
     try:
-        from fast_flights import FlightData, Passengers, get_flights  # type: ignore
-        _ensure_fast_flights_krw_patch()
+        from fast_flights import FlightData, Passengers, create_filter, get_flights_from_filter  # type: ignore
     except Exception as e:
         print(f"   [실조회 실패] {code}: fast-flights 를 불러올 수 없음 ({type(e).__name__}: {str(e)[:80]})")
         return None
@@ -240,7 +240,7 @@ def fetch_live_price(code: str, dep_yyyymmdd: str, ret_yyyymmdd: str) -> Optiona
         return f"{d[:4]}-{d[4:6]}-{d[6:]}"
 
     try:
-        result = get_flights(
+        flt = create_filter(
             flight_data=[
                 FlightData(date=iso(dep_yyyymmdd), from_airport="ICN", to_airport=code),
                 FlightData(date=iso(ret_yyyymmdd), from_airport=code, to_airport="ICN"),
@@ -248,24 +248,34 @@ def fetch_live_price(code: str, dep_yyyymmdd: str, ret_yyyymmdd: str) -> Optiona
             trip="round-trip",
             seat="economy",
             passengers=Passengers(adults=1, children=0, infants_in_seat=0, infants_on_lap=0),
-            fetch_mode="common",
+            max_stops=0,
         )
+        result = get_flights_from_filter(flt, currency="KRW", mode="common")
+    except RuntimeError as e:
+        if "No flights found" in str(e):
+            print(f"   [실조회 실패] {code}: 해당 날짜에 직항 결과 없음")
+        else:
+            print(f"   [실조회 실패] {code}: RuntimeError: {str(e)[:160]}")
+        return None
     except Exception as e:  # 네트워크/차단/라이브러리 버전 차이 등
         print(f"   [실조회 실패] {code}: {type(e).__name__}: {str(e)[:160]}")
         return None
 
     flights = list(getattr(result, "flights", None) or [])
     if not flights:
-        print(f"   [실조회 실패] {code}: 응답에 항공편이 0건 (차단·동의 페이지·화면 형식 변경 가능성)")
+        print(f"   [실조회 실패] {code}: 응답에 항공편이 0건")
         return None
-    direct = [f for f in flights if getattr(f, "stops", 0) in (0, None)]
+    # max_stops=0 으로 서버가 이미 직항만 돌려주므로, 경유 표시를 못 읽은 경우('Unknown')도 직항으로 인정
+    direct = [f for f in flights if getattr(f, "stops", None) in (0, None, "Unknown", "")]
     if not direct:
         print(f"   [실조회 실패] {code}: 직항이 없음 (전체 {len(flights)}건은 모두 경유)")
+        _print_diag(code, flights)
         return None
     prices = [p for p in (parse_krw(getattr(f, "price", None)) for f in direct) if p]
     if not prices:
         samples = ", ".join(str(getattr(f, "price", ""))[:14] for f in direct[:2])
         print(f"   [실조회 실패] {code}: 유효한 가격 파싱 실패 (응답 가격 예: {samples})")
+        _print_diag(code, direct)
         return None
     return min(prices)
 
@@ -482,6 +492,9 @@ def main() -> None:
         live_price: Optional[int] = None
         if live_enabled and time.monotonic() - started < LIVE_PRICE_BUDGET_SEC:
             live_price = fetch_live_price(code, sched["dep_yyyymmdd"], sched["ret_yyyymmdd"])
+            if live_price is not None and not (0.3 * meta["base_price"] <= live_price <= 3.0 * meta["base_price"]):
+                print(f"   [실조회 폐기] {code}: {live_price:,}원은 기준가({meta['base_price']:,}원) 대비 비정상 범위")
+                live_price = None
             if live_price is not None:
                 consecutive_fail = 0
                 time.sleep(LIVE_PRICE_DELAY_SEC)

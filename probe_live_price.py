@@ -6,6 +6,7 @@
   python probe_live_price.py access   # 구글 항공권 페이지에 GitHub 서버가 접근 가능한지
   python probe_live_price.py v2       # fast-flights 2.x 로 3개 노선 시험
   python probe_live_price.py v3       # fast-flights 3.x(KRW 통화 지정 가능) 로 3개 노선 시험
+  python probe_live_price.py collect  # collect_flights.fetch_live_price 로 여러 노선을 실제 수집 방식 그대로 시험
 """
 import datetime
 import sys
@@ -74,6 +75,22 @@ def probe_v3():
                 print(f"[v3 {a}->{b}] 실패: {type(e).__name__}: {str(e)[:200]}")
 
 
+def probe_collect():
+    """collect_flights.fetch_live_price 를 그대로 호출해 지역별 대표 노선을 시험합니다."""
+    import collect_flights as cf
+    codes = ["KIX", "FUK", "NRT", "HSG", "DAD", "BKK", "TPE", "PVG", "UBN", "GUM"]
+    meta = {m["code"]: m for m in cf.CITIES_58_MASTER}
+    ok = 0
+    for i, code in enumerate(codes):
+        s = cf.build_schedule_window(i)
+        p = cf.fetch_live_price(code, s["dep_yyyymmdd"], s["ret_yyyymmdd"])
+        if p:
+            ok += 1
+        base = meta[code]["base_price"]
+        print(f"[collect {code}] {s['schedule']} → {('%s원' % format(p, ',')) if p else '실패'} (기준가 {base:,}원)")
+    print(f"결과: {ok}/{len(codes)} 성공")
+
+
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "access"
-    {"access": probe_access, "v2": probe_v2, "v3": probe_v3}[mode]()
+    {"access": probe_access, "v2": probe_v2, "v3": probe_v3, "collect": probe_collect}[mode]()
