@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>THE BOARDING PASS TIMES | 데일리 최저가 항공권 소식</title>
   <link rel="alternate" type="application/rss+xml" title="보딩패스 타임즈" href="./feed.xml" />
+  <meta name="description" content="매일 아침 인천·김포 출발 직항 노선의 실제 왕복 최저가를 신문처럼 정리합니다." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="THE BOARDING PASS TIMES · 데일리 최저가 항공권 소식" />
+  <meta property="og:description" content="매일 아침 인천·김포 출발 직항 노선의 실제 왕복 최저가" />
+  <meta property="og:url" content="https://lee2000y-max.github.io/daily-flight-news/" />
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Alpine.js -->
@@ -431,6 +436,27 @@
     </div>
   </section>
 
+  <!-- 오늘의 환율 박스(P3): 오늘 발행된 도시들의 현지 통화만. 조회 실패한 날은 숨김(이월 없음) -->
+  <section class="max-w-7xl mx-auto px-4 mb-6" x-show="loadState === 'ok' && fxRows.length" x-cloak aria-labelledby="fxTitle">
+    <div class="bg-[#FAF7F0] border border-[#2C2620] px-4 py-3">
+      <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+        <h2 id="fxTitle" class="font-serif-kr font-black text-sm tracking-wider">💱 오늘의 환율 <span class="font-sans font-medium text-[11px] text-[#5C5549]">현지 통화 → 원화</span></h2>
+        <span class="text-[10px] text-[#7A7164]">
+          <span x-text="fxUpdatedText"></span> ·
+          <a :href="fx.sourceUrl || '#'" target="_blank" rel="noopener noreferrer" class="underline">Rates By Exchange Rate API</a>
+        </span>
+      </div>
+      <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-1.5 text-xs">
+        <template x-for="r in fxRows" :key="r.cur">
+          <li class="flex items-baseline justify-between gap-2 border-b border-dashed border-[#D5CBB8] pb-1">
+            <span class="text-[#3E3932]"><span x-text="r.flag"></span> <span x-text="r.label"></span></span>
+            <strong class="font-mono-flap text-[#1E1B18]" x-text="r.krwText"></strong>
+          </li>
+        </template>
+      </ul>
+    </div>
+  </section>
+
   <!-- ===================================================================== -->
   <!-- 3. 5대 대분류 면(Section) 탭 + 2단 세부 카테고리 필터 칩 + 검색/필터 바 -->
   <!-- ===================================================================== -->
@@ -668,6 +694,10 @@
                 <span class="text-[#5C5549] font-semibold shrink-0">✈️ 운항 편명</span>
                 <span class="text-[#7A7164] text-right">오늘 상세 조회 실패 · 가격은 실제 조회값</span>
               </div>
+              <div class="flex items-start justify-between gap-2" x-show="fxOf(item.code)">
+                <span class="text-[#5C5549] font-semibold shrink-0">💱 현지 통화</span>
+                <span class="font-mono-flap text-[11px] text-[#2C2620] text-right" x-text="fxOf(item.code) ? fxOf(item.code).label + ' = ' + fxOf(item.code).krwText : ''"></span>
+              </div>
               <!-- 다른 일정 제안(2위): 가격 추이·이력에는 포함하지 않음 -->
               <div class="pt-1.5 border-t border-[#E2D9C8]" x-show="item.alt">
                 <div class="flex items-start justify-between gap-2">
@@ -736,6 +766,10 @@
                 <span class="text-[10px] opacity-80">↗</span>
               </a>
             </div>
+            <div class="flex justify-end mt-2">
+              <button type="button" @click="shareCard(item)"
+                class="text-[11px] font-bold text-[#5C5549] underline hover:text-[#1E1B18]">🖼️ 공유 이미지</button>
+            </div>
           </div>
 
         </article>
@@ -799,7 +833,8 @@
         climate: {},        // 도시별 월 기후 평년값 {code: {tmean[12], precipMm[12]}}
         climateMeta: {},
         crowd: {},          // 한국인 쏠림 지수 {code: {level 1~5}} (1 = 가장 한적). 없으면 1면 D는 쉼
-        crowdMeta: {},   // 실조회(live) 이력 첫 날짜. 이력 판정(A·C, 스탬프 1·3·6·7)은 이 날로부터 충분한 날이 지나야 켠다
+        crowdMeta: {},
+        fx: {},             // 오늘의 원화 환율 {source, updated, rates: {CUR: {krw, unit, name}}, cityCurrency}   // 실조회(live) 이력 첫 날짜. 이력 판정(A·C, 스탬프 1·3·6·7)은 이 날로부터 충분한 날이 지나야 켠다
 
         sections: [
           { id: 'ALL', label: '전체 호외', icon: '🗞️' },
@@ -1037,6 +1072,7 @@
           this.climateMeta = extData.climate || {};
           this.crowd = (extData.crowd && extData.crowd.cities) || {};
           this.crowdMeta = extData.crowd || {};
+          this.fx = extData.fx || {};
           const fresh = {};
           (Array.isArray(extData.flights) ? extData.flights : []).forEach(row => {
             if (!row || !row.date || !row.code) return;
@@ -1610,6 +1646,83 @@
             .slice(0, cap)
             .forEach(x => { map[x.f.code] = x.s; });
           return map;
+        },
+
+        FX_FLAG: { JPY: '🇯🇵', CNY: '🇨🇳', VND: '🇻🇳', THB: '🇹🇭', PHP: '🇵🇭', TWD: '🇹🇼', HKD: '🇭🇰', MOP: '🇲🇴',
+                   IDR: '🇮🇩', MYR: '🇲🇾', SGD: '🇸🇬', LAK: '🇱🇦', BND: '🇧🇳', USD: '🇺🇸', KZT: '🇰🇿', UZS: '🇺🇿', MNT: '🇲🇳' },
+        FX_SHORT: { JPY: '엔', CNY: '위안', VND: '동', THB: '바트', PHP: '페소', TWD: '대만달러', HKD: '홍콩달러', MOP: '파타카',
+                    IDR: '루피아', MYR: '링깃', SGD: '싱가포르달러', LAK: '킵', BND: '브루나이달러', USD: '달러', KZT: '텡게', UZS: '숨', MNT: '투그릭' },
+
+        fxOf(code) {
+          const cur = this.fx && this.fx.cityCurrency && this.fx.cityCurrency[code];
+          const r = cur && this.fx.rates && this.fx.rates[cur];
+          if (!r) return null;
+          const krw = r.krw >= 1000 ? Math.round(r.krw).toLocaleString('ko-KR') : r.krw.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+          return { cur, flag: this.FX_FLAG[cur] || '', label: `${r.unit.toLocaleString('ko-KR')}${this.FX_SHORT[cur] || cur}`, krwText: `₩${krw}` };
+        },
+
+        get fxRows() {
+          const seen = new Set(), out = [];
+          [...this.currentEditionFlights]
+            .sort((a, b) => this.getTaxonomy(a.code).order - this.getTaxonomy(b.code).order)
+            .forEach(f => { const x = this.fxOf(f.code); if (x && !seen.has(x.cur)) { seen.add(x.cur); out.push(x); } });
+          return out;
+        },
+
+        get fxUpdatedText() {
+          const t = Date.parse((this.fx && this.fx.updated) || '');
+          if (!t) return '';
+          const k = new Date(t + 9 * 3600 * 1000).toISOString();
+          return `기준 ${k.slice(0, 10)} ${k.slice(11, 16)} (한국 시각)`;
+        },
+
+        // 카드 공유 이미지(1080×1350 PNG). 휴대폰은 공유 창, 그 외에는 파일 저장. 값은 모두 카드와 같은 오늘 실제 조회값
+        async shareCard(item) {
+          try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
+          const W = 1080, H = 1350, c = document.createElement('canvas');
+          c.width = W; c.height = H;
+          const g = c.getContext('2d');
+          const serif = "'Noto Serif KR', serif", sans = "'Noto Sans KR', sans-serif", mono = "'JetBrains Mono', monospace";
+          g.fillStyle = '#EFECE4'; g.fillRect(0, 0, W, H);
+          g.fillStyle = '#FAF7F0'; g.fillRect(60, 60, W - 120, H - 120);
+          g.strokeStyle = '#2C2620'; g.lineWidth = 4; g.strokeRect(60, 60, W - 120, H - 120);
+          g.textAlign = 'center'; g.fillStyle = '#3E3932';
+          g.font = `700 30px ${serif}`; g.fillText('THE BOARDING PASS TIMES', W / 2, 150);
+          g.fillStyle = '#1E1B18'; g.font = `900 64px ${serif}`; g.fillText('데일리 최저가 항공권 소식', W / 2, 240);
+          g.fillStyle = '#5C5549'; g.font = `500 28px ${sans}`; g.fillText(this.formatDateKorean(item.editionDate || this.selectedDate), W / 2, 295);
+          g.fillStyle = '#2C2620'; g.fillRect(120, 330, W - 240, 4); g.fillRect(120, 342, W - 240, 2);
+          g.textAlign = 'left';
+          g.fillStyle = '#5C5549'; g.font = `700 34px ${mono}`; g.fillText(`${item.origin} ✈ ${item.dest}`, 120, 430);
+          g.fillStyle = '#1E1B18'; g.font = `900 104px ${serif}`; g.fillText(item.city, 120, 560);
+          g.fillStyle = '#5C5549'; g.font = `600 32px ${sans}`; g.fillText('왕복 직항 최저가', 120, 650);
+          g.fillStyle = '#B8332A'; g.font = `900 120px ${serif}`; g.fillText(this.formatPrice(item.price), 120, 780);
+          g.fillStyle = '#F2ECE1'; g.fillRect(120, 840, W - 240, 250);
+          g.fillStyle = '#1E1B18'; g.font = `700 34px ${sans}`;
+          const lines = [`📅 ${item.dates}`, item.airline ? `✈️ ${item.airline}${item.flightNos ? ' (' + item.flightNos + ')' : ''}` : '', item.schedule ? `🕒 ${item.schedule}` : ''].filter(Boolean);
+          lines.forEach((t, i) => {
+            let txt = t;
+            while (g.measureText(txt).width > W - 300 && txt.length > 4) txt = txt.slice(0, -2);
+            if (txt !== t) txt += '…';
+            g.fillText(txt, 150, 905 + i * 70);
+          });
+          g.fillStyle = '#5C5549'; g.font = `500 26px ${sans}`;
+          g.fillText('발행일 아침 실제 조회 가격 · 좌석 상황에 따라 바뀔 수 있음', 120, 1170);
+          g.fillStyle = '#1E3A5F'; g.font = `700 28px ${mono}`;
+          g.fillText('lee2000y-max.github.io/daily-flight-news', 120, 1230);
+          const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+          if (!blob) return;
+          const name = `boarding-pass-times_${item.editionDate || this.selectedDate}_${item.code}.png`;
+          const file = new File([blob], name, { type: 'image/png' });
+          try {
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({ files: [file], title: `${item.city} 왕복 ${this.formatPrice(item.price)}` });
+              return;
+            }
+          } catch (e) { if (e && e.name === 'AbortError') return; }
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob); a.download = name;
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(() => URL.revokeObjectURL(a.href), 4000);
         },
 
         priceBar(item) {

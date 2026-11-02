@@ -158,3 +158,22 @@ CITY_COORDS = {
     "TAS": (41.30, 69.24), "VTE": (17.97, 102.63), "BWN": (4.90, 114.94), "GUM": (13.47, 144.75),
     "SPN": (15.18, 145.75), "DPS": (-8.65, 115.22),
 }
+
+# 도시별 현지 통화(ISO 4217). 환율 박스용(P3)
+CITY_CURRENCY = {
+    **{c: "JPY" for c in ["KIX", "FUK", "NRT", "CTS", "NGO", "OKA", "HSG", "TAK", "FSZ", "KOJ", "OIT", "YGJ",
+                          "KKJ", "SDJ", "MYJ", "HIJ", "KMJ", "NGS", "KMQ", "AOJ", "AKJ"]},
+    **{c: "CNY" for c in ["TAO", "PVG", "PKX", "YNT", "DLC", "HGH", "XIY", "DYG", "CAN", "HRB"]},
+    **{c: "VND" for c in ["DAD", "CXR", "PQC", "HAN", "SGN", "HPH", "DLI"]},
+    **{c: "THB" for c in ["BKK", "CNX", "HKT"]},
+    **{c: "PHP" for c in ["CEB", "TAG", "CRK"]},
+    "TPE": "TWD", "KHH": "TWD", "HKG": "HKD", "MFM": "MOP",
+    "DPS": "IDR", "BKI": "MYR", "SIN": "SGD", "VTE": "LAK", "BWN": "BND",
+    "GUM": "USD", "SPN": "USD", "ALA": "KZT", "TAS": "UZS", "UBN": "MNT",
+}
+# 환율 표기 단위(원화 기준가가 너무 작아지는 통화는 100·1000 단위로)
+CURRENCY_UNIT = {"JPY": 100, "VND": 1000, "IDR": 1000, "LAK": 1000, "UZS": 1000, "MNT": 1000, "KZT": 100}
+CURRENCY_NAME = {"JPY": "일본 엔", "CNY": "중국 위안", "VND": "베트남 동", "THB": "태국 바트", "PHP": "필리핀 페소",
+                 "TWD": "대만 달러", "HKD": "홍콩 달러", "MOP": "마카오 파타카", "IDR": "인도네시아 루피아",
+                 "MYR": "말레이시아 링깃", "SGD": "싱가포르 달러", "LAK": "라오스 킵", "BND": "브루나이 달러",
+                 "USD": "미국 달러", "KZT": "카자흐스탄 텡게", "UZS": "우즈베키스탄 숨", "MNT": "몽골 투그릭"}

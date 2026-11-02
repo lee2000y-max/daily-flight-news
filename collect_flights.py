@@ -27,7 +27,7 @@ import sys
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from routes import BEST_SEASONS, CITY_MASTER, ORIGINS, GMP_DESTINATIONS, CITIES_58_MASTER  # noqa: F401  (CITIES_58_MASTER: build_reports 호환)
+from routes import BEST_SEASONS, CITY_CURRENCY, CITY_MASTER, CURRENCY_NAME, CURRENCY_UNIT, ORIGINS, GMP_DESTINATIONS, CITIES_58_MASTER  # noqa: F401  (CITIES_58_MASTER: build_reports 호환)
 
 DATA_JSON_PATH = "flights_data.json"
 SCHEMA_VERSION = 2
@@ -501,6 +501,33 @@ def write_feed(data: Dict[str, Any]) -> None:
     print(f"📰 {FEED_PATH} 저장 ({len(items)}건)")
 
 
+FX_URL = "https://open.er-api.com/v6/latest/KRW"
+
+
+def fetch_fx() -> Dict[str, Any]:
+    """오늘의 원화 환율(키 없는 ExchangeRate-API 공개 엔드포인트). 실패하면 빈 값 — 이월하지 않는다(절대 규칙 1)."""
+    import urllib.request
+    try:
+        with urllib.request.urlopen(FX_URL, timeout=20) as r:
+            d = json.load(r)
+        if d.get("result") != "success":
+            raise ValueError(d.get("error-type") or "result != success")
+        rates = d.get("rates", {})
+        out = {}
+        for cur in sorted(set(CITY_CURRENCY.values())):
+            per_krw = rates.get(cur)
+            if not per_krw:
+                continue
+            unit = CURRENCY_UNIT.get(cur, 1)
+            out[cur] = {"krw": round(unit / per_krw, 2), "unit": unit, "name": CURRENCY_NAME.get(cur, cur)}
+        print(f"💱 환율 {len(out)}종 ({d.get('time_last_update_utc', '')})")
+        return {"source": "ExchangeRate-API (open.er-api.com)", "sourceUrl": "https://www.exchangerate-api.com",
+                "updated": d.get("time_last_update_utc", ""), "rates": out, "cityCurrency": CITY_CURRENCY}
+    except Exception as e:
+        print(f"⚠️ 환율 조회 실패(환율 박스 생략): {type(e).__name__}: {str(e)[:120]}")
+        return {}
+
+
 def load_crowd() -> Dict[str, Any]:
     """한국인 쏠림 지수(data/crowd_index.json). 형식: {"basis": "...", "period": "...", "cities": {code: {"level": 1~5}}}
     level 1 = 가장 한적, 5 = 가장 붐빔. 파일이 없으면 빈 값(1면 D 유형은 쉼)."""
@@ -652,6 +679,7 @@ def main() -> None:
         "historicalSeries": series,
         "climate": load_climate(),
         "crowd": load_crowd(),
+        "fx": fetch_fx(),
     }
     tmp = DATA_JSON_PATH + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:

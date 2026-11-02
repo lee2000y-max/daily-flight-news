@@ -8,7 +8,7 @@ on:
         required: false
         default: 'OKA'
       mode:
-        description: 'route(노선 진단) · site(화면 검증·스크린샷) · climate(기후 평년값 갱신·커밋)'
+        description: 'route(노선 진단) · site(화면 검증·스크린샷) · climate(기후 평년값 갱신·커밋) · booking(판매처별 가격 실험, route에 "ICN-YNT 2026-12-10 2026-12-16 ...")'
         required: false
         default: 'route'
 
@@ -64,3 +64,22 @@ jobs:
           git commit -m "Update climate normals"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: 판매처별 가격 실험(P3)
+        if: github.event.inputs.mode == 'booking'
+        env:
+          PYTHONUTF8: '1'
+          PYTHONUNBUFFERED: '1'
+          ROUTE: ${{ github.event.inputs.route }}
+        run: |
+          pip install -q playwright "fast-flights==2.2" "primp==0.6.2"
+          python -m playwright install --with-deps chromium > /dev/null
+          python probe_booking.py $ROUTE; rc=$?
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -q --orphan preview/screenshots
+          git rm -rq --cached . > /dev/null
+          git add -f screenshots
+          git commit -qm "판매처별 가격 실험 스크린샷 (${GITHUB_REF_NAME})"
+          git push -qf origin HEAD:preview/screenshots
+          exit $rc
