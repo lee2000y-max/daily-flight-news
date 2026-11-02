@@ -482,13 +482,20 @@ def main() -> None:
             return
         published, failed = res["published"], res["failed"]
     else:  # merge
-        published, failed, seen = [], [], set()
+        shards = []
         for name in sorted(os.listdir("shard_out")) if os.path.isdir("shard_out") else []:
             with open(os.path.join("shard_out", name), encoding="utf-8") as f:
-                res = json.load(f)
-            if res.get("date") != today_str:
-                print(f"[주의] {name} 날짜 {res.get('date')} ≠ 오늘 {today_str}, 건너뜀")
-                continue
+                shards.append(json.load(f))
+        if shards:
+            # 발행일은 묶음 수집이 시작된 날짜(자정 직전에 시작해 합치기가 자정을 넘겨도 같은 호로 묶음)
+            from collections import Counter
+            today_str = Counter(s["date"] for s in shards).most_common(1)[0][0]
+        published, failed, seen = [], [], set()
+        for res in shards:
+            for r in res["published"]:
+                r["date"] = today_str
+            for r in res["failed"]:
+                r["date"] = today_str
             published += res["published"]
             failed += res["failed"]
             seen |= set(res["codes"])
@@ -502,6 +509,9 @@ def main() -> None:
     if dry:
         print("DRY_RUN=1: 저장하지 않음")
         return
+    if not published:
+        print("[오류] 발행 도시가 0개라 저장하지 않습니다(이전 지면 유지).")
+        sys.exit(1)
 
     prev = load_previous(DATA_JSON_PATH)
     keep_flights = [r for r in prev.get("flights", []) if r.get("date") != today_str]
