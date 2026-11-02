@@ -4,9 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       route:
-        description: '진단할 도착 공항 코드'
+        description: '진단할 도착 공항 코드(mode=route)'
         required: false
         default: 'OKA'
+      mode:
+        description: 'route(노선 진단) 또는 site(화면 검증·스크린샷)'
+        required: false
+        default: 'route'
+
+permissions:
+  contents: write
 
 jobs:
   probe:
@@ -17,7 +24,23 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
+      - name: 화면 검증·스크린샷
+        if: github.event.inputs.mode == 'site'
+        run: |
+          pip install -q playwright
+          python -m playwright install --with-deps chromium > /dev/null
+          python check_site.py; rc=$?
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -q --orphan preview/screenshots
+          git rm -rq --cached . > /dev/null
+          git add -f screenshots
+          git commit -qm "화면 검증 스크린샷 (${GITHUB_REF_NAME})"
+          git push -qf origin HEAD:preview/screenshots
+          exit $rc
+
       - name: 노선 진단
+        if: github.event.inputs.mode != 'site'
         run: |
           pip install -q "flights==0.9.0" "fast-flights==2.2" "primp==0.6.2"
           python probe_route.py "${{ github.event.inputs.route }}"
