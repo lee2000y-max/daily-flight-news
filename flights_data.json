@@ -1,7 +1,7 @@
 {
  "schemaVersion": 2,
  "publisher": "THE BOARDING PASS TIMES (보딩패스 타임즈 항공편집국)",
- "updatedAt": "2026-11-03 07:10",
+ "updatedAt": "2026-11-03 07:25",
  "latestDate": "2026-11-03",
  "availableDates": [
   "2026-11-03",
@@ -11,7 +11,7 @@
   "2026-11-03": {
    "published": 56,
    "total": 58,
-   "generatedAt": "2026-11-03 07:10"
+   "generatedAt": "2026-11-03 07:25"
   },
   "2026-11-02": {
    "published": 53,
@@ -60,7 +60,7 @@
    "retDate": "2026-12-15",
    "nights": 6,
    "leaveDays": 5,
-   "price": 234703,
+   "price": 234677,
    "dates": "2026.12.09(수)~12.15(화) (6박 7일)",
    "holidays": [],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-KIX-20261209/KIX-ICN-20261215?adult=1&fareType=Y",
@@ -88,10 +88,10 @@
     "retDate": "2026-12-28",
     "nights": 3,
     "leaveDays": 1,
-    "price": 370612,
+    "price": 370563,
     "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-KIX-20261225/KIX-ICN-20261228?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/kix/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -186,7 +186,7 @@
     "price": 432200,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-FUK-20270101/FUK-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/fuk/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -254,7 +254,7 @@
    "price": 271972,
    "dates": "2026.12.29(화)~01.05(화) (7박 8일)",
    "holidays": [
-    "New Year's Day"
+    "신정연휴"
    ],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-NRT-20261229/NRT-ICN-20270105?adult=1&fareType=Y",
    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/nrt/261229/270105/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -262,16 +262,16 @@
    "alt": {
     "origin": "ICN",
     "dest": "NRT",
-    "depDate": "2026-12-02",
-    "retDate": "2026-12-08",
-    "nights": 6,
-    "leaveDays": 5,
-    "price": 287244,
-    "dates": "2026.12.02(수)~12.08(화) (6박 7일)",
+    "depDate": "2026-12-04",
+    "retDate": "2026-12-09",
+    "nights": 5,
+    "leaveDays": 4,
+    "price": 292718,
+    "dates": "2026.12.04(금)~12.09(수) (5박 6일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-NRT-20261202/NRT-ICN-20261208?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/nrt/261202/261208/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDIoAGoFEgNJQ05yBRIDTlJUGhwSCjIwMjYtMTItMDgoAGoFEgNOUlRyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-NRT-20261204/NRT-ICN-20261209?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/nrt/261204/261209/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDQoAGoFEgNJQ05yBRIDTlJUGhwSCjIwMjYtMTItMDkoAGoFEgNOUlRyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -284,7 +284,7 @@
     "price": 453148,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-NRT-20270101/NRT-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/nrt/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -379,7 +379,7 @@
     "price": 644800,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-CTS-20270101/CTS-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/cts/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -458,10 +458,10 @@
     "retDate": "2027-01-05",
     "nights": 7,
     "leaveDays": 5,
-    "price": 295136,
+    "price": 295106,
     "dates": "2026.12.29(화)~01.05(화) (7박 8일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-NGO-20261229/NGO-ICN-20270105?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ngo/261229/270105/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -478,7 +478,7 @@
     "price": 484400,
     "dates": "2026.12.31(목)~01.03(일) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-NGO-20261231/NGO-ICN-20270103?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ngo/261231/270103/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -574,7 +574,7 @@
     "price": 548290,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-OKA-20270101/OKA-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/oka/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -669,7 +669,7 @@
     "price": 556300,
     "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-HSG-20261225/HSG-ICN-20261228?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hsg/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -759,7 +759,7 @@
     "price": 437500,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-TAK-20270101/TAK-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tak/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -840,7 +840,7 @@
     "price": 302400,
     "dates": "2026.12.29(화)~01.05(화) (7박 8일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-FSZ-20261229/FSZ-ICN-20270105?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/fsz/261229/270105/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -857,7 +857,7 @@
     "price": 501500,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-FSZ-20270101/FSZ-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/fsz/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -946,7 +946,7 @@
     "price": 394400,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-KOJ-20270101/KOJ-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/koj/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1014,7 +1014,7 @@
    "price": 265400,
    "dates": "2026.12.30(수)~01.05(화) (6박 7일)",
    "holidays": [
-    "New Year's Day"
+    "신정연휴"
    ],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-OIT-20261230/OIT-ICN-20270105?adult=1&fareType=Y",
    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/oit/261230/270105/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1044,7 +1044,7 @@
     "price": 547700,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-OIT-20270101/OIT-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/oit/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1134,7 +1134,7 @@
     "price": 439700,
     "dates": "2026.12.31(목)~01.03(일) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-YGJ-20261231/YGJ-ICN-20270103?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ygj/261231/270103/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1229,7 +1229,7 @@
     "price": 405500,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-KKJ-20270101/KKJ-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/kkj/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1325,7 +1325,7 @@
     "price": 809700,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-SDJ-20270101/SDJ-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/sdj/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1420,7 +1420,7 @@
     "price": 469900,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-MYJ-20270101/MYJ-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/myj/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1482,7 +1482,7 @@
    "price": 217800,
    "dates": "2026.12.29(화)~01.04(월) (6박 7일)",
    "holidays": [
-    "New Year's Day"
+    "신정연휴"
    ],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-HIJ-20261229/HIJ-ICN-20270104?adult=1&fareType=Y",
    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hij/261229/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1512,7 +1512,7 @@
     "price": 321800,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-HIJ-20270101/HIJ-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hij/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1608,7 +1608,7 @@
     "price": 472400,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-KMJ-20270101/KMJ-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/kmj/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1783,7 +1783,7 @@
     "price": 558500,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-KMQ-20270101/KMQ-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/kmq/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1885,7 +1885,7 @@
     "price": 751500,
     "dates": "2026.12.31(목)~01.03(일) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-AOJ-20261231/AOJ-ICN-20270103?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/aoj/261231/270103/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -1949,7 +1949,7 @@
    "retDate": "2026-11-27",
    "nights": 6,
    "leaveDays": 5,
-   "price": 226378,
+   "price": 226347,
    "dates": "2026.11.21(토)~11.27(금) (6박 7일)",
    "holidays": [],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-DAD-20261121/DAD-ICN-20261127?adult=1&fareType=Y",
@@ -1958,16 +1958,16 @@
    "alt": {
     "origin": "ICN",
     "dest": "DAD",
-    "depDate": "2026-11-28",
-    "retDate": "2026-12-03",
+    "depDate": "2026-12-05",
+    "retDate": "2026-12-10",
     "nights": 5,
     "leaveDays": 4,
-    "price": 264527,
-    "dates": "2026.11.28(토)~12.03(목) (5박 6일)",
+    "price": 264483,
+    "dates": "2026.12.05(토)~12.10(목) (5박 6일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-DAD-20261128/DAD-ICN-20261203?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dad/261128/261203/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjgoAGoFEgNJQ05yBRIDREFEGhwSCjIwMjYtMTItMDMoAGoFEgNEQURyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-DAD-20261205/DAD-ICN-20261210?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dad/261205/261210/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDUoAGoFEgNJQ05yBRIDREFEGhwSCjIwMjYtMTItMTAoAGoFEgNEQURyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -1977,10 +1977,10 @@
     "retDate": "2026-12-28",
     "nights": 3,
     "leaveDays": 1,
-    "price": 496965,
+    "price": 496887,
     "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-DAD-20261225/DAD-ICN-20261228?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dad/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2067,10 +2067,10 @@
     "retDate": "2026-12-28",
     "nights": 3,
     "leaveDays": 1,
-    "price": 558843,
+    "price": 558750,
     "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-CXR-20261225/CXR-ICN-20261228?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/cxr/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2133,7 +2133,7 @@
    "retDate": "2026-12-02",
    "nights": 4,
    "leaveDays": 3,
-   "price": 356064,
+   "price": 356006,
    "dates": "2026.11.28(토)~12.02(수) (4박 5일)",
    "holidays": [],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-PQC-20261128/PQC-ICN-20261202?adult=1&fareType=Y",
@@ -2161,10 +2161,10 @@
     "retDate": "2027-01-03",
     "nights": 3,
     "leaveDays": 1,
-    "price": 700426,
+    "price": 700277,
     "dates": "2026.12.31(목)~01.03(일) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-PQC-20261231/PQC-ICN-20270103?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/pqc/261231/270103/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2224,7 +2224,7 @@
    "retDate": "2026-12-23",
    "nights": 5,
    "leaveDays": 4,
-   "price": 342230,
+   "price": 342108,
    "dates": "2026.12.18(금)~12.23(수) (5박 6일)",
    "holidays": [],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-HAN-20261218/HAN-ICN-20261223?adult=1&fareType=Y",
@@ -2237,7 +2237,7 @@
     "retDate": "2026-12-07",
     "nights": 6,
     "leaveDays": 5,
-    "price": 343218,
+    "price": 343096,
     "dates": "2026.12.01(화)~12.07(월) (6박 7일)",
     "holidays": [],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-HAN-20261201/HAN-ICN-20261207?adult=1&fareType=Y",
@@ -2255,7 +2255,7 @@
     "price": 444451,
     "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-HAN-20261225/HAN-ICN-20261228?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/han/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2332,10 +2332,10 @@
     "retDate": "2026-12-25",
     "nights": 6,
     "leaveDays": 4,
-    "price": 383357,
+    "price": 383311,
     "dates": "2026.12.19(토)~12.25(금) (6박 7일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-SGN-20261219/SGN-ICN-20261225?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/sgn/261219/261225/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2352,7 +2352,7 @@
     "price": 452277,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-SGN-20270101/SGN-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/sgn/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2443,7 +2443,7 @@
     "price": 507571,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-HPH-20270101/HPH-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hph/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2507,7 +2507,7 @@
    "retDate": "2026-12-15",
    "nights": 6,
    "leaveDays": 5,
-   "price": 267201,
+   "price": 267184,
    "dates": "2026.12.09(수)~12.15(화) (6박 7일)",
    "holidays": [],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-TPE-20261209/TPE-ICN-20261215?adult=1&fareType=Y",
@@ -2523,7 +2523,7 @@
     "price": 291100,
     "dates": "2026.12.22(화)~12.29(화) (7박 8일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-TPE-20261222/TPE-ICN-20261229?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tpe/261222/261229/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2540,7 +2540,7 @@
     "price": 383539,
     "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-TPE-20261225/TPE-ICN-20261228?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tpe/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2618,7 +2618,7 @@
     "retDate": "2026-12-18",
     "nights": 6,
     "leaveDays": 5,
-    "price": 341916,
+    "price": 341897,
     "dates": "2026.12.12(토)~12.18(금) (6박 7일)",
     "holidays": [],
     "naverUrl": "https://flight.naver.com/flights/international/GMP-KHH-20261212/KHH-GMP-20261218?adult=1&fareType=Y",
@@ -2636,7 +2636,7 @@
     "price": 451877,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/GMP-KHH-20270101/KHH-GMP-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/gmp/khh/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2725,10 +2725,10 @@
     "retDate": "2027-01-04",
     "nights": 3,
     "leaveDays": 1,
-    "price": 380270,
+    "price": 380218,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-HKG-20270101/HKG-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hkg/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2817,7 +2817,7 @@
     "price": 575800,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-MFM-20270101/MFM-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/mfm/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -2884,16 +2884,16 @@
    "alt": {
     "origin": "ICN",
     "dest": "TAO",
-    "depDate": "2026-12-02",
-    "retDate": "2026-12-08",
-    "nights": 6,
-    "leaveDays": 5,
-    "price": 210521,
-    "dates": "2026.12.02(수)~12.08(화) (6박 7일)",
+    "depDate": "2026-12-09",
+    "retDate": "2026-12-14",
+    "nights": 5,
+    "leaveDays": 4,
+    "price": 213300,
+    "dates": "2026.12.09(수)~12.14(월) (5박 6일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-TAO-20261202/TAO-ICN-20261208?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tao/261202/261208/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDIoAGoFEgNJQ05yBRIDVEFPGhwSCjIwMjYtMTItMDgoAGoFEgNUQU9yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-TAO-20261209/TAO-ICN-20261214?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tao/261209/261214/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDkoAGoFEgNJQ05yBRIDVEFPGhwSCjIwMjYtMTItMTQoAGoFEgNUQU9yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -2906,7 +2906,7 @@
     "price": 348100,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-TAO-20270101/TAO-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tao/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -3001,7 +3001,7 @@
     "price": 502700,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-PVG-20270101/PVG-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/pvg/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -3068,7 +3068,7 @@
    "price": 329700,
    "dates": "2026.12.31(목)~01.03(일) (3박 4일)",
    "holidays": [
-    "New Year's Day"
+    "신정연휴"
    ],
    "naverUrl": "https://flight.naver.com/flights/international/GMP-PKX-20261231/PKX-GMP-20270103?adult=1&fareType=Y",
    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/gmp/pkx/261231/270103/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -3098,7 +3098,7 @@
     "price": 329700,
     "dates": "2026.12.31(목)~01.03(일) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/GMP-PKX-20261231/PKX-GMP-20270103?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/gmp/pkx/261231/270103/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -3193,7 +3193,7 @@
     "price": 323300,
     "dates": "2026.12.31(목)~01.03(일) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-YNT-20261231/YNT-ICN-20270103?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ynt/261231/270103/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -3288,7 +3288,7 @@
     "price": 258900,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-DLC-20270101/DLC-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dlc/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -3383,7 +3383,7 @@
     "price": 519524,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-HGH-20270101/HGH-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hgh/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -3480,7 +3480,7 @@
     "price": 548300,
     "dates": "2026.12.24(목)~12.27(일) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-XIY-20261224/XIY-ICN-20261227?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/xiy/261224/261227/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -3547,7 +3547,7 @@
    "price": 589404,
    "dates": "2026.12.26(토)~01.02(토) (7박 8일)",
    "holidays": [
-    "New Year's Day"
+    "신정연휴"
    ],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-DYG-20261226/DYG-ICN-20270102?adult=1&fareType=Y",
    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dyg/261226/270102/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -3598,11 +3598,11 @@
    "outbound": {
     "airlineCode": "CZ",
     "airline": "중국남방항공",
-    "flightNo": "CZ3062",
-    "dep": "16:15",
-    "arr": "19:15",
+    "flightNo": "CZ338",
+    "dep": "15:15",
+    "arr": "18:05",
     "arrDayOffset": 0,
-    "durationMin": 240,
+    "durationMin": 230,
     "stops": 0
    },
    "inbound": {
@@ -3616,53 +3616,37 @@
     "stops": 0
    },
    "airline": "중국남방항공",
-   "flightNos": "CZ3062 / CZ337",
-   "timeSlot": "출국 16:15→19:15 / 귀국 09:05→13:15",
+   "flightNos": "CZ338 / CZ337",
+   "timeSlot": "출국 15:15→18:05 / 귀국 09:05→13:15",
    "isFSC": true,
    "origin": "ICN",
    "dest": "CAN",
-   "depDate": "2026-11-20",
+   "depDate": "2026-11-19",
    "retDate": "2026-11-23",
-   "nights": 3,
-   "leaveDays": 2,
+   "nights": 4,
+   "leaveDays": 3,
    "price": 404300,
-   "dates": "2026.11.20(금)~11.23(월) (3박 4일)",
+   "dates": "2026.11.19(목)~11.23(월) (4박 5일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-CAN-20261120/CAN-ICN-20261123?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/can/261120/261123/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjAoAGoFEgNJQ05yBRIDQ0FOGhwSCjIwMjYtMTEtMjMoAGoFEgNDQU5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-CAN-20261119/CAN-ICN-20261123?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/can/261119/261123/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMTkoAGoFEgNJQ05yBRIDQ0FOGhwSCjIwMjYtMTEtMjMoAGoFEgNDQU5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "CAN",
-    "depDate": "2026-11-28",
+    "depDate": "2026-11-27",
     "retDate": "2026-12-01",
-    "nights": 3,
-    "leaveDays": 2,
+    "nights": 4,
+    "leaveDays": 3,
     "price": 404300,
-    "dates": "2026.11.28(토)~12.01(화) (3박 4일)",
+    "dates": "2026.11.27(금)~12.01(화) (4박 5일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-CAN-20261128/CAN-ICN-20261201?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/can/261128/261201/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjgoAGoFEgNJQ05yBRIDQ0FOGhwSCjIwMjYtMTItMDEoAGoFEgNDQU5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-CAN-20261127/CAN-ICN-20261201?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/can/261127/261201/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjcoAGoFEgNJQ05yBRIDQ0FOGhwSCjIwMjYtMTItMDEoAGoFEgNDQU5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
-   "leaveSaver": {
-    "origin": "ICN",
-    "dest": "CAN",
-    "depDate": "2026-12-25",
-    "retDate": "2026-12-28",
-    "nights": 3,
-    "leaveDays": 1,
-    "price": 613300,
-    "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
-    "holidays": [
-     "Christmas Day"
-    ],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-CAN-20261225/CAN-ICN-20261228?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/can/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMjUoAGoFEgNJQ05yBRIDQ0FOGhwSCjIwMjYtMTItMjgoAGoFEgNDQU5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
-    "source": "calendar"
-   },
+   "leaveSaver": null,
    "bestSeasons": [
     {
      "months": [
@@ -3745,7 +3729,7 @@
     "price": 396700,
     "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-HRB-20261225/HRB-ICN-20261228?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hrb/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -3834,7 +3818,7 @@
     "price": 772900,
     "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-BKK-20261225/BKK-ICN-20261228?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/bkk/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -3924,7 +3908,7 @@
     "price": 714800,
     "dates": "2026.12.24(목)~12.27(일) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-CNX-20261224/CNX-ICN-20261227?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/cnx/261224/261227/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4014,7 +3998,7 @@
     "price": 967900,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-HKT-20270101/HKT-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hkt/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4075,7 +4059,7 @@
    "retDate": "2026-12-24",
    "nights": 6,
    "leaveDays": 5,
-   "price": 588640,
+   "price": 588726,
    "dates": "2026.12.18(금)~12.24(목) (6박 7일)",
    "holidays": [],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-CEB-20261218/CEB-ICN-20261224?adult=1&fareType=Y",
@@ -4106,7 +4090,7 @@
     "price": 811900,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-CEB-20270101/CEB-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ceb/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4163,29 +4147,29 @@
    "isFSC": false,
    "origin": "ICN",
    "dest": "TAG",
-   "depDate": "2026-11-25",
-   "retDate": "2026-12-01",
+   "depDate": "2026-11-17",
+   "retDate": "2026-11-23",
    "nights": 6,
    "leaveDays": 5,
-   "price": 649100,
-   "dates": "2026.11.25(수)~12.01(화) (6박 7일)",
+   "price": 679100,
+   "dates": "2026.11.17(화)~11.23(월) (6박 7일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-TAG-20261125/TAG-ICN-20261201?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tag/261125/261201/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjUoAGoFEgNJQ05yBRIDVEFHGhwSCjIwMjYtMTItMDEoAGoFEgNUQUdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-TAG-20261117/TAG-ICN-20261123?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tag/261117/261123/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMTcoAGoFEgNJQ05yBRIDVEFHGhwSCjIwMjYtMTEtMjMoAGoFEgNUQUdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "TAG",
-    "depDate": "2026-11-17",
-    "retDate": "2026-11-23",
+    "depDate": "2026-12-08",
+    "retDate": "2026-12-14",
     "nights": 6,
     "leaveDays": 5,
-    "price": 679100,
-    "dates": "2026.11.17(화)~11.23(월) (6박 7일)",
+    "price": 689100,
+    "dates": "2026.12.08(화)~12.14(월) (6박 7일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-TAG-20261117/TAG-ICN-20261123?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tag/261117/261123/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMTcoAGoFEgNJQ05yBRIDVEFHGhwSCjIwMjYtMTEtMjMoAGoFEgNUQUdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-TAG-20261208/TAG-ICN-20261214?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tag/261208/261214/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDgoAGoFEgNJQ05yBRIDVEFHGhwSCjIwMjYtMTItMTQoAGoFEgNUQUdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -4198,7 +4182,7 @@
     "price": 869100,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-TAG-20270101/TAG-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tag/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4259,7 +4243,7 @@
    "retDate": "2026-11-27",
    "nights": 6,
    "leaveDays": 5,
-   "price": 368737,
+   "price": 368682,
    "dates": "2026.11.21(토)~11.27(금) (6박 7일)",
    "holidays": [],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-CRK-20261121/CRK-ICN-20261127?adult=1&fareType=Y",
@@ -4290,7 +4274,7 @@
     "price": 702600,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-CRK-20270101/CRK-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/crk/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4381,7 +4365,7 @@
     "price": 615548,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-BKI-20270101/BKI-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/bki/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4439,7 +4423,7 @@
    "retDate": "2026-11-25",
    "nights": 5,
    "leaveDays": 4,
-   "price": 427143,
+   "price": 427183,
    "dates": "2026.11.20(금)~11.25(수) (5박 6일)",
    "holidays": [],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-SIN-20261120/SIN-ICN-20261125?adult=1&fareType=Y",
@@ -4470,7 +4454,7 @@
     "price": 758248,
     "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-SIN-20261225/SIN-ICN-20261228?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/sin/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4524,29 +4508,29 @@
    "isFSC": false,
    "origin": "ICN",
    "dest": "UBN",
-   "depDate": "2026-12-10",
-   "retDate": "2026-12-13",
+   "depDate": "2026-12-03",
+   "retDate": "2026-12-06",
    "nights": 3,
    "leaveDays": 2,
-   "price": 430895,
-   "dates": "2026.12.10(목)~12.13(일) (3박 4일)",
+   "price": 406894,
+   "dates": "2026.12.03(목)~12.06(일) (3박 4일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-UBN-20261210/UBN-ICN-20261213?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ubn/261210/261213/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMTAoAGoFEgNJQ05yBRIDVUJOGhwSCjIwMjYtMTItMTMoAGoFEgNVQk5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-UBN-20261203/UBN-ICN-20261206?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ubn/261203/261206/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDMoAGoFEgNJQ05yBRIDVUJOGhwSCjIwMjYtMTItMDYoAGoFEgNVQk5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "UBN",
-    "depDate": "2026-12-06",
+    "depDate": "2026-12-10",
     "retDate": "2026-12-13",
-    "nights": 7,
-    "leaveDays": 5,
+    "nights": 3,
+    "leaveDays": 2,
     "price": 430895,
-    "dates": "2026.12.06(일)~12.13(일) (7박 8일)",
+    "dates": "2026.12.10(목)~12.13(일) (3박 4일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-UBN-20261206/UBN-ICN-20261213?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ubn/261206/261213/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDYoAGoFEgNJQ05yBRIDVUJOGhwSCjIwMjYtMTItMTMoAGoFEgNVQk5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-UBN-20261210/UBN-ICN-20261213?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ubn/261210/261213/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMTAoAGoFEgNJQ05yBRIDVUJOGhwSCjIwMjYtMTItMTMoAGoFEgNVQk5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -4559,7 +4543,7 @@
     "price": 591896,
     "dates": "2026.12.31(목)~01.03(일) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-UBN-20261231/UBN-ICN-20270103?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ubn/261231/270103/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4648,7 +4632,7 @@
     "price": 1068700,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-ALA-20270101/ALA-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ala/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4739,7 +4723,7 @@
     "price": 1590900,
     "dates": "2026.12.31(목)~01.03(일) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-TAS-20261231/TAS-ICN-20270103?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tas/261231/270103/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4806,7 +4790,7 @@
    "price": 571844,
    "dates": "2026.12.31(목)~01.07(목) (7박 8일)",
    "holidays": [
-    "New Year's Day"
+    "신정연휴"
    ],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-VTE-20261231/VTE-ICN-20270107?adult=1&fareType=Y",
    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/vte/261231/270107/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4836,7 +4820,7 @@
     "price": 748700,
     "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-VTE-20261225/VTE-ICN-20261228?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/vte/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -4999,7 +4983,7 @@
     "price": 624300,
     "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
     "holidays": [
-     "Christmas Day"
+     "기독탄신일"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-GUM-20261225/GUM-ICN-20261228?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/gum/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -5091,7 +5075,7 @@
     "price": 661500,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-SPN-20270101/SPN-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/spn/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -5180,10 +5164,10 @@
     "retDate": "2027-01-04",
     "nights": 3,
     "leaveDays": 1,
-    "price": 773300,
+    "price": 773860,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
-     "New Year's Day"
+     "신정연휴"
     ],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-DPS-20270101/DPS-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dps/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
@@ -7774,6 +7758,10 @@
    "prices": [
     1023600,
     1023500
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "AOJ": {
@@ -7788,6 +7776,10 @@
    "prices": [
     381500,
     381500
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "BKI": {
@@ -7802,6 +7794,10 @@
    "prices": [
     296680,
     296680
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "BKK": {
@@ -7816,6 +7812,10 @@
    "prices": [
     572840,
     572900
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "BWN": {
@@ -7830,6 +7830,10 @@
    "prices": [
     557200,
     557100
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "CAN": {
@@ -7844,6 +7848,10 @@
    "prices": [
     405300,
     404300
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "CEB": {
@@ -7857,7 +7865,11 @@
    ],
    "prices": [
     580898,
-    588640
+    588726
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "CNX": {
@@ -7872,6 +7884,10 @@
    "prices": [
     426663,
     427178
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "CRK": {
@@ -7885,7 +7901,11 @@
    ],
    "prices": [
     368542,
-    368737
+    368682
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "CTS": {
@@ -7900,6 +7920,10 @@
    "prices": [
     474375,
     399800
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "CXR": {
@@ -7914,6 +7938,10 @@
    "prices": [
     232037,
     232278
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "DAD": {
@@ -7927,7 +7955,11 @@
    ],
    "prices": [
     226137,
-    226378
+    226347
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "DLC": {
@@ -7942,6 +7974,10 @@
    "prices": [
     219300,
     218900
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "DPS": {
@@ -7956,6 +7992,10 @@
    "prices": [
     626800,
     627300
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "DYG": {
@@ -7970,6 +8010,10 @@
    "prices": [
     588670,
     589404
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "FSZ": {
@@ -7984,6 +8028,10 @@
    "prices": [
     302300,
     283500
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "FUK": {
@@ -7998,6 +8046,10 @@
    "prices": [
     270600,
     270900
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "GUM": {
@@ -8012,6 +8064,10 @@
    "prices": [
     255357,
     255706
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "HAN": {
@@ -8025,7 +8081,11 @@
    ],
    "prices": [
     336180,
-    342230
+    342108
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "HGH": {
@@ -8040,6 +8100,10 @@
    "prices": [
     509100,
     484100
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "HKG": {
@@ -8054,6 +8118,10 @@
    "prices": [
     242800,
     242800
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "HKT": {
@@ -8068,6 +8136,10 @@
    "prices": [
     553100,
     552900
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "HPH": {
@@ -8082,6 +8154,10 @@
    "prices": [
     406893,
     406893
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "HRB": {
@@ -8096,6 +8172,10 @@
    "prices": [
     316200,
     316500
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "HSG": {
@@ -8110,6 +8190,10 @@
    "prices": [
     231300,
     231300
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "KHH": {
@@ -8124,6 +8208,10 @@
    "prices": [
     334587,
     320303
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "KIX": {
@@ -8137,7 +8225,11 @@
    ],
    "prices": [
     256600,
-    234703
+    234677
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "KKJ": {
@@ -8152,6 +8244,10 @@
    "prices": [
     300700,
     255500
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "KMQ": {
@@ -8166,6 +8262,10 @@
    "prices": [
     383500,
     383500
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "KOJ": {
@@ -8180,6 +8280,10 @@
    "prices": [
     216100,
     216400
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "MFM": {
@@ -8194,6 +8298,10 @@
    "prices": [
     379969,
     380668
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "NGO": {
@@ -8208,6 +8316,10 @@
    "prices": [
     262000,
     290873
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "NGS": {
@@ -8222,6 +8334,10 @@
    "prices": [
     312700,
     312700
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "NRT": {
@@ -8236,6 +8352,10 @@
    "prices": [
     271666,
     271972
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "OIT": {
@@ -8250,6 +8370,10 @@
    "prices": [
     265100,
     265400
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "OKA": {
@@ -8264,6 +8388,10 @@
    "prices": [
     324000,
     324300
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "PKX": {
@@ -8278,6 +8406,10 @@
    "prices": [
     330300,
     329700
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "PQC": {
@@ -8291,7 +8423,11 @@
    ],
    "prices": [
     355356,
-    356064
+    356006
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "PVG": {
@@ -8306,6 +8442,10 @@
    "prices": [
     352413,
     353124
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "SDJ": {
@@ -8320,6 +8460,10 @@
    "prices": [
     422000,
     422000
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "SGN": {
@@ -8334,6 +8478,10 @@
    "prices": [
     382993,
     362713
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "SIN": {
@@ -8347,7 +8495,11 @@
    ],
    "prices": [
     426277,
-    427143
+    427183
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "SPN": {
@@ -8362,6 +8514,10 @@
    "prices": [
     366893,
     321500
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "TAG": {
@@ -8375,7 +8531,11 @@
    ],
    "prices": [
     648900,
-    649100
+    679100
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "TAK": {
@@ -8390,6 +8550,10 @@
    "prices": [
     244600,
     215500
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "TAO": {
@@ -8404,6 +8568,10 @@
    "prices": [
     206800,
     207100
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "TAS": {
@@ -8418,6 +8586,10 @@
    "prices": [
     1341000,
     1340900
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "TPE": {
@@ -8431,7 +8603,11 @@
    ],
    "prices": [
     266936,
-    267201
+    267184
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "UBN": {
@@ -8445,7 +8621,11 @@
    ],
    "prices": [
     406566,
-    430895
+    406894
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "VTE": {
@@ -8460,6 +8640,10 @@
    "prices": [
     571075,
     571844
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "XIY": {
@@ -8474,6 +8658,10 @@
    "prices": [
     493300,
     493300
+   ],
+   "fsc": [
+    "",
+    "1"
    ]
   },
   "YGJ": {
@@ -8488,6 +8676,10 @@
    "prices": [
     190800,
     190800
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "YNT": {
@@ -8502,6 +8694,10 @@
    "prices": [
     173500,
     173300
+   ],
+   "fsc": [
+    "",
+    "0"
    ]
   },
   "HIJ": {
@@ -8513,6 +8709,9 @@
    ],
    "prices": [
     217800
+   ],
+   "fsc": [
+    "0"
    ]
   },
   "KMJ": {
@@ -8524,6 +8723,9 @@
    ],
    "prices": [
     336800
+   ],
+   "fsc": [
+    "1"
    ]
   },
   "MYJ": {
@@ -8535,7 +8737,1757 @@
    ],
    "prices": [
     296400
+   ],
+   "fsc": [
+    "0"
    ]
   }
- }
+ },
+ "climate": {
+  "source": "NASA POWER 기후값(T2M, PRECTOTCORR)",
+  "period": "25-year Meteorological and Solar Monthly & Annual Climatologies (January 2001 - December 2025)",
+  "cities": {
+   "AKJ": {
+    "tmean": [
+     -9.3,
+     -8.9,
+     -4.7,
+     2.6,
+     9.8,
+     14.9,
+     19.1,
+     19.6,
+     14.9,
+     7.6,
+     0.2,
+     -6.6
+    ],
+    "precipMm": [
+     64,
+     54,
+     52,
+     49,
+     69,
+     80,
+     123,
+     147,
+     115,
+     103,
+     96,
+     92
+    ]
+   },
+   "ALA": {
+    "tmean": [
+     -12.9,
+     -10.6,
+     -3.3,
+     2.5,
+     6.9,
+     11.1,
+     13.6,
+     13.2,
+     8.4,
+     2.1,
+     -4.9,
+     -10.9
+    ],
+    "precipMm": [
+     22,
+     28,
+     46,
+     79,
+     68,
+     50,
+     34,
+     28,
+     24,
+     38,
+     39,
+     27
+    ]
+   },
+   "AOJ": {
+    "tmean": [
+     -0.8,
+     -0.7,
+     2.4,
+     7.1,
+     12.6,
+     17.0,
+     21.0,
+     22.9,
+     19.7,
+     13.7,
+     7.2,
+     1.4
+    ],
+    "precipMm": [
+     113,
+     87,
+     85,
+     84,
+     89,
+     89,
+     147,
+     161,
+     142,
+     129,
+     139,
+     146
+    ]
+   },
+   "BKI": {
+    "tmean": [
+     24.0,
+     23.9,
+     24.5,
+     25.4,
+     25.4,
+     25.0,
+     24.6,
+     24.6,
+     24.6,
+     24.5,
+     24.6,
+     24.5
+    ],
+    "precipMm": [
+     197,
+     97,
+     123,
+     138,
+     218,
+     263,
+     259,
+     239,
+     272,
+     356,
+     282,
+     270
+    ]
+   },
+   "BKK": {
+    "tmean": [
+     26.2,
+     28.8,
+     30.2,
+     30.7,
+     29.5,
+     28.4,
+     27.8,
+     27.6,
+     27.2,
+     26.9,
+     25.9,
+     24.9
+    ],
+    "precipMm": [
+     16,
+     13,
+     47,
+     75,
+     164,
+     165,
+     169,
+     181,
+     278,
+     203,
+     39,
+     10
+    ]
+   },
+   "BWN": {
+    "tmean": [
+     26.7,
+     26.5,
+     26.9,
+     27.7,
+     28.0,
+     27.8,
+     27.6,
+     27.6,
+     27.5,
+     27.2,
+     27.3,
+     27.2
+    ],
+    "precipMm": [
+     285,
+     141,
+     155,
+     212,
+     241,
+     258,
+     249,
+     229,
+     253,
+     312,
+     321,
+     333
+    ]
+   },
+   "CAN": {
+    "tmean": [
+     14.0,
+     16.9,
+     20.1,
+     23.8,
+     26.5,
+     27.8,
+     28.3,
+     28.3,
+     26.9,
+     23.7,
+     19.9,
+     14.8
+    ],
+    "precipMm": [
+     49,
+     41,
+     96,
+     152,
+     298,
+     332,
+     213,
+     244,
+     178,
+     55,
+     41,
+     30
+    ]
+   },
+   "CEB": {
+    "tmean": [
+     25.8,
+     25.9,
+     26.8,
+     28.1,
+     28.7,
+     27.9,
+     27.2,
+     27.1,
+     27.1,
+     27.1,
+     26.9,
+     26.4
+    ],
+    "precipMm": [
+     160,
+     102,
+     83,
+     66,
+     126,
+     212,
+     238,
+     203,
+     219,
+     238,
+     163,
+     198
+    ]
+   },
+   "CNX": {
+    "tmean": [
+     19.3,
+     21.7,
+     24.6,
+     27.1,
+     25.8,
+     25.0,
+     24.3,
+     23.8,
+     23.6,
+     22.6,
+     20.8,
+     18.9
+    ],
+    "precipMm": [
+     15,
+     4,
+     23,
+     63,
+     189,
+     141,
+     178,
+     237,
+     222,
+     123,
+     37,
+     13
+    ]
+   },
+   "CRK": {
+    "tmean": [
+     24.4,
+     25.6,
+     27.4,
+     29.4,
+     28.9,
+     27.3,
+     26.5,
+     26.2,
+     26.3,
+     26.0,
+     25.4,
+     24.7
+    ],
+    "precipMm": [
+     28,
+     29,
+     32,
+     48,
+     197,
+     395,
+     522,
+     608,
+     433,
+     236,
+     123,
+     91
+    ]
+   },
+   "CTS": {
+    "tmean": [
+     -6.9,
+     -6.7,
+     -2.9,
+     3.5,
+     10.0,
+     14.9,
+     18.8,
+     19.9,
+     16.0,
+     9.2,
+     2.1,
+     -4.6
+    ],
+    "precipMm": [
+     103,
+     83,
+     72,
+     62,
+     74,
+     82,
+     121,
+     160,
+     137,
+     118,
+     129,
+     130
+    ]
+   },
+   "CXR": {
+    "tmean": [
+     24.2,
+     24.5,
+     25.9,
+     27.6,
+     28.6,
+     28.4,
+     28.0,
+     28.1,
+     28.1,
+     27.2,
+     26.4,
+     25.0
+    ],
+    "precipMm": [
+     48,
+     16,
+     34,
+     44,
+     129,
+     108,
+     122,
+     136,
+     220,
+     264,
+     304,
+     148
+    ]
+   },
+   "DAD": {
+    "tmean": [
+     21.0,
+     21.7,
+     23.7,
+     26.0,
+     27.8,
+     28.5,
+     28.4,
+     28.2,
+     27.3,
+     25.7,
+     24.2,
+     21.9
+    ],
+    "precipMm": [
+     79,
+     27,
+     39,
+     49,
+     81,
+     71,
+     102,
+     167,
+     371,
+     562,
+     412,
+     249
+    ]
+   },
+   "DLC": {
+    "tmean": [
+     -2.1,
+     -0.7,
+     3.1,
+     8.5,
+     14.6,
+     19.8,
+     23.6,
+     24.8,
+     21.5,
+     15.4,
+     7.8,
+     0.9
+    ],
+    "precipMm": [
+     6,
+     12,
+     12,
+     43,
+     62,
+     78,
+     144,
+     170,
+     54,
+     42,
+     35,
+     11
+    ]
+   },
+   "DLI": {
+    "tmean": [
+     20.0,
+     20.9,
+     22.9,
+     24.8,
+     25.5,
+     25.1,
+     24.8,
+     24.8,
+     24.1,
+     22.9,
+     21.9,
+     20.5
+    ],
+    "precipMm": [
+     33,
+     9,
+     23,
+     38,
+     112,
+     86,
+     101,
+     117,
+     197,
+     225,
+     251,
+     112
+    ]
+   },
+   "DPS": {
+    "tmean": [
+     25.5,
+     25.5,
+     25.7,
+     25.7,
+     25.1,
+     24.3,
+     23.5,
+     23.4,
+     24.4,
+     25.6,
+     26.3,
+     25.9
+    ],
+    "precipMm": [
+     317,
+     249,
+     201,
+     123,
+     82,
+     53,
+     40,
+     24,
+     38,
+     57,
+     134,
+     272
+    ]
+   },
+   "DYG": {
+    "tmean": [
+     2.7,
+     5.4,
+     10.4,
+     16.0,
+     20.3,
+     23.8,
+     26.2,
+     25.4,
+     21.6,
+     16.2,
+     10.4,
+     4.3
+    ],
+    "precipMm": [
+     42,
+     58,
+     94,
+     147,
+     223,
+     229,
+     208,
+     145,
+     114,
+     103,
+     80,
+     32
+    ]
+   },
+   "FSZ": {
+    "tmean": [
+     1.4,
+     2.7,
+     5.8,
+     10.7,
+     15.5,
+     19.2,
+     23.0,
+     24.0,
+     20.9,
+     15.5,
+     9.8,
+     4.1
+    ],
+    "precipMm": [
+     70,
+     89,
+     140,
+     166,
+     177,
+     213,
+     235,
+     166,
+     225,
+     220,
+     102,
+     74
+    ]
+   },
+   "FUK": {
+    "tmean": [
+     3.8,
+     5.2,
+     8.1,
+     13.1,
+     17.9,
+     21.7,
+     25.6,
+     26.4,
+     22.6,
+     16.9,
+     11.5,
+     6.0
+    ],
+    "precipMm": [
+     70,
+     88,
+     118,
+     140,
+     157,
+     299,
+     357,
+     204,
+     189,
+     108,
+     89,
+     79
+    ]
+   },
+   "GUM": {
+    "tmean": [
+     27.5,
+     27.2,
+     27.3,
+     27.9,
+     28.4,
+     28.7,
+     28.5,
+     28.4,
+     28.4,
+     28.4,
+     28.6,
+     28.2
+    ],
+    "precipMm": [
+     82,
+     50,
+     42,
+     47,
+     62,
+     97,
+     197,
+     315,
+     278,
+     231,
+     136,
+     69
+    ]
+   },
+   "HAN": {
+    "tmean": [
+     15.4,
+     18.2,
+     21.4,
+     25.1,
+     27.5,
+     28.5,
+     28.4,
+     27.9,
+     26.7,
+     23.8,
+     20.3,
+     16.0
+    ],
+    "precipMm": [
+     32,
+     22,
+     49,
+     78,
+     179,
+     201,
+     300,
+     322,
+     223,
+     124,
+     52,
+     25
+    ]
+   },
+   "HGH": {
+    "tmean": [
+     3.4,
+     5.9,
+     10.2,
+     16.1,
+     21.3,
+     24.9,
+     28.4,
+     28.1,
+     23.9,
+     18.3,
+     12.3,
+     5.3
+    ],
+    "precipMm": [
+     78,
+     90,
+     105,
+     115,
+     124,
+     230,
+     168,
+     177,
+     129,
+     74,
+     77,
+     59
+    ]
+   },
+   "HIJ": {
+    "tmean": [
+     1.8,
+     3.0,
+     6.2,
+     11.4,
+     16.5,
+     20.7,
+     24.5,
+     25.4,
+     21.5,
+     15.5,
+     9.6,
+     4.0
+    ],
+    "precipMm": [
+     63,
+     74,
+     109,
+     125,
+     146,
+     211,
+     260,
+     122,
+     170,
+     113,
+     79,
+     84
+    ]
+   },
+   "HKG": {
+    "tmean": [
+     16.0,
+     17.8,
+     20.2,
+     23.3,
+     26.3,
+     27.9,
+     28.5,
+     28.4,
+     27.6,
+     25.1,
+     21.6,
+     17.1
+    ],
+    "precipMm": [
+     36,
+     29,
+     72,
+     104,
+     210,
+     282,
+     185,
+     218,
+     160,
+     49,
+     30,
+     25
+    ]
+   },
+   "HKT": {
+    "tmean": [
+     26.9,
+     27.6,
+     28.4,
+     28.8,
+     28.5,
+     28.1,
+     27.9,
+     27.7,
+     27.4,
+     27.2,
+     27.4,
+     27.1
+    ],
+    "precipMm": [
+     80,
+     27,
+     112,
+     145,
+     265,
+     281,
+     264,
+     310,
+     352,
+     336,
+     219,
+     137
+    ]
+   },
+   "HPH": {
+    "tmean": [
+     15.8,
+     17.7,
+     20.5,
+     24.0,
+     26.9,
+     28.2,
+     28.2,
+     28.0,
+     27.1,
+     24.5,
+     21.1,
+     16.9
+    ],
+    "precipMm": [
+     39,
+     25,
+     50,
+     69,
+     168,
+     213,
+     302,
+     338,
+     240,
+     122,
+     51,
+     28
+    ]
+   },
+   "HRB": {
+    "tmean": [
+     -18.7,
+     -14.2,
+     -3.8,
+     6.5,
+     14.9,
+     21.1,
+     23.7,
+     21.7,
+     15.2,
+     5.3,
+     -6.0,
+     -16.5
+    ],
+    "precipMm": [
+     5,
+     5,
+     11,
+     22,
+     54,
+     104,
+     135,
+     104,
+     54,
+     21,
+     13,
+     8
+    ]
+   },
+   "HSG": {
+    "tmean": [
+     7.2,
+     8.0,
+     10.4,
+     14.4,
+     18.5,
+     21.9,
+     25.8,
+     27.2,
+     24.0,
+     19.5,
+     14.6,
+     9.4
+    ],
+    "precipMm": [
+     69,
+     88,
+     124,
+     158,
+     175,
+     288,
+     347,
+     228,
+     196,
+     112,
+     95,
+     82
+    ]
+   },
+   "KHH": {
+    "tmean": [
+     21.3,
+     21.9,
+     23.1,
+     25.2,
+     27.2,
+     28.6,
+     29.2,
+     29.0,
+     28.5,
+     27.0,
+     25.3,
+     22.6
+    ],
+    "precipMm": [
+     29,
+     24,
+     36,
+     56,
+     173,
+     298,
+     263,
+     402,
+     212,
+     66,
+     47,
+     33
+    ]
+   },
+   "KIX": {
+    "tmean": [
+     2.6,
+     3.7,
+     6.8,
+     12.1,
+     17.1,
+     21.1,
+     25.1,
+     25.9,
+     22.3,
+     16.3,
+     10.6,
+     5.0
+    ],
+    "precipMm": [
+     66,
+     79,
+     116,
+     135,
+     159,
+     213,
+     220,
+     178,
+     225,
+     192,
+     93,
+     76
+    ]
+   },
+   "KKJ": {
+    "tmean": [
+     7.6,
+     8.3,
+     10.6,
+     14.4,
+     18.5,
+     22.0,
+     25.8,
+     27.4,
+     24.3,
+     19.9,
+     15.1,
+     9.9
+    ],
+    "precipMm": [
+     77,
+     85,
+     120,
+     142,
+     156,
+     265,
+     340,
+     192,
+     200,
+     107,
+     88,
+     86
+    ]
+   },
+   "KMJ": {
+    "tmean": [
+     4.3,
+     5.8,
+     8.8,
+     13.5,
+     18.3,
+     21.9,
+     25.6,
+     26.4,
+     23.0,
+     17.4,
+     11.9,
+     6.4
+    ],
+    "precipMm": [
+     69,
+     100,
+     130,
+     157,
+     182,
+     383,
+     394,
+     213,
+     207,
+     117,
+     96,
+     82
+    ]
+   },
+   "KMQ": {
+    "tmean": [
+     -0.6,
+     -0.2,
+     3.5,
+     9.3,
+     15.2,
+     19.5,
+     23.5,
+     24.5,
+     20.4,
+     14.2,
+     8.3,
+     2.5
+    ],
+    "precipMm": [
+     189,
+     124,
+     134,
+     126,
+     118,
+     154,
+     242,
+     171,
+     200,
+     162,
+     164,
+     227
+    ]
+   },
+   "KOJ": {
+    "tmean": [
+     8.5,
+     9.8,
+     12.3,
+     16.2,
+     20.1,
+     23.2,
+     26.7,
+     27.5,
+     25.3,
+     20.7,
+     15.7,
+     10.6
+    ],
+    "precipMm": [
+     85,
+     124,
+     158,
+     184,
+     226,
+     550,
+     378,
+     228,
+     296,
+     154,
+     127,
+     101
+    ]
+   },
+   "MFM": {
+    "tmean": [
+     17.3,
+     18.3,
+     20.3,
+     23.1,
+     26.4,
+     28.4,
+     29.0,
+     28.9,
+     28.3,
+     26.1,
+     22.8,
+     18.8
+    ],
+    "precipMm": [
+     40,
+     30,
+     85,
+     112,
+     247,
+     294,
+     216,
+     253,
+     195,
+     69,
+     32,
+     26
+    ]
+   },
+   "MYJ": {
+    "tmean": [
+     6.4,
+     7.2,
+     9.7,
+     14.0,
+     18.2,
+     21.9,
+     25.6,
+     26.9,
+     24.0,
+     19.3,
+     14.2,
+     8.7
+    ],
+    "precipMm": [
+     56,
+     75,
+     108,
+     128,
+     153,
+     242,
+     268,
+     138,
+     181,
+     119,
+     77,
+     74
+    ]
+   },
+   "NGO": {
+    "tmean": [
+     4.2,
+     5.2,
+     8.3,
+     13.3,
+     18.1,
+     22.1,
+     26.0,
+     27.0,
+     23.8,
+     18.1,
+     12.4,
+     6.7
+    ],
+    "precipMm": [
+     73,
+     79,
+     118,
+     146,
+     164,
+     198,
+     225,
+     161,
+     215,
+     189,
+     90,
+     81
+    ]
+   },
+   "NGS": {
+    "tmean": [
+     5.9,
+     7.0,
+     9.7,
+     14.1,
+     18.6,
+     22.2,
+     26.0,
+     27.0,
+     23.6,
+     18.4,
+     13.2,
+     8.0
+    ],
+    "precipMm": [
+     71,
+     98,
+     131,
+     167,
+     186,
+     333,
+     352,
+     225,
+     201,
+     117,
+     103,
+     92
+    ]
+   },
+   "NRT": {
+    "tmean": [
+     4.7,
+     5.6,
+     8.8,
+     13.5,
+     18.2,
+     21.8,
+     25.5,
+     26.9,
+     23.6,
+     18.1,
+     12.7,
+     7.3
+    ],
+    "precipMm": [
+     80,
+     74,
+     124,
+     135,
+     148,
+     185,
+     153,
+     134,
+     211,
+     246,
+     120,
+     83
+    ]
+   },
+   "OIT": {
+    "tmean": [
+     6.9,
+     8.0,
+     10.5,
+     14.8,
+     18.8,
+     22.2,
+     25.9,
+     26.7,
+     23.9,
+     19.2,
+     14.3,
+     9.1
+    ],
+    "precipMm": [
+     63,
+     89,
+     117,
+     145,
+     186,
+     352,
+     298,
+     198,
+     255,
+     154,
+     93,
+     74
+    ]
+   },
+   "OKA": {
+    "tmean": [
+     18.9,
+     19.0,
+     19.8,
+     21.8,
+     24.5,
+     27.0,
+     28.8,
+     29.0,
+     28.2,
+     26.2,
+     23.6,
+     20.6
+    ],
+    "precipMm": [
+     61,
+     50,
+     81,
+     124,
+     209,
+     293,
+     125,
+     175,
+     186,
+     126,
+     83,
+     67
+    ]
+   },
+   "PKX": {
+    "tmean": [
+     -5.2,
+     -1.8,
+     5.1,
+     13.2,
+     20.5,
+     24.8,
+     26.6,
+     25.0,
+     19.8,
+     11.8,
+     2.9,
+     -4.0
+    ],
+    "precipMm": [
+     2,
+     6,
+     9,
+     24,
+     38,
+     84,
+     151,
+     108,
+     64,
+     30,
+     14,
+     2
+    ]
+   },
+   "PQC": {
+    "tmean": [
+     27.0,
+     27.3,
+     28.1,
+     29.1,
+     29.3,
+     28.8,
+     28.4,
+     28.2,
+     28.0,
+     27.9,
+     27.9,
+     27.4
+    ],
+    "precipMm": [
+     25,
+     16,
+     51,
+     109,
+     221,
+     310,
+     346,
+     293,
+     346,
+     247,
+     146,
+     62
+    ]
+   },
+   "PVG": {
+    "tmean": [
+     4.4,
+     6.1,
+     9.9,
+     15.3,
+     20.6,
+     24.5,
+     28.5,
+     28.5,
+     24.6,
+     19.3,
+     13.6,
+     6.7
+    ],
+    "precipMm": [
+     67,
+     78,
+     88,
+     95,
+     104,
+     195,
+     148,
+     173,
+     136,
+     77,
+     71,
+     53
+    ]
+   },
+   "SDJ": {
+    "tmean": [
+     -3.3,
+     -3.1,
+     0.7,
+     6.8,
+     12.9,
+     17.4,
+     21.4,
+     22.5,
+     18.3,
+     11.8,
+     5.5,
+     -0.3
+    ],
+    "precipMm": [
+     126,
+     80,
+     93,
+     92,
+     94,
+     116,
+     204,
+     168,
+     142,
+     153,
+     127,
+     150
+    ]
+   },
+   "SGN": {
+    "tmean": [
+     26.2,
+     28.0,
+     29.8,
+     30.7,
+     29.4,
+     27.4,
+     26.7,
+     26.6,
+     26.5,
+     26.5,
+     26.3,
+     25.7
+    ],
+    "precipMm": [
+     11,
+     6,
+     13,
+     41,
+     155,
+     212,
+     207,
+     191,
+     190,
+     215,
+     100,
+     32
+    ]
+   },
+   "SIN": {
+    "tmean": [
+     25.9,
+     26.2,
+     27.0,
+     27.8,
+     28.1,
+     27.6,
+     27.1,
+     27.1,
+     27.1,
+     27.3,
+     26.9,
+     26.3
+    ],
+    "precipMm": [
+     235,
+     101,
+     168,
+     193,
+     199,
+     164,
+     174,
+     173,
+     167,
+     210,
+     283,
+     300
+    ]
+   },
+   "SPN": {
+    "tmean": [
+     27.2,
+     26.9,
+     27.1,
+     27.7,
+     28.3,
+     28.8,
+     28.6,
+     28.5,
+     28.5,
+     28.5,
+     28.6,
+     28.0
+    ],
+    "precipMm": [
+     65,
+     38,
+     32,
+     45,
+     47,
+     74,
+     154,
+     302,
+     262,
+     226,
+     103,
+     59
+    ]
+   },
+   "TAG": {
+    "tmean": [
+     26.5,
+     26.5,
+     27.1,
+     28.1,
+     28.6,
+     28.2,
+     27.8,
+     27.8,
+     27.8,
+     27.8,
+     27.7,
+     27.2
+    ],
+    "precipMm": [
+     153,
+     94,
+     86,
+     62,
+     117,
+     196,
+     213,
+     172,
+     171,
+     213,
+     192,
+     180
+    ]
+   },
+   "TAK": {
+    "tmean": [
+     4.5,
+     5.6,
+     8.5,
+     13.4,
+     18.2,
+     22.2,
+     26.1,
+     27.3,
+     23.7,
+     18.1,
+     12.4,
+     6.8
+    ],
+    "precipMm": [
+     54,
+     68,
+     96,
+     106,
+     132,
+     195,
+     219,
+     138,
+     187,
+     130,
+     70,
+     70
+    ]
+   },
+   "TAO": {
+    "tmean": [
+     1.5,
+     2.4,
+     5.8,
+     10.5,
+     16.0,
+     20.7,
+     24.7,
+     25.8,
+     22.5,
+     17.4,
+     10.9,
+     4.2
+    ],
+    "precipMm": [
+     11,
+     18,
+     18,
+     38,
+     68,
+     73,
+     178,
+     170,
+     76,
+     26,
+     38,
+     16
+    ]
+   },
+   "TAS": {
+    "tmean": [
+     0.4,
+     2.3,
+     8.5,
+     14.2,
+     20.5,
+     26.3,
+     29.0,
+     27.5,
+     21.5,
+     13.8,
+     6.6,
+     1.2
+    ],
+    "precipMm": [
+     46,
+     59,
+     62,
+     56,
+     31,
+     13,
+     4,
+     3,
+     4,
+     26,
+     52,
+     56
+    ]
+   },
+   "TPE": {
+    "tmean": [
+     17.0,
+     17.8,
+     19.1,
+     21.9,
+     24.8,
+     27.0,
+     28.3,
+     28.1,
+     26.7,
+     24.1,
+     21.8,
+     18.5
+    ],
+    "precipMm": [
+     99,
+     91,
+     131,
+     126,
+     228,
+     262,
+     162,
+     263,
+     252,
+     116,
+     115,
+     100
+    ]
+   },
+   "UBN": {
+    "tmean": [
+     -20.9,
+     -17.9,
+     -8.9,
+     0.5,
+     7.3,
+     14.8,
+     17.3,
+     14.7,
+     7.8,
+     -1.3,
+     -11.4,
+     -19.0
+    ],
+    "precipMm": [
+     3,
+     4,
+     6,
+     10,
+     29,
+     48,
+     68,
+     61,
+     25,
+     11,
+     8,
+     4
+    ]
+   },
+   "VTE": {
+    "tmean": [
+     21.3,
+     24.6,
+     28.1,
+     30.5,
+     29.3,
+     27.9,
+     27.2,
+     26.7,
+     26.6,
+     25.3,
+     23.2,
+     20.7
+    ],
+    "precipMm": [
+     8,
+     13,
+     35,
+     61,
+     168,
+     170,
+     203,
+     246,
+     204,
+     85,
+     16,
+     6
+    ]
+   },
+   "XIY": {
+    "tmean": [
+     -0.0,
+     3.6,
+     9.7,
+     16.1,
+     21.2,
+     25.8,
+     27.5,
+     26.1,
+     20.5,
+     14.4,
+     7.3,
+     1.1
+    ],
+    "precipMm": [
+     9,
+     13,
+     23,
+     40,
+     69,
+     84,
+     124,
+     114,
+     125,
+     60,
+     27,
+     6
+    ]
+   },
+   "YGJ": {
+    "tmean": [
+     5.3,
+     5.7,
+     8.2,
+     12.7,
+     17.3,
+     21.3,
+     25.1,
+     26.7,
+     23.1,
+     18.1,
+     13.1,
+     7.8
+    ],
+    "precipMm": [
+     132,
+     108,
+     124,
+     116,
+     124,
+     182,
+     221,
+     125,
+     204,
+     138,
+     111,
+     153
+    ]
+   },
+   "YNT": {
+    "tmean": [
+     -1.6,
+     -0.0,
+     4.6,
+     11.1,
+     17.8,
+     22.8,
+     25.6,
+     25.2,
+     21.2,
+     15.1,
+     7.6,
+     0.8
+    ],
+    "precipMm": [
+     10,
+     16,
+     16,
+     38,
+     64,
+     74,
+     168,
+     184,
+     59,
+     25,
+     37,
+     15
+    ]
+   }
+  }
+ },
+ "crowd": {}
 }

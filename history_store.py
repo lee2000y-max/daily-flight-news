@@ -3,7 +3,8 @@
 """
 전체 이력 저장소 (월별 CSV 파티션)
 
-  data/history/YYYY-MM.csv   컬럼: date,code,price,source,dep,ret
+  data/history/YYYY-MM.csv   컬럼: date,code,price,source,dep,ret,airline,fsc
+  (airline: 1위 일정의 가는 편/오는 편 항공사 코드, fsc: 둘 다 대형항공이면 1·아니면 0·모르면 빈칸. 2026-11 추가)
 
 - 노선·날짜당 1행(date+code)만 보관합니다. 같은 날 다시 실행하면 그 행을 덮어씁니다.
 - 신뢰할 수 있는 관측값(source = live 또는 sheet)만 저장합니다.
@@ -18,7 +19,7 @@ import re
 from typing import Any, Dict, Iterable, Iterator, List, Tuple
 
 HISTORY_DIR = os.path.join("data", "history")
-FIELDS = ["date", "code", "price", "source", "dep", "ret"]
+FIELDS = ["date", "code", "price", "source", "dep", "ret", "airline", "fsc"]
 TRUSTED_SOURCES = ("live", "sheet")
 
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -58,6 +59,8 @@ def read_month(ym: str) -> Dict[Tuple[str, str], Dict[str, Any]]:
                     "source": rec.get("source") or "",
                     "dep": rec.get("dep") or "",
                     "ret": rec.get("ret") or "",
+                    "airline": rec.get("airline") or "",
+                    "fsc": rec.get("fsc") or "",
                 }
             except (KeyError, ValueError, TypeError):
                 continue  # 깨진 줄은 건너뜀
@@ -73,7 +76,8 @@ def write_month(ym: str, rows: Dict[Tuple[str, str], Dict[str, Any]]) -> None:
         w.writerow(FIELDS)
         for key in sorted(rows):
             r = rows[key]
-            w.writerow([r["date"], r["code"], r["price"], r["source"], r["dep"], r["ret"]])
+            w.writerow([r["date"], r["code"], r["price"], r["source"], r["dep"], r["ret"],
+                        r.get("airline", ""), r.get("fsc", "")])
     os.replace(tmp, path)
 
 
@@ -89,8 +93,11 @@ def _clean(obs: Dict[str, Any]) -> Dict[str, Any]:
         return None  # type: ignore[return-value]
     if source not in TRUSTED_SOURCES:
         return None  # type: ignore[return-value]
+    fsc = obs.get("fsc")
     return {"date": date, "code": code, "price": price, "source": source,
-            "dep": str(obs.get("dep") or ""), "ret": str(obs.get("ret") or "")}
+            "dep": str(obs.get("dep") or ""), "ret": str(obs.get("ret") or ""),
+            "airline": str(obs.get("airline") or ""),
+            "fsc": "" if fsc in (None, "") else ("1" if fsc in (True, 1, "1") else "0")}
 
 
 def upsert_observations(observations: Iterable[Dict[str, Any]]) -> Dict[str, int]:

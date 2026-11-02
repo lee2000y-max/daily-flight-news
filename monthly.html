@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>월간 보딩패스 타임즈 | 월간 운임 리포트</title>
+  <link rel="alternate" type="application/rss+xml" title="보딩패스 타임즈" href="./feed.xml" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper-bg: #EFECE4; --card-bg: #FAF7F0; --ink: #1E1B18; --muted: #5C5549; --rule: #2C2620; --line: #D5CBB8; }
+    body {
+      background-color: var(--paper-bg); color: var(--ink); font-family: 'Noto Sans KR', sans-serif;
+      background-image: radial-gradient(rgba(44, 38, 32, 0.045) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    .font-serif-kr { font-family: 'Noto Serif KR', serif; }
+    .font-masthead { font-family: 'Playfair Display', 'Noto Serif KR', serif; }
+    .font-mono { font-family: 'JetBrains Mono', 'Noto Sans KR', monospace; }
+    .double-rule-bottom { border-bottom: 3px double var(--rule); }
+    .double-rule-top { border-top: 3px double var(--rule); }
+    th button { font: inherit; }
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body class="min-h-screen pb-16 antialiased" x-data="monthlyEdition()" x-init="init()">
+  <header class="max-w-6xl mx-auto px-4 pt-5 pb-3">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-[#5C5549] border-t-2 border-b border-[#2C2620] py-1.5 px-1 font-medium">
+      <a href="./index.html" class="font-bold text-[#1E3A5F] underline">← 오늘 일간지로</a>
+      <label class="flex items-center gap-2">
+        <span class="font-bold text-[#1E1B18]">월간호 선택</span>
+        <select x-model="period" @change="load()" class="bg-[#FAF7F0] border border-[#8C8275] rounded px-2 py-0.5 text-xs font-bold">
+          <template x-for="p in periods" :key="p"><option :value="p" x-text="labelOf(p)"></option></template>
+        </select>
+      </label>
+    </div>
+    <div class="py-5 text-center double-rule-bottom">
+      <div class="font-masthead text-xs sm:text-sm tracking-[0.22em] font-bold text-[#3E3932]">THE BOARDING PASS TIMES · MONTHLY</div>
+      <h1 class="font-serif-kr text-3xl sm:text-5xl font-black tracking-tight mt-1">월간 보딩패스 타임즈</h1>
+      <p class="text-sm text-[#3E3932] mt-2" x-text="period ? labelOf(period) + ' · 인천·김포 출발 직항 운임 월간 정리' : ''"></p>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4">
+    <div x-show="state === 'loading'" class="text-center py-10 font-serif-kr font-bold">월간호를 불러오는 중입니다…</div>
+    <div x-show="state === 'error'" x-cloak class="text-center py-10 font-serif-kr font-bold">월간호를 불러오지 못했습니다.</div>
+
+    <template x-if="state === 'ok' && rep">
+      <div>
+        <!-- 데이터 충실도: 참고용 안내 -->
+        <div class="border-2 px-4 py-3 mb-6 text-sm"
+          :class="isReference ? 'border-[#B8332A] bg-[#FBEDEA]' : 'border-[#2C2620] bg-[#FAF7F0]'">
+          <strong x-show="isReference" class="text-[#B8332A] mr-1">참고용</strong>
+          <span x-text="coverageText"></span>
+          <span class="block text-xs text-[#5C5549] mt-1" x-show="isReference" x-text="referenceReason"></span>
+        </div>
+
+        <!-- 하이라이트 -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <template x-for="h in highlightBlocks" :key="h.key">
+            <div class="bg-[#FAF7F0] border border-[#D5CBB8] p-4">
+              <h2 class="font-serif-kr font-black text-base border-b border-[#2C2620] pb-1 mb-2" x-text="h.title"></h2>
+              <ol class="text-sm space-y-1">
+                <template x-for="(x, i) in h.items" :key="x.code">
+                  <li class="flex justify-between gap-2">
+                    <span><span class="font-mono text-xs text-[#7A7164]" x-text="(i + 1) + '.'"></span> <span x-text="cityOf(x.code)"></span></span>
+                    <strong class="font-mono" x-text="h.fmt(x.value)"></strong>
+                  </li>
+                </template>
+                <li x-show="h.items.length === 0" class="text-xs text-[#7A7164]">해당 없음(관측이 부족함)</li>
+              </ol>
+            </div>
+          </template>
+        </section>
+
+        <!-- 면별 평균 -->
+        <section class="mb-8">
+          <h2 class="font-serif-kr font-black text-xl border-b-2 border-[#2C2620] pb-1 mb-3">면별 평균 운임</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <template x-for="(v, k) in rep.sections" :key="k">
+              <div class="bg-[#FAF7F0] border border-[#D5CBB8] p-3">
+                <div class="text-xs text-[#5C5549] font-semibold" x-text="v.major + ' · ' + v.routes + '개 노선'"></div>
+                <div class="font-serif-kr font-black text-lg" x-text="won(v.mean_price)"></div>
+              </div>
+            </template>
+          </div>
+        </section>
+
+        <!-- 노선별 표 -->
+        <section>
+          <h2 class="font-serif-kr font-black text-xl border-b-2 border-[#2C2620] pb-1 mb-3">노선별 월간 기록</h2>
+          <div class="overflow-x-auto bg-[#FAF7F0] border border-[#D5CBB8]">
+            <table class="w-full text-sm">
+              <thead class="bg-[#1E1B18] text-[#FAF7F0] text-xs">
+                <tr>
+                  <template x-for="c in columns" :key="c.key">
+                    <th class="px-3 py-2 text-left whitespace-nowrap">
+                      <button type="button" @click="sortBy(c.key)" x-text="c.label + (sortKey === c.key ? (sortDir > 0 ? ' ▲' : ' ▼') : '')"></button>
+                    </th>
+                  </template>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="r in rows" :key="r.code">
+                  <tr class="border-t border-[#E2D9C8]">
+                    <td class="px-3 py-1.5 whitespace-nowrap"><strong x-text="r.city"></strong> <span class="font-mono text-xs text-[#7A7164]" x-text="r.code"></span></td>
+                    <td class="px-3 py-1.5 font-mono text-right" x-text="r.n"></td>
+                    <td class="px-3 py-1.5 font-mono text-right" x-text="won(r.mean)"></td>
+                    <td class="px-3 py-1.5 font-mono text-right" x-text="won(r.min)"></td>
+                    <td class="px-3 py-1.5 font-mono text-right" x-text="won(r.max)"></td>
+                    <td class="px-3 py-1.5 font-mono text-right" :class="r.change_pct < 0 ? 'text-emerald-800' : (r.change_pct > 0 ? 'text-rose-800' : '')"
+                      x-text="r.change_pct == null ? '-' : (r.change_pct > 0 ? '+' : '') + r.change_pct + '%'"></td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-[#7A7164] mt-2">관측 = 그 달에 발행된 날 수(도시별 1위 왕복 최저가 1건/일). 변동 = 그 달 첫 관측 대비 마지막 관측.</p>
+        </section>
+      </div>
+    </template>
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-4 mt-12">
+    <div class="double-rule-top pt-5 text-center text-xs text-[#5C5549]">
+      THE BOARDING PASS TIMES · 보딩패스 타임즈 항공편집국 · <a href="./feed.xml" class="underline">RSS</a>
+    </div>
+  </footer>
+
+  <script>
+    function monthlyEdition() {
+      return {
+        periods: [], period: '', rep: null, state: 'loading', sortKey: 'mean', sortDir: 1,
+        columns: [
+          { key: 'city', label: '도시' }, { key: 'n', label: '관측' }, { key: 'mean', label: '평균' },
+          { key: 'min', label: '최저' }, { key: 'max', label: '최고' }, { key: 'change_pct', label: '변동' }
+        ],
+        async init() {
+          try {
+            const idx = await (await fetch('./data/reports/index.json?t=' + Date.now(), { cache: 'no-store' })).json();
+            this.periods = Array.isArray(idx.monthly) ? idx.monthly : [];
+            const q = new URLSearchParams(location.search).get('m');
+            this.period = this.periods.includes(q) ? q : (this.periods[0] || '');
+            await this.load();
+          } catch (e) { this.state = 'error'; }
+        },
+        async load() {
+          if (!this.period) { this.state = 'error'; return; }
+          this.state = 'loading';
+          try {
+            const r = await fetch(`./data/reports/monthly/${this.period}.json?t=` + Date.now(), { cache: 'no-store' });
+            this.rep = await r.json();
+            this.state = 'ok';
+            history.replaceState(null, '', '?m=' + this.period);
+          } catch (e) { this.state = 'error'; }
+        },
+        labelOf(p) { const [y, m] = String(p).split('-'); return `${y}년 ${parseInt(m, 10)}월호`; },
+        won(v) { return v == null ? '-' : '₩' + Math.round(v).toLocaleString('ko-KR'); },
+        cityOf(code) { const r = this.rep && this.rep.routes && this.rep.routes[code]; return r ? r.city : code; },
+        get isReference() {
+          const c = (this.rep && this.rep.coverage) || {};
+          const src = c.by_source || {};
+          return Boolean(src.sheet) || (c.days_with_data || 0) < (c.days_in_period || 0);
+        },
+        get referenceReason() {
+          const c = (this.rep && this.rep.coverage) || {};
+          const src = c.by_source || {};
+          const why = [];
+          if (src.sheet) why.push('이전 수집기 기록(현재와 탐색 조건이 다름)이 포함됨');
+          if ((c.days_with_data || 0) < (c.days_in_period || 0)) why.push(`한 달 ${c.days_in_period}일 중 ${c.days_with_data}일만 관측됨`);
+          return why.join(' · ');
+        },
+        get coverageText() {
+          const c = (this.rep && this.rep.coverage) || {};
+          return `관측 기간 ${c.first_date || '-'} ~ ${c.last_date || '-'} · ${c.days_with_data || 0}일 · ${c.routes_with_data || 0}개 노선 · 관측 ${c.observations || 0}건`;
+        },
+        get highlightBlocks() {
+          const h = (this.rep && this.rep.highlights) || {};
+          return [
+            { key: 'c', title: '평균이 가장 싼 노선', items: h.cheapest_mean || [], fmt: v => this.won(v) },
+            { key: 'd', title: '가장 많이 내린 노선', items: h.biggest_drop_pct || [], fmt: v => v + '%' },
+            { key: 'r', title: '가장 많이 오른 노선', items: h.biggest_rise_pct || [], fmt: v => '+' + v + '%' },
+            { key: 'v', title: '변동이 가장 큰 노선', items: h.most_volatile_pct || [], fmt: v => v + '%' }
+          ];
+        },
+        get rows() {
+          const routes = (this.rep && this.rep.routes) || {};
+          const list = Object.entries(routes).map(([code, r]) => ({
+            code, city: r.city || code, n: r.n || 0, mean: r.mean,
+            min: r.min ? r.min.price : null, max: r.max ? r.max.price : null, change_pct: r.change_pct
+          }));
+          const k = this.sortKey, d = this.sortDir;
+          return list.sort((a, b) => {
+            const x = a[k], y = b[k];
+            if (x == null && y == null) return 0;
+            if (x == null) return 1;
+            if (y == null) return -1;
+            return (typeof x === 'string' ? x.localeCompare(y) : x - y) * d;
+          });
+        },
+        sortBy(k) { if (this.sortKey === k) this.sortDir *= -1; else { this.sortKey = k; this.sortDir = 1; } }
+      };
+    }
+  </script>
+</body>
+</html>
