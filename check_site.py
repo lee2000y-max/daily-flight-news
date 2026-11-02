@@ -97,6 +97,28 @@ with sync_playwright() as p:
             problems.append(f"{name}: 미발행 목록 미표시")
         page.screenshot(path=f"screenshots/{name}_full.png", full_page=True)
         page.close()
+    # 월간지
+    page = b.new_page(viewport={"width": 1366, "height": 900})
+    merr = []
+    page.on("pageerror", lambda e: merr.append(str(e)))
+    idx = json.load(open("data/reports/index.json", encoding="utf-8"))
+    for ym in idx.get("monthly", [])[:2]:
+        page.goto(f"http://127.0.0.1:{PORT}/monthly.html?m={ym}", wait_until="networkidle")
+        page.wait_for_timeout(1200)
+        rows = page.locator("tbody tr").count()
+        body = page.inner_text("body")
+        rep = json.load(open(f"data/reports/monthly/{ym}.json", encoding="utf-8"))
+        cov = rep.get("coverage", {})
+        should_ref = bool(cov.get("by_source", {}).get("sheet")) or cov.get("days_with_data", 0) < cov.get("days_in_period", 0)
+        print(f"[monthly {ym}] 표 {rows}행(데이터 {len(rep.get('routes', {}))}), 참고용 표시 {'참고용' in body}(기대 {should_ref})")
+        if rows != len(rep.get("routes", {})):
+            problems.append(f"monthly {ym}: 표 행 수 불일치")
+        if should_ref != ("참고용" in body):
+            problems.append(f"monthly {ym}: 참고용 표시 이상")
+        page.screenshot(path=f"screenshots/monthly_{ym}.png", full_page=True)
+    if merr:
+        problems.append(f"monthly: 오류 {merr[:3]}")
+    page.close()
     b.close()
 srv.shutdown()
 print("문제:", problems or "없음")
