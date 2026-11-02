@@ -104,6 +104,8 @@ NAVER_ENDPOINTS = [
 NAVER_MONTHLY_LIMIT = 30000        # 사용자 설정 월 한도(무료). 이 스크립트는 실행당 아래 상한만 쓴다
 NAVER_MAX_CALLS_PER_RUN = 40
 SHORT_NAME = {"BKK": "방콕", "CTS": "삿포로", "SIN": "싱가포르", "TAG": "보홀", "DPS": "발리", "BWN": "브루나이"}
+# 사람들이 실제로 검색하는 다른 이름(2026-11-03 첫 결과에서 코마쓰 0, 타이베이가 낮게 나와 보강)
+EXTRA_NAMES = {"KMQ": ["가나자와"], "TPE": ["타이페이"], "PKX": ["북경"], "HGH": ["항주"]}
 
 
 def search_interest() -> dict:
@@ -127,7 +129,8 @@ def search_interest() -> dict:
         group = [anchor] + others[i:i + 4]
         body = json.dumps({
             "startDate": start.isoformat(), "endDate": end.isoformat(), "timeUnit": "week",
-            "keywordGroups": [{"groupName": c, "keywords": [f"{name[c]} 여행", f"{name[c]} 항공권"]} for c in group],
+            "keywordGroups": [{"groupName": c, "keywords": [f"{n} {w}" for n in [name[c]] + EXTRA_NAMES.get(c, []) for w in ("여행", "항공권")]}
+                              for c in group],
         }).encode("utf-8")
         d = None
         for ep in ([endpoint] if endpoint else NAVER_ENDPOINTS):
