@@ -1,7 +1,7 @@
 {
  "schemaVersion": 2,
  "publisher": "THE BOARDING PASS TIMES (보딩패스 타임즈 항공편집국)",
- "updatedAt": "2026-11-03 07:34",
+ "updatedAt": "2026-11-03 08:21",
  "latestDate": "2026-11-03",
  "availableDates": [
   "2026-11-03",
@@ -11,7 +11,7 @@
   "2026-11-03": {
    "published": 56,
    "total": 58,
-   "generatedAt": "2026-11-03 07:34"
+   "generatedAt": "2026-11-03 08:21"
   },
   "2026-11-02": {
    "published": 53,
@@ -31,54 +31,54 @@
    "note": "간사이공항 귀국 수속 혼잡을 감안해 출발 2시간 30분 전 공항 도착 권장",
    "priceSource": "live",
    "outbound": {
-    "airlineCode": "RS",
-    "airline": "에어서울",
-    "flightNo": "RS381",
-    "dep": "15:20",
-    "arr": "17:00",
+    "airlineCode": "MM",
+    "airline": "피치항공",
+    "flightNo": "MM738",
+    "dep": "13:10",
+    "arr": "14:55",
     "arrDayOffset": 0,
-    "durationMin": 100,
+    "durationMin": 105,
     "stops": 0
    },
    "inbound": {
-    "airlineCode": "7C",
-    "airline": "제주항공",
-    "flightNo": "7C1396",
-    "dep": "08:50",
-    "arr": "11:00",
+    "airlineCode": "MM",
+    "airline": "피치항공",
+    "flightNo": "MM737",
+    "dep": "10:20",
+    "arr": "12:20",
     "arrDayOffset": 0,
-    "durationMin": 130,
+    "durationMin": 120,
     "stops": 0
    },
-   "airline": "에어서울 / 제주항공",
-   "flightNos": "RS381 / 7C1396",
-   "timeSlot": "출국 15:20→17:00 / 귀국 08:50→11:00",
+   "airline": "피치항공",
+   "flightNos": "MM738 / MM737",
+   "timeSlot": "출국 13:10→14:55 / 귀국 10:20→12:20",
    "isFSC": false,
-   "origin": "ICN",
+   "origin": "GMP",
    "dest": "KIX",
    "depDate": "2026-12-09",
    "retDate": "2026-12-15",
    "nights": 6,
    "leaveDays": 5,
-   "price": 234677,
+   "price": 252508,
    "dates": "2026.12.09(수)~12.15(화) (6박 7일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-KIX-20261209/KIX-ICN-20261215?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/kix/261209/261215/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDkoAGoFEgNJQ05yBRIDS0lYGhwSCjIwMjYtMTItMTUoAGoFEgNLSVhyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/GMP-KIX-20261209/KIX-GMP-20261215?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/gmp/kix/261209/261215/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDkoAGoFEgNHTVByBRIDS0lYGhwSCjIwMjYtMTItMTUoAGoFEgNLSVhyBRIDR01QQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "KIX",
     "depDate": "2026-12-16",
-    "retDate": "2026-12-22",
-    "nights": 6,
-    "leaveDays": 5,
-    "price": 253700,
-    "dates": "2026.12.16(수)~12.22(화) (6박 7일)",
+    "retDate": "2026-12-21",
+    "nights": 5,
+    "leaveDays": 4,
+    "price": 263700,
+    "dates": "2026.12.16(수)~12.21(월) (5박 6일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-KIX-20261216/KIX-ICN-20261222?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/kix/261216/261222/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMTYoAGoFEgNJQ05yBRIDS0lYGhwSCjIwMjYtMTItMjIoAGoFEgNLSVhyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-KIX-20261216/KIX-ICN-20261221?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/kix/261216/261221/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMTYoAGoFEgNJQ05yBRIDS0lYGhwSCjIwMjYtMTItMjEoAGoFEgNLSVhyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -306,7 +306,17 @@
      ],
      "label": "단풍"
     }
-   ]
+   ],
+   "sellers": {
+    "items": [
+     {
+      "name": "Air Busan, Jeju Air",
+      "price": 271944,
+      "airline": true
+     }
+    ],
+    "checkedAt": "08:18"
+   }
   },
   {
    "date": "2026-11-03",
@@ -361,7 +371,7 @@
     "retDate": "2026-12-01",
     "nights": 6,
     "leaveDays": 5,
-    "price": 404800,
+    "price": 414800,
     "dates": "2026.11.25(수)~12.01(화) (6박 7일)",
     "holidays": [],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-CTS-20261125/CTS-ICN-20261201?adult=1&fareType=Y",
@@ -749,23 +759,7 @@
     "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMTYoAGoFEgNJQ05yBRIDVEFLGhwSCjIwMjYtMTItMjIoAGoFEgNUQUtyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
-   "leaveSaver": {
-    "origin": "ICN",
-    "dest": "TAK",
-    "depDate": "2027-01-01",
-    "retDate": "2027-01-04",
-    "nights": 3,
-    "leaveDays": 1,
-    "price": 437500,
-    "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
-    "holidays": [
-     "신정연휴"
-    ],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-TAK-20270101/TAK-ICN-20270104?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tak/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjctMDEtMDEoAGoFEgNJQ05yBRIDVEFLGhwSCjIwMjctMDEtMDQoAGoFEgNUQUtyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
-    "source": "calendar"
-   },
+   "leaveSaver": null,
    "bestSeasons": [
     {
      "months": [
@@ -797,73 +791,57 @@
    "outbound": {
     "airlineCode": "7C",
     "airline": "제주항공",
-    "flightNo": "7C1603",
-    "dep": "16:05",
-    "arr": "18:00",
+    "flightNo": "7C1601",
+    "dep": "07:10",
+    "arr": "09:10",
     "arrDayOffset": 0,
-    "durationMin": 115,
+    "durationMin": 120,
     "stops": 0
    },
    "inbound": {
     "airlineCode": "7C",
     "airline": "제주항공",
-    "flightNo": "7C1604",
-    "dep": "19:00",
-    "arr": "21:25",
+    "flightNo": "7C1602",
+    "dep": "10:10",
+    "arr": "12:40",
     "arrDayOffset": 0,
-    "durationMin": 145,
+    "durationMin": 150,
     "stops": 0
    },
    "airline": "제주항공",
-   "flightNos": "7C1603 / 7C1604",
-   "timeSlot": "출국 16:05→18:00 / 귀국 19:00→21:25",
+   "flightNos": "7C1601 / 7C1602",
+   "timeSlot": "출국 07:10→09:10 / 귀국 10:10→12:40",
    "isFSC": false,
    "origin": "ICN",
    "dest": "FSZ",
-   "depDate": "2026-11-20",
-   "retDate": "2026-11-25",
-   "nights": 5,
-   "leaveDays": 4,
-   "price": 283500,
-   "dates": "2026.11.20(금)~11.25(수) (5박 6일)",
-   "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-FSZ-20261120/FSZ-ICN-20261125?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/fsz/261120/261125/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjAoAGoFEgNJQ05yBRIDRlNaGhwSCjIwMjYtMTEtMjUoAGoFEgNGU1pyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "depDate": "2026-12-29",
+   "retDate": "2027-01-05",
+   "nights": 7,
+   "leaveDays": 5,
+   "price": 302400,
+   "dates": "2026.12.29(화)~01.05(화) (7박 8일)",
+   "holidays": [
+    "신정연휴"
+   ],
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-FSZ-20261229/FSZ-ICN-20270105?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/fsz/261229/270105/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMjkoAGoFEgNJQ05yBRIDRlNaGhwSCjIwMjctMDEtMDUoAGoFEgNGU1pyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "FSZ",
-    "depDate": "2026-12-29",
-    "retDate": "2027-01-05",
-    "nights": 7,
-    "leaveDays": 5,
-    "price": 302400,
-    "dates": "2026.12.29(화)~01.05(화) (7박 8일)",
-    "holidays": [
-     "신정연휴"
-    ],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-FSZ-20261229/FSZ-ICN-20270105?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/fsz/261229/270105/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMjkoAGoFEgNJQ05yBRIDRlNaGhwSCjIwMjctMDEtMDUoAGoFEgNGU1pyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "depDate": "2026-11-20",
+    "retDate": "2026-11-24",
+    "nights": 4,
+    "leaveDays": 3,
+    "price": 308500,
+    "dates": "2026.11.20(금)~11.24(화) (4박 5일)",
+    "holidays": [],
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-FSZ-20261120/FSZ-ICN-20261124?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/fsz/261120/261124/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjAoAGoFEgNJQ05yBRIDRlNaGhwSCjIwMjYtMTEtMjQoAGoFEgNGU1pyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
-   "leaveSaver": {
-    "origin": "ICN",
-    "dest": "FSZ",
-    "depDate": "2027-01-01",
-    "retDate": "2027-01-04",
-    "nights": 3,
-    "leaveDays": 1,
-    "price": 501500,
-    "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
-    "holidays": [
-     "신정연휴"
-    ],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-FSZ-20270101/FSZ-ICN-20270104?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/fsz/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjctMDEtMDEoAGoFEgNJQ05yBRIDRlNaGhwSCjIwMjctMDEtMDQoAGoFEgNGU1pyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
-    "source": "calendar"
-   },
+   "leaveSaver": null,
    "bestSeasons": [
     {
      "months": [
@@ -1041,7 +1019,7 @@
     "retDate": "2027-01-04",
     "nights": 3,
     "leaveDays": 1,
-    "price": 547700,
+    "price": 522700,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
      "신정연휴"
@@ -1502,23 +1480,7 @@
     "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDIoAGoFEgNJQ05yBRIDSElKGhwSCjIwMjYtMTItMDgoAGoFEgNISUpyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
-   "leaveSaver": {
-    "origin": "ICN",
-    "dest": "HIJ",
-    "depDate": "2027-01-01",
-    "retDate": "2027-01-04",
-    "nights": 3,
-    "leaveDays": 1,
-    "price": 321800,
-    "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
-    "holidays": [
-     "신정연휴"
-    ],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-HIJ-20270101/HIJ-ICN-20270104?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hij/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjctMDEtMDEoAGoFEgNJQ05yBRIDSElKGhwSCjIwMjctMDEtMDQoAGoFEgNISUpyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
-    "source": "calendar"
-   },
+   "leaveSaver": null,
    "bestSeasons": [
     {
      "months": [
@@ -1587,15 +1549,15 @@
     "origin": "ICN",
     "dest": "KMJ",
     "depDate": "2026-12-09",
-    "retDate": "2026-12-14",
-    "nights": 5,
-    "leaveDays": 4,
+    "retDate": "2026-12-15",
+    "nights": 6,
+    "leaveDays": 5,
     "price": 342400,
-    "dates": "2026.12.09(수)~12.14(월) (5박 6일)",
+    "dates": "2026.12.09(수)~12.15(화) (6박 7일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-KMJ-20261209/KMJ-ICN-20261214?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/kmj/261209/261214/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDkoAGoFEgNJQ05yBRIDS01KGhwSCjIwMjYtMTItMTQoAGoFEgNLTUpyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-KMJ-20261209/KMJ-ICN-20261215?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/kmj/261209/261215/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDkoAGoFEgNJQ05yBRIDS01KGhwSCjIwMjYtMTItMTUoAGoFEgNLTUpyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -1668,29 +1630,29 @@
    "isFSC": true,
    "origin": "ICN",
    "dest": "NGS",
-   "depDate": "2026-12-01",
+   "depDate": "2026-12-03",
    "retDate": "2026-12-07",
-   "nights": 6,
-   "leaveDays": 5,
+   "nights": 4,
+   "leaveDays": 3,
    "price": 312700,
-   "dates": "2026.12.01(화)~12.07(월) (6박 7일)",
+   "dates": "2026.12.03(목)~12.07(월) (4박 5일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-NGS-20261201/NGS-ICN-20261207?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ngs/261201/261207/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDEoAGoFEgNJQ05yBRIDTkdTGhwSCjIwMjYtMTItMDcoAGoFEgNOR1NyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-NGS-20261203/NGS-ICN-20261207?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ngs/261203/261207/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDMoAGoFEgNJQ05yBRIDTkdTGhwSCjIwMjYtMTItMDcoAGoFEgNOR1NyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "NGS",
-    "depDate": "2026-12-08",
-    "retDate": "2026-12-14",
+    "depDate": "2026-11-24",
+    "retDate": "2026-11-30",
     "nights": 6,
     "leaveDays": 5,
     "price": 312700,
-    "dates": "2026.12.08(화)~12.14(월) (6박 7일)",
+    "dates": "2026.11.24(화)~11.30(월) (6박 7일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-NGS-20261208/NGS-ICN-20261214?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ngs/261208/261214/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDgoAGoFEgNJQ05yBRIDTkdTGhwSCjIwMjYtMTItMTQoAGoFEgNOR1NyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-NGS-20261124/NGS-ICN-20261130?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ngs/261124/261130/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjQoAGoFEgNJQ05yBRIDTkdTGhwSCjIwMjYtMTEtMzAoAGoFEgNOR1NyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": null,
@@ -1850,16 +1812,16 @@
    "isFSC": true,
    "origin": "ICN",
    "dest": "AOJ",
-   "depDate": "2026-12-05",
+   "depDate": "2026-12-04",
    "retDate": "2026-12-08",
-   "nights": 3,
-   "leaveDays": 2,
+   "nights": 4,
+   "leaveDays": 3,
    "price": 381500,
-   "dates": "2026.12.05(토)~12.08(화) (3박 4일)",
+   "dates": "2026.12.04(금)~12.08(화) (4박 5일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-AOJ-20261205/AOJ-ICN-20261208?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/aoj/261205/261208/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDUoAGoFEgNJQ05yBRIDQU9KGhwSCjIwMjYtMTItMDgoAGoFEgNBT0pyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-AOJ-20261204/AOJ-ICN-20261208?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/aoj/261204/261208/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDQoAGoFEgNJQ05yBRIDQU9KGhwSCjIwMjYtMTItMDgoAGoFEgNBT0pyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "AOJ",
@@ -1875,23 +1837,7 @@
     "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjEoAGoFEgNJQ05yBRIDQU9KGhwSCjIwMjYtMTEtMjYoAGoFEgNBT0pyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
-   "leaveSaver": {
-    "origin": "ICN",
-    "dest": "AOJ",
-    "depDate": "2026-12-31",
-    "retDate": "2027-01-03",
-    "nights": 3,
-    "leaveDays": 1,
-    "price": 751500,
-    "dates": "2026.12.31(목)~01.03(일) (3박 4일)",
-    "holidays": [
-     "신정연휴"
-    ],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-AOJ-20261231/AOJ-ICN-20270103?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/aoj/261231/270103/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMzEoAGoFEgNJQ05yBRIDQU9KGhwSCjIwMjctMDEtMDMoAGoFEgNBT0pyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
-    "source": "calendar"
-   },
+   "leaveSaver": null,
    "bestSeasons": [
     {
      "months": [
@@ -1958,16 +1904,16 @@
    "alt": {
     "origin": "ICN",
     "dest": "DAD",
-    "depDate": "2026-11-28",
-    "retDate": "2026-12-03",
+    "depDate": "2026-12-05",
+    "retDate": "2026-12-10",
     "nights": 5,
     "leaveDays": 4,
     "price": 264483,
-    "dates": "2026.11.28(토)~12.03(목) (5박 6일)",
+    "dates": "2026.12.05(토)~12.10(목) (5박 6일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-DAD-20261128/DAD-ICN-20261203?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dad/261128/261203/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjgoAGoFEgNJQ05yBRIDREFEGhwSCjIwMjYtMTItMDMoAGoFEgNEQURyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-DAD-20261205/DAD-ICN-20261210?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dad/261205/261210/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDUoAGoFEgNJQ05yBRIDREFEGhwSCjIwMjYtMTItMTAoAGoFEgNEQURyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -2048,16 +1994,16 @@
    "alt": {
     "origin": "ICN",
     "dest": "CXR",
-    "depDate": "2026-11-28",
-    "retDate": "2026-12-04",
-    "nights": 6,
-    "leaveDays": 5,
-    "price": 232247,
-    "dates": "2026.11.28(토)~12.04(금) (6박 7일)",
+    "depDate": "2026-11-26",
+    "retDate": "2026-11-29",
+    "nights": 3,
+    "leaveDays": 2,
+    "price": 239147,
+    "dates": "2026.11.26(목)~11.29(일) (3박 4일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-CXR-20261128/CXR-ICN-20261204?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/cxr/261128/261204/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjgoAGoFEgNJQ05yBRIDQ1hSGhwSCjIwMjYtMTItMDQoAGoFEgNDWFJyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-CXR-20261126/CXR-ICN-20261129?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/cxr/261126/261129/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjYoAGoFEgNJQ05yBRIDQ1hSGhwSCjIwMjYtMTEtMjkoAGoFEgNDWFJyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -2245,23 +2191,7 @@
     "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDEoAGoFEgNJQ05yBRIDSEFOGhwSCjIwMjYtMTItMDcoAGoFEgNIQU5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
-   "leaveSaver": {
-    "origin": "ICN",
-    "dest": "HAN",
-    "depDate": "2026-12-25",
-    "retDate": "2026-12-28",
-    "nights": 3,
-    "leaveDays": 1,
-    "price": 444451,
-    "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
-    "holidays": [
-     "기독탄신일"
-    ],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-HAN-20261225/HAN-ICN-20261228?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/han/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMjUoAGoFEgNJQ05yBRIDSEFOGhwSCjIwMjYtMTItMjgoAGoFEgNIQU5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
-    "source": "calendar"
-   },
+   "leaveSaver": null,
    "bestSeasons": [
     {
      "months": [
@@ -2319,7 +2249,7 @@
    "retDate": "2027-01-07",
    "nights": 5,
    "leaveDays": 4,
-   "price": 362713,
+   "price": 362667,
    "dates": "2027.01.02(토)~01.07(목) (5박 6일)",
    "holidays": [],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-SGN-20270102/SGN-ICN-20270107?adult=1&fareType=Y",
@@ -2504,15 +2434,15 @@
    "origin": "ICN",
    "dest": "TPE",
    "depDate": "2026-12-09",
-   "retDate": "2026-12-15",
-   "nights": 6,
-   "leaveDays": 5,
-   "price": 267184,
-   "dates": "2026.12.09(수)~12.15(화) (6박 7일)",
+   "retDate": "2026-12-14",
+   "nights": 5,
+   "leaveDays": 4,
+   "price": 283697,
+   "dates": "2026.12.09(수)~12.14(월) (5박 6일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-TPE-20261209/TPE-ICN-20261215?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tpe/261209/261215/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDkoAGoFEgNJQ05yBRIDVFBFGhwSCjIwMjYtMTItMTUoAGoFEgNUUEVyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-TPE-20261209/TPE-ICN-20261214?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tpe/261209/261214/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDkoAGoFEgNJQ05yBRIDVFBFGhwSCjIwMjYtMTItMTQoAGoFEgNUUEVyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "TPE",
@@ -2530,23 +2460,7 @@
     "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMjIoAGoFEgNJQ05yBRIDVFBFGhwSCjIwMjYtMTItMjkoAGoFEgNUUEVyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
-   "leaveSaver": {
-    "origin": "ICN",
-    "dest": "TPE",
-    "depDate": "2026-12-25",
-    "retDate": "2026-12-28",
-    "nights": 3,
-    "leaveDays": 1,
-    "price": 383539,
-    "dates": "2026.12.25(금)~12.28(월) (3박 4일)",
-    "holidays": [
-     "기독탄신일"
-    ],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-TPE-20261225/TPE-ICN-20261228?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tpe/261225/261228/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMjUoAGoFEgNJQ05yBRIDVFBFGhwSCjIwMjYtMTItMjgoAGoFEgNUUEVyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
-    "source": "calendar"
-   },
+   "leaveSaver": null,
    "bestSeasons": [
     {
      "months": [
@@ -2633,7 +2547,7 @@
     "retDate": "2027-01-04",
     "nights": 3,
     "leaveDays": 1,
-    "price": 451877,
+    "price": 451854,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
      "신정연휴"
@@ -2872,15 +2786,15 @@
    "origin": "ICN",
    "dest": "TAO",
    "depDate": "2026-12-05",
-   "retDate": "2026-12-08",
-   "nights": 3,
-   "leaveDays": 2,
+   "retDate": "2026-12-10",
+   "nights": 5,
+   "leaveDays": 4,
    "price": 207100,
-   "dates": "2026.12.05(토)~12.08(화) (3박 4일)",
+   "dates": "2026.12.05(토)~12.10(목) (5박 6일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-TAO-20261205/TAO-ICN-20261208?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tao/261205/261208/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDUoAGoFEgNJQ05yBRIDVEFPGhwSCjIwMjYtMTItMDgoAGoFEgNUQU9yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-TAO-20261205/TAO-ICN-20261210?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tao/261205/261210/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDUoAGoFEgNJQ05yBRIDVEFPGhwSCjIwMjYtMTItMTAoAGoFEgNUQU9yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "TAO",
@@ -2896,23 +2810,7 @@
     "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDIoAGoFEgNJQ05yBRIDVEFPGhwSCjIwMjYtMTItMDgoAGoFEgNUQU9yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
-   "leaveSaver": {
-    "origin": "ICN",
-    "dest": "TAO",
-    "depDate": "2027-01-01",
-    "retDate": "2027-01-04",
-    "nights": 3,
-    "leaveDays": 1,
-    "price": 348100,
-    "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
-    "holidays": [
-     "신정연휴"
-    ],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-TAO-20270101/TAO-ICN-20270104?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tao/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjctMDEtMDEoAGoFEgNJQ05yBRIDVEFPGhwSCjIwMjctMDEtMDQoAGoFEgNUQU9yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
-    "source": "calendar"
-   },
+   "leaveSaver": null,
    "bestSeasons": [
     {
      "months": [
@@ -2966,29 +2864,29 @@
    "isFSC": false,
    "origin": "ICN",
    "dest": "PVG",
-   "depDate": "2026-11-27",
-   "retDate": "2026-12-03",
-   "nights": 6,
-   "leaveDays": 5,
+   "depDate": "2026-12-11",
+   "retDate": "2026-12-15",
+   "nights": 4,
+   "leaveDays": 3,
    "price": 353073,
-   "dates": "2026.11.27(금)~12.03(목) (6박 7일)",
+   "dates": "2026.12.11(금)~12.15(화) (4박 5일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-PVG-20261127/PVG-ICN-20261203?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/pvg/261127/261203/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjcoAGoFEgNJQ05yBRIDUFZHGhwSCjIwMjYtMTItMDMoAGoFEgNQVkdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-PVG-20261211/PVG-ICN-20261215?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/pvg/261211/261215/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMTEoAGoFEgNJQ05yBRIDUFZHGhwSCjIwMjYtMTItMTUoAGoFEgNQVkdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "PVG",
-    "depDate": "2026-12-11",
-    "retDate": "2026-12-15",
-    "nights": 4,
-    "leaveDays": 3,
-    "price": 353124,
-    "dates": "2026.12.11(금)~12.15(화) (4박 5일)",
+    "depDate": "2026-11-27",
+    "retDate": "2026-12-03",
+    "nights": 6,
+    "leaveDays": 5,
+    "price": 353073,
+    "dates": "2026.11.27(금)~12.03(목) (6박 7일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-PVG-20261211/PVG-ICN-20261215?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/pvg/261211/261215/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMTEoAGoFEgNJQ05yBRIDUFZHGhwSCjIwMjYtMTItMTUoAGoFEgNQVkdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-PVG-20261127/PVG-ICN-20261203?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/pvg/261127/261203/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjcoAGoFEgNJQ05yBRIDUFZHGhwSCjIwMjYtMTItMDMoAGoFEgNQVkdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -3183,23 +3081,7 @@
     "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDIoAGoFEgNJQ05yBRIDWU5UGhwSCjIwMjYtMTItMDgoAGoFEgNZTlRyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
-   "leaveSaver": {
-    "origin": "ICN",
-    "dest": "YNT",
-    "depDate": "2026-12-31",
-    "retDate": "2027-01-03",
-    "nights": 3,
-    "leaveDays": 1,
-    "price": 323300,
-    "dates": "2026.12.31(목)~01.03(일) (3박 4일)",
-    "holidays": [
-     "신정연휴"
-    ],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-YNT-20261231/YNT-ICN-20270103?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/ynt/261231/270103/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMzEoAGoFEgNJQ05yBRIDWU5UGhwSCjIwMjctMDEtMDMoAGoFEgNZTlRyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
-    "source": "calendar"
-   },
+   "leaveSaver": null,
    "bestSeasons": [
     {
      "months": [
@@ -3285,7 +3167,7 @@
     "retDate": "2027-01-04",
     "nights": 3,
     "leaveDays": 1,
-    "price": 258900,
+    "price": 244400,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
      "신정연휴"
@@ -3336,41 +3218,43 @@
     "airlineCode": "KE",
     "airline": "대한항공",
     "flightNo": "KE108",
-    "dep": "13:30",
-    "arr": "16:50",
+    "dep": "14:30",
+    "arr": "18:05",
     "arrDayOffset": 0,
-    "durationMin": 140,
+    "durationMin": 155,
     "stops": 0
    },
    "airline": "대한항공",
    "flightNos": "KE107 / KE108",
-   "timeSlot": "출국 11:40→13:20 / 귀국 13:30→16:50",
+   "timeSlot": "출국 11:40→13:20 / 귀국 14:30→18:05",
    "isFSC": true,
    "origin": "ICN",
    "dest": "HGH",
-   "depDate": "2026-11-20",
-   "retDate": "2026-11-25",
-   "nights": 5,
-   "leaveDays": 4,
-   "price": 484100,
-   "dates": "2026.11.20(금)~11.25(수) (5박 6일)",
+   "depDate": "2026-11-27",
+   "retDate": "2026-11-30",
+   "nights": 3,
+   "leaveDays": 2,
+   "price": 509100,
+   "dates": "2026.11.27(금)~11.30(월) (3박 4일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-HGH-20261120/HGH-ICN-20261125?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hgh/261120/261125/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjAoAGoFEgNJQ05yBRIDSEdIGhwSCjIwMjYtMTEtMjUoAGoFEgNIR0hyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-HGH-20261127/HGH-ICN-20261130?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hgh/261127/261130/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjcoAGoFEgNJQ05yBRIDSEdIGhwSCjIwMjYtMTEtMzAoAGoFEgNIR0hyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "HGH",
-    "depDate": "2026-11-27",
-    "retDate": "2026-12-02",
-    "nights": 5,
-    "leaveDays": 4,
-    "price": 484100,
-    "dates": "2026.11.27(금)~12.02(수) (5박 6일)",
-    "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-HGH-20261127/HGH-ICN-20261202?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hgh/261127/261202/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjcoAGoFEgNJQ05yBRIDSEdIGhwSCjIwMjYtMTItMDIoAGoFEgNIR0hyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "depDate": "2027-01-01",
+    "retDate": "2027-01-04",
+    "nights": 3,
+    "leaveDays": 1,
+    "price": 519458,
+    "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
+    "holidays": [
+     "신정연휴"
+    ],
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-HGH-20270101/HGH-ICN-20270104?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hgh/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjctMDEtMDEoAGoFEgNJQ05yBRIDSEdIGhwSCjIwMjctMDEtMDQoAGoFEgNIR0hyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -3388,7 +3272,7 @@
     "naverUrl": "https://flight.naver.com/flights/international/ICN-HGH-20270101/HGH-ICN-20270104?adult=1&fareType=Y",
     "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hgh/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
     "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjctMDEtMDEoAGoFEgNJQ05yBRIDSEdIGhwSCjIwMjctMDEtMDQoAGoFEgNIR0hyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
-    "source": "calendar"
+    "source": "detail"
    },
    "bestSeasons": [
     {
@@ -3540,31 +3424,29 @@
    "isFSC": true,
    "origin": "ICN",
    "dest": "DYG",
-   "depDate": "2026-12-26",
-   "retDate": "2027-01-02",
-   "nights": 7,
-   "leaveDays": 4,
-   "price": 589404,
-   "dates": "2026.12.26(토)~01.02(토) (7박 8일)",
-   "holidays": [
-    "신정연휴"
-   ],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-DYG-20261226/DYG-ICN-20270102?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dyg/261226/270102/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMjYoAGoFEgNJQ05yBRIDRFlHGhwSCjIwMjctMDEtMDIoAGoFEgNEWUdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "depDate": "2026-12-19",
+   "retDate": "2026-12-22",
+   "nights": 3,
+   "leaveDays": 2,
+   "price": 589518,
+   "dates": "2026.12.19(토)~12.22(화) (3박 4일)",
+   "holidays": [],
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-DYG-20261219/DYG-ICN-20261222?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dyg/261219/261222/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMTkoAGoFEgNJQ05yBRIDRFlHGhwSCjIwMjYtMTItMjIoAGoFEgNEWUdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "DYG",
-    "depDate": "2026-12-19",
-    "retDate": "2026-12-22",
+    "depDate": "2026-12-26",
+    "retDate": "2026-12-29",
     "nights": 3,
     "leaveDays": 2,
-    "price": 589518,
-    "dates": "2026.12.19(토)~12.22(화) (3박 4일)",
+    "price": 589756,
+    "dates": "2026.12.26(토)~12.29(화) (3박 4일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-DYG-20261219/DYG-ICN-20261222?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dyg/261219/261222/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMTkoAGoFEgNJQ05yBRIDRFlHGhwSCjIwMjYtMTItMjIoAGoFEgNEWUdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-DYG-20261226/DYG-ICN-20261229?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dyg/261226/261229/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMjYoAGoFEgNJQ05yBRIDRFlHGhwSCjIwMjYtMTItMjkoAGoFEgNEWUdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": null,
@@ -3816,7 +3698,7 @@
     "retDate": "2026-12-11",
     "nights": 6,
     "leaveDays": 5,
-    "price": 574104,
+    "price": 573846,
     "dates": "2026.12.05(토)~12.11(금) (6박 7일)",
     "holidays": [],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-BKK-20261205/BKK-ICN-20261211?adult=1&fareType=Y",
@@ -3979,48 +3861,32 @@
    "isFSC": true,
    "origin": "ICN",
    "dest": "HKT",
-   "depDate": "2026-11-21",
+   "depDate": "2026-11-20",
    "retDate": "2026-11-24",
-   "nights": 3,
-   "leaveDays": 2,
+   "nights": 4,
+   "leaveDays": 3,
    "price": 552900,
-   "dates": "2026.11.21(토)~11.24(화) (3박 4일)",
+   "dates": "2026.11.20(금)~11.24(화) (4박 5일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-HKT-20261121/HKT-ICN-20261124?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hkt/261121/261124/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjEoAGoFEgNJQ05yBRIDSEtUGhwSCjIwMjYtMTEtMjQoAGoFEgNIS1RyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-HKT-20261120/HKT-ICN-20261124?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hkt/261120/261124/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjAoAGoFEgNJQ05yBRIDSEtUGhwSCjIwMjYtMTEtMjQoAGoFEgNIS1RyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "HKT",
-    "depDate": "2026-11-18",
-    "retDate": "2026-11-24",
-    "nights": 6,
-    "leaveDays": 5,
-    "price": 552900,
-    "dates": "2026.11.18(수)~11.24(화) (6박 7일)",
+    "depDate": "2026-12-11",
+    "retDate": "2026-12-15",
+    "nights": 4,
+    "leaveDays": 3,
+    "price": 652900,
+    "dates": "2026.12.11(금)~12.15(화) (4박 5일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-HKT-20261118/HKT-ICN-20261124?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hkt/261118/261124/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMTgoAGoFEgNJQ05yBRIDSEtUGhwSCjIwMjYtMTEtMjQoAGoFEgNIS1RyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-HKT-20261211/HKT-ICN-20261215?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hkt/261211/261215/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMTEoAGoFEgNJQ05yBRIDSEtUGhwSCjIwMjYtMTItMTUoAGoFEgNIS1RyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
-   "leaveSaver": {
-    "origin": "ICN",
-    "dest": "HKT",
-    "depDate": "2027-01-01",
-    "retDate": "2027-01-04",
-    "nights": 3,
-    "leaveDays": 1,
-    "price": 967900,
-    "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
-    "holidays": [
-     "신정연휴"
-    ],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-HKT-20270101/HKT-ICN-20270104?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/hkt/270101/270104/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjctMDEtMDEoAGoFEgNJQ05yBRIDSEtUGhwSCjIwMjctMDEtMDQoAGoFEgNIS1RyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
-    "source": "calendar"
-   },
+   "leaveSaver": null,
    "bestSeasons": [
     {
      "months": [
@@ -4176,16 +4042,16 @@
    "alt": {
     "origin": "ICN",
     "dest": "TAG",
-    "depDate": "2026-11-17",
-    "retDate": "2026-11-23",
+    "depDate": "2026-12-08",
+    "retDate": "2026-12-14",
     "nights": 6,
     "leaveDays": 5,
-    "price": 679100,
-    "dates": "2026.11.17(화)~11.23(월) (6박 7일)",
+    "price": 689100,
+    "dates": "2026.12.08(화)~12.14(월) (6박 7일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-TAG-20261117/TAG-ICN-20261123?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tag/261117/261123/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMTcoAGoFEgNJQ05yBRIDVEFHGhwSCjIwMjYtMTEtMjMoAGoFEgNUQUdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-TAG-20261208/TAG-ICN-20261214?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/tag/261208/261214/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMDgoAGoFEgNJQ05yBRIDVEFHGhwSCjIwMjYtMTItMTQoAGoFEgNUQUdyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -4528,7 +4394,7 @@
    "retDate": "2026-12-06",
    "nights": 3,
    "leaveDays": 2,
-   "price": 406894,
+   "price": 417903,
    "dates": "2026.12.03(목)~12.06(일) (3박 4일)",
    "holidays": [],
    "naverUrl": "https://flight.naver.com/flights/international/ICN-UBN-20261203/UBN-ICN-20261206?adult=1&fareType=Y",
@@ -4541,7 +4407,7 @@
     "retDate": "2026-12-13",
     "nights": 3,
     "leaveDays": 2,
-    "price": 430895,
+    "price": 430903,
     "dates": "2026.12.10(목)~12.13(일) (3박 4일)",
     "holidays": [],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-UBN-20261210/UBN-ICN-20261213?adult=1&fareType=Y",
@@ -5056,29 +4922,29 @@
    "isFSC": false,
    "origin": "ICN",
    "dest": "SPN",
-   "depDate": "2026-11-27",
-   "retDate": "2026-12-01",
-   "nights": 4,
-   "leaveDays": 3,
-   "price": 321500,
-   "dates": "2026.11.27(금)~12.01(화) (4박 5일)",
+   "depDate": "2026-11-20",
+   "retDate": "2026-11-23",
+   "nights": 3,
+   "leaveDays": 2,
+   "price": 367722,
+   "dates": "2026.11.20(금)~11.23(월) (3박 4일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-SPN-20261127/SPN-ICN-20261201?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/spn/261127/261201/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjcoAGoFEgNJQ05yBRIDU1BOGhwSCjIwMjYtMTItMDEoAGoFEgNTUE5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-SPN-20261120/SPN-ICN-20261123?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/spn/261120/261123/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjAoAGoFEgNJQ05yBRIDU1BOGhwSCjIwMjYtMTEtMjMoAGoFEgNTUE5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "SPN",
-    "depDate": "2026-11-20",
-    "retDate": "2026-11-23",
+    "depDate": "2026-12-11",
+    "retDate": "2026-12-14",
     "nights": 3,
     "leaveDays": 2,
-    "price": 367722,
-    "dates": "2026.11.20(금)~11.23(월) (3박 4일)",
+    "price": 431500,
+    "dates": "2026.12.11(금)~12.14(월) (3박 4일)",
     "holidays": [],
-    "naverUrl": "https://flight.naver.com/flights/international/ICN-SPN-20261120/SPN-ICN-20261123?adult=1&fareType=Y",
-    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/spn/261120/261123/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjAoAGoFEgNJQ05yBRIDU1BOGhwSCjIwMjYtMTEtMjMoAGoFEgNTUE5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+    "naverUrl": "https://flight.naver.com/flights/international/ICN-SPN-20261211/SPN-ICN-20261214?adult=1&fareType=Y",
+    "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/spn/261211/261214/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+    "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTItMTEoAGoFEgNJQ05yBRIDU1BOGhwSCjIwMjYtMTItMTQoAGoFEgNTUE5yBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
     "verified": true
    },
    "leaveSaver": {
@@ -5149,15 +5015,15 @@
    "origin": "ICN",
    "dest": "DPS",
    "depDate": "2026-11-20",
-   "retDate": "2026-11-24",
-   "nights": 4,
-   "leaveDays": 3,
+   "retDate": "2026-11-23",
+   "nights": 3,
+   "leaveDays": 2,
    "price": 627300,
-   "dates": "2026.11.20(금)~11.24(화) (4박 5일)",
+   "dates": "2026.11.20(금)~11.23(월) (3박 4일)",
    "holidays": [],
-   "naverUrl": "https://flight.naver.com/flights/international/ICN-DPS-20261120/DPS-ICN-20261124?adult=1&fareType=Y",
-   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dps/261120/261124/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
-   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjAoAGoFEgNJQ05yBRIDRFBTGhwSCjIwMjYtMTEtMjQoAGoFEgNEUFNyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
+   "naverUrl": "https://flight.naver.com/flights/international/ICN-DPS-20261120/DPS-ICN-20261123?adult=1&fareType=Y",
+   "skyUrl": "https://www.skyscanner.co.kr/transport/flights/icn/dps/261120/261123/?adultsv2=1&cabinclass=economy&rtn=1&preferdirects=true",
+   "googleUrl": "https://www.google.com/travel/flights?tfs=GhwSCjIwMjYtMTEtMjAoAGoFEgNJQ05yBRIDRFBTGhwSCjIwMjYtMTEtMjMoAGoFEgNEUFNyBRIDSUNOQgEBSAGYAQE=&hl=ko&curr=KRW",
    "alt": {
     "origin": "ICN",
     "dest": "DPS",
@@ -5165,7 +5031,7 @@
     "retDate": "2026-11-23",
     "nights": 6,
     "leaveDays": 5,
-    "price": 633759,
+    "price": 627300,
     "dates": "2026.11.17(화)~11.23(월) (6박 7일)",
     "holidays": [],
     "naverUrl": "https://flight.naver.com/flights/international/ICN-DPS-20261117/DPS-ICN-20261123?adult=1&fareType=Y",
@@ -5180,7 +5046,7 @@
     "retDate": "2027-01-04",
     "nights": 3,
     "leaveDays": 1,
-    "price": 773860,
+    "price": 767300,
     "dates": "2027.01.01(금)~01.04(월) (3박 4일)",
     "holidays": [
      "신정연휴"
@@ -8025,7 +7891,7 @@
    ],
    "prices": [
     588670,
-    589404
+    589518
    ],
    "fsc": [
     "",
@@ -8043,7 +7909,7 @@
    ],
    "prices": [
     302300,
-    283500
+    302400
    ],
    "fsc": [
     "",
@@ -8115,7 +7981,7 @@
    ],
    "prices": [
     509100,
-    484100
+    509100
    ],
    "fsc": [
     "",
@@ -8241,7 +8107,7 @@
    ],
    "prices": [
     256600,
-    234677
+    252508
    ],
    "fsc": [
     "",
@@ -8493,7 +8359,7 @@
    ],
    "prices": [
     382993,
-    362713
+    362667
    ],
    "fsc": [
     "",
@@ -8529,7 +8395,7 @@
    ],
    "prices": [
     366893,
-    321500
+    367722
    ],
    "fsc": [
     "",
@@ -8619,7 +8485,7 @@
    ],
    "prices": [
     266936,
-    267184
+    283697
    ],
    "fsc": [
     "",
@@ -8637,7 +8503,7 @@
    ],
    "prices": [
     406566,
-    406894
+    417903
    ],
    "fsc": [
     "",
@@ -10505,7 +10371,585 @@
    }
   }
  },
- "crowd": {},
+ "crowd": {
+  "basis": "인천공항 노선별 출발 여객(공공데이터 15062056)",
+  "period": "2026",
+  "cities": {
+   "CTS": {
+    "level": 4,
+    "pax": 305523
+   },
+   "FUK": {
+    "level": 5,
+    "pax": 897910
+   },
+   "NRT": {
+    "level": 5,
+    "pax": 1387417
+   },
+   "KIX": {
+    "level": 5,
+    "pax": 1172433
+   },
+   "NGO": {
+    "level": 4,
+    "pax": 261028
+   },
+   "OKA": {
+    "level": 4,
+    "pax": 224770
+   },
+   "SDJ": {
+    "level": 1,
+    "pax": 21142
+   },
+   "CAN": {
+    "level": 4,
+    "pax": 199471
+   },
+   "DLC": {
+    "level": 4,
+    "pax": 147521
+   },
+   "HGH": {
+    "level": 3,
+    "pax": 115798
+   },
+   "HRB": {
+    "level": 2,
+    "pax": 57423
+   },
+   "PKX": {
+    "level": 4,
+    "pax": 313262
+   },
+   "PVG": {
+    "level": 5,
+    "pax": 550957
+   },
+   "XIY": {
+    "level": 2,
+    "pax": 61422
+   },
+   "TPE": {
+    "level": 5,
+    "pax": 608857
+   },
+   "HKG": {
+    "level": 5,
+    "pax": 689484
+   },
+   "UBN": {
+    "level": 4,
+    "pax": 125539
+   },
+   "DAD": {
+    "level": 5,
+    "pax": 464014
+   },
+   "HAN": {
+    "level": 5,
+    "pax": 349269
+   },
+   "SGN": {
+    "level": 4,
+    "pax": 273024
+   },
+   "SIN": {
+    "level": 5,
+    "pax": 452341
+   },
+   "BKK": {
+    "level": 5,
+    "pax": 464937
+   },
+   "HKT": {
+    "level": 3,
+    "pax": 75429
+   },
+   "CEB": {
+    "level": 4,
+    "pax": 131416
+   },
+   "CRK": {
+    "level": 3,
+    "pax": 72386
+   },
+   "VTE": {
+    "level": 2,
+    "pax": 48066
+   },
+   "TAG": {
+    "level": 3,
+    "pax": 85618
+   },
+   "MFM": {
+    "level": 3,
+    "pax": 105760
+   },
+   "TAK": {
+    "level": 2,
+    "pax": 62047
+   },
+   "YGJ": {
+    "level": 1,
+    "pax": 27016
+   },
+   "DYG": {
+    "level": 1,
+    "pax": 41370
+   },
+   "CXR": {
+    "level": 4,
+    "pax": 345254
+   },
+   "GUM": {
+    "level": 3,
+    "pax": 112801
+   },
+   "BKI": {
+    "level": 3,
+    "pax": 73266
+   },
+   "KHH": {
+    "level": 3,
+    "pax": 93470
+   },
+   "TAO": {
+    "level": 5,
+    "pax": 403135
+   },
+   "YNT": {
+    "level": 3,
+    "pax": 89473
+   },
+   "KOJ": {
+    "level": 2,
+    "pax": 54649
+   },
+   "PQC": {
+    "level": 4,
+    "pax": 234080
+   },
+   "CNX": {
+    "level": 3,
+    "pax": 84306
+   },
+   "DPS": {
+    "level": 3,
+    "pax": 99234
+   },
+   "FSZ": {
+    "level": 2,
+    "pax": 59525
+   },
+   "HIJ": {
+    "level": 2,
+    "pax": 58587
+   },
+   "MYJ": {
+    "level": 2,
+    "pax": 59707
+   },
+   "OIT": {
+    "level": 1,
+    "pax": 21408
+   },
+   "SPN": {
+    "level": 1,
+    "pax": 29437
+   },
+   "KKJ": {
+    "level": 1,
+    "pax": 30551
+   },
+   "AOJ": {
+    "level": 1,
+    "pax": 13567
+   },
+   "KMJ": {
+    "level": 2,
+    "pax": 52106
+   },
+   "KMQ": {
+    "level": 1,
+    "pax": 16711
+   },
+   "NGS": {
+    "level": 1,
+    "pax": 11759
+   },
+   "ALA": {
+    "level": 2,
+    "pax": 42103
+   },
+   "TAS": {
+    "level": 2,
+    "pax": 68788
+   },
+   "BWN": {
+    "level": 1,
+    "pax": 9052
+   },
+   "HSG": {
+    "level": 1,
+    "pax": 21274
+   },
+   "HPH": {
+    "level": 1,
+    "pax": 25775
+   }
+  },
+  "months": {
+   "1": {
+    "AOJ": 1,
+    "BWN": 1,
+    "KMQ": 1,
+    "NGS": 1,
+    "DYG": 1,
+    "SDJ": 1,
+    "ALA": 1,
+    "KKJ": 1,
+    "HSG": 1,
+    "OIT": 1,
+    "HPH": 1,
+    "YGJ": 1,
+    "HRB": 2,
+    "XIY": 2,
+    "KMJ": 2,
+    "HIJ": 2,
+    "SPN": 2,
+    "FSZ": 2,
+    "MYJ": 2,
+    "TAK": 2,
+    "TAS": 2,
+    "CRK": 2,
+    "VTE": 2,
+    "YNT": 3,
+    "KOJ": 3,
+    "HKT": 3,
+    "UBN": 3,
+    "KHH": 3,
+    "HGH": 3,
+    "DPS": 3,
+    "MFM": 3,
+    "BKI": 3,
+    "DLC": 3,
+    "TAG": 3,
+    "CNX": 4,
+    "GUM": 4,
+    "CAN": 4,
+    "CEB": 4,
+    "NGO": 4,
+    "OKA": 4,
+    "PKX": 4,
+    "SGN": 4,
+    "PQC": 4,
+    "HAN": 4,
+    "TAO": 4,
+    "SIN": 5,
+    "CTS": 5,
+    "CXR": 5,
+    "PVG": 5,
+    "DAD": 5,
+    "BKK": 5,
+    "TPE": 5,
+    "HKG": 5,
+    "FUK": 5,
+    "KIX": 5,
+    "NRT": 5
+   },
+   "2": {
+    "BWN": 1,
+    "KMQ": 1,
+    "AOJ": 1,
+    "NGS": 1,
+    "DYG": 1,
+    "SDJ": 1,
+    "ALA": 1,
+    "KKJ": 1,
+    "HSG": 1,
+    "OIT": 1,
+    "YGJ": 1,
+    "HPH": 1,
+    "TAS": 2,
+    "KMJ": 2,
+    "XIY": 2,
+    "HIJ": 2,
+    "FSZ": 2,
+    "SPN": 2,
+    "MYJ": 2,
+    "TAK": 2,
+    "HRB": 2,
+    "YNT": 2,
+    "VTE": 2,
+    "CRK": 3,
+    "KOJ": 3,
+    "HKT": 3,
+    "DPS": 3,
+    "UBN": 3,
+    "KHH": 3,
+    "HGH": 3,
+    "MFM": 3,
+    "BKI": 3,
+    "CNX": 3,
+    "TAG": 3,
+    "DLC": 4,
+    "GUM": 4,
+    "CAN": 4,
+    "CEB": 4,
+    "NGO": 4,
+    "OKA": 4,
+    "PKX": 4,
+    "SGN": 4,
+    "PQC": 4,
+    "HAN": 4,
+    "TAO": 4,
+    "CTS": 5,
+    "SIN": 5,
+    "CXR": 5,
+    "PVG": 5,
+    "BKK": 5,
+    "DAD": 5,
+    "TPE": 5,
+    "HKG": 5,
+    "FUK": 5,
+    "KIX": 5,
+    "NRT": 5
+   },
+   "3": {
+    "BWN": 1,
+    "AOJ": 1,
+    "KMQ": 1,
+    "NGS": 1,
+    "HSG": 1,
+    "SDJ": 1,
+    "HPH": 1,
+    "ALA": 1,
+    "OIT": 1,
+    "KKJ": 1,
+    "YGJ": 1,
+    "HRB": 1,
+    "SPN": 2,
+    "BKI": 2,
+    "DYG": 2,
+    "KMJ": 2,
+    "VTE": 2,
+    "XIY": 2,
+    "HIJ": 2,
+    "MYJ": 2,
+    "FSZ": 2,
+    "TAS": 2,
+    "KOJ": 2,
+    "TAK": 3,
+    "CNX": 3,
+    "TAG": 3,
+    "HKT": 3,
+    "DPS": 3,
+    "CRK": 3,
+    "YNT": 3,
+    "UBN": 3,
+    "KHH": 3,
+    "MFM": 3,
+    "GUM": 3,
+    "CEB": 4,
+    "HGH": 4,
+    "DLC": 4,
+    "PQC": 4,
+    "OKA": 4,
+    "CAN": 4,
+    "SGN": 4,
+    "CTS": 4,
+    "PKX": 4,
+    "NGO": 4,
+    "CXR": 4,
+    "HAN": 5,
+    "TAO": 5,
+    "SIN": 5,
+    "DAD": 5,
+    "BKK": 5,
+    "PVG": 5,
+    "TPE": 5,
+    "HKG": 5,
+    "FUK": 5,
+    "KIX": 5,
+    "NRT": 5
+   },
+   "4": {
+    "SPN": 1,
+    "NGS": 1,
+    "BWN": 1,
+    "OIT": 1,
+    "HSG": 1,
+    "AOJ": 1,
+    "YGJ": 1,
+    "KMQ": 1,
+    "HPH": 1,
+    "SDJ": 1,
+    "KOJ": 1,
+    "KKJ": 1,
+    "VTE": 2,
+    "CNX": 2,
+    "KMJ": 2,
+    "ALA": 2,
+    "HIJ": 2,
+    "BKI": 2,
+    "MYJ": 2,
+    "FSZ": 2,
+    "DYG": 2,
+    "TAG": 2,
+    "HRB": 2,
+    "TAK": 3,
+    "CRK": 3,
+    "XIY": 3,
+    "HKT": 3,
+    "TAS": 3,
+    "GUM": 3,
+    "CEB": 3,
+    "KHH": 3,
+    "DPS": 3,
+    "YNT": 3,
+    "UBN": 3,
+    "HGH": 4,
+    "MFM": 4,
+    "DLC": 4,
+    "CTS": 4,
+    "CAN": 4,
+    "PQC": 4,
+    "OKA": 4,
+    "NGO": 4,
+    "SGN": 4,
+    "CXR": 4,
+    "PKX": 4,
+    "HAN": 5,
+    "TAO": 5,
+    "DAD": 5,
+    "BKK": 5,
+    "SIN": 5,
+    "PVG": 5,
+    "TPE": 5,
+    "HKG": 5,
+    "FUK": 5,
+    "KIX": 5,
+    "NRT": 5
+   },
+   "5": {
+    "BWN": 1,
+    "NGS": 1,
+    "OIT": 1,
+    "VTE": 1,
+    "AOJ": 1,
+    "HSG": 1,
+    "YGJ": 1,
+    "HPH": 1,
+    "KMQ": 1,
+    "SDJ": 1,
+    "KOJ": 1,
+    "KKJ": 2,
+    "TAG": 2,
+    "BKI": 2,
+    "KMJ": 2,
+    "CNX": 2,
+    "DYG": 2,
+    "HKT": 2,
+    "MYJ": 2,
+    "HRB": 2,
+    "HIJ": 2,
+    "CRK": 2,
+    "FSZ": 3,
+    "TAK": 3,
+    "ALA": 3,
+    "XIY": 3,
+    "GUM": 3,
+    "TAS": 3,
+    "KHH": 3,
+    "CEB": 3,
+    "YNT": 3,
+    "MFM": 3,
+    "DPS": 3,
+    "HGH": 4,
+    "UBN": 4,
+    "PQC": 4,
+    "DLC": 4,
+    "CAN": 4,
+    "OKA": 4,
+    "CTS": 4,
+    "SGN": 4,
+    "CXR": 4,
+    "NGO": 4,
+    "HAN": 4,
+    "PKX": 5,
+    "BKK": 5,
+    "DAD": 5,
+    "TAO": 5,
+    "SIN": 5,
+    "TPE": 5,
+    "PVG": 5,
+    "HKG": 5,
+    "FUK": 5,
+    "KIX": 5,
+    "NRT": 5
+   },
+   "6": {
+    "SPN": 1,
+    "NGS": 1,
+    "BWN": 1,
+    "OIT": 1,
+    "KOJ": 1,
+    "HSG": 1,
+    "AOJ": 1,
+    "YGJ": 1,
+    "VTE": 1,
+    "HPH": 1,
+    "KMQ": 1,
+    "SDJ": 1,
+    "KKJ": 2,
+    "TAG": 2,
+    "CNX": 2,
+    "BKI": 2,
+    "KMJ": 2,
+    "HKT": 2,
+    "DYG": 2,
+    "TAK": 2,
+    "FSZ": 2,
+    "MYJ": 2,
+    "HIJ": 2,
+    "XIY": 3,
+    "ALA": 3,
+    "CRK": 3,
+    "GUM": 3,
+    "HRB": 3,
+    "CEB": 3,
+    "TAS": 3,
+    "KHH": 3,
+    "MFM": 3,
+    "DPS": 3,
+    "YNT": 3,
+    "HGH": 4,
+    "PQC": 4,
+    "DLC": 4,
+    "OKA": 4,
+    "CAN": 4,
+    "UBN": 4,
+    "NGO": 4,
+    "SGN": 4,
+    "CXR": 4,
+    "HAN": 4,
+    "CTS": 4,
+    "BKK": 5,
+    "DAD": 5,
+    "PKX": 5,
+    "TAO": 5,
+    "SIN": 5,
+    "TPE": 5,
+    "PVG": 5,
+    "HKG": 5,
+    "FUK": 5,
+    "KIX": 5,
+    "NRT": 5
+   }
+  }
+ },
  "fx": {
   "source": "ExchangeRate-API (open.er-api.com)",
   "sourceUrl": "https://www.exchangerate-api.com",
