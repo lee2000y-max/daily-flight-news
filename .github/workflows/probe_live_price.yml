@@ -90,6 +90,8 @@ jobs:
           PYTHONUTF8: '1'
           PYTHONUNBUFFERED: '1'
           CROWD_DISCOVER: ${{ github.event.inputs.route == 'discover' && '1' || '0' }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
         run: |
           python build_crowd.py
           [ "$CROWD_DISCOVER" = "1" ] && exit 0

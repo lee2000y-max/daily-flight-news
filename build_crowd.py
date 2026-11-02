@@ -14,6 +14,13 @@
   - 여객 수에는 외국인도 포함된다(국적 구분 없음). '한국인 쏠림'의 근사치로 쓴다.
   - 자료의 '공항'은 IATA 코드, '월'은 "01월", '년도'는 "2026년" 형식(2026-11-03 확인).
 
+네이버 데이터랩 검색어 트렌드(선택, 2026-11-03 추가)
+  - GitHub Secrets NAVER_CLIENT_ID / NAVER_CLIENT_SECRET이 있으면 최근 8주 "○○ 여행·항공권" 검색량을 더한다.
+  - 요청마다 기준 키워드(도쿄)를 함께 넣어 도시 간 비교가 되게 한다(요청당 도시 4개 + 기준 1개).
+  - 호출 수: 실행 1번에 약 15회. 사용자가 정한 월 한도 30,000회(NAVER_MONTHLY_LIMIT)에 한참 못 미치게
+    실행당 상한(NAVER_MAX_CALLS_PER_RUN=40)을 둔다. 주 1회 실행 기준 월 약 60회.
+  - 최종 단계 = 인천공항 여객 순위와 검색량 순위의 평균을 5단계로 나눈 값. 키가 없으면 여객 수만 쓴다.
+
 결과: data/crowd_index.json
   {"basis": "...", "period": "...", "months": {"1": {code: level}, ...}, "cities": {code: {"level": 연간 단계, "pax": 연간 여객}}}
 """
@@ -77,6 +84,61 @@ def download_csv() -> bytes:
     raise RuntimeError("CSV를 받지 못함")
 
 
+NAVER_URL = "https://openapi.naver.com/v1/datalab/search"
+NAVER_MONTHLY_LIMIT = 30000        # 사용자 설정 월 한도(무료). 이 스크립트는 실행당 아래 상한만 쓴다
+NAVER_MAX_CALLS_PER_RUN = 40
+SHORT_NAME = {"BKK": "방콕", "CTS": "삿포로", "SIN": "싱가포르", "TAG": "보홀", "DPS": "발리", "BWN": "브루나이"}
+
+
+def search_interest() -> dict:
+    """{도시 코드: 기준(도쿄) 대비 최근 8주 검색량 비율}. 키가 없거나 실패하면 빈 값."""
+    import datetime
+    cid, sec = os.environ.get("NAVER_CLIENT_ID", ""), os.environ.get("NAVER_CLIENT_SECRET", "")
+    if not cid or not sec:
+        print("네이버 키 없음: 검색량 보정 생략")
+        return {}
+    end = datetime.date.today() - datetime.timedelta(days=1)
+    start = end - datetime.timedelta(weeks=8)
+    name = {c["code"]: SHORT_NAME.get(c["code"], c["city"].split()[0]) for c in CITY_MASTER}
+    anchor = "NRT"
+    others = [c for c in name if c != anchor]
+    out, calls = {}, 0
+    for i in range(0, len(others), 4):
+        if calls >= NAVER_MAX_CALLS_PER_RUN:
+            print(f"네이버 호출 상한({NAVER_MAX_CALLS_PER_RUN}회) 도달, 나머지 생략")
+            break
+        group = [anchor] + others[i:i + 4]
+        body = json.dumps({
+            "startDate": start.isoformat(), "endDate": end.isoformat(), "timeUnit": "week",
+            "keywordGroups": [{"groupName": c, "keywords": [f"{name[c]} 여행", f"{name[c]} 항공권"]} for c in group],
+        }).encode("utf-8")
+        try:
+            calls += 1
+            d = json.loads(get(NAVER_URL, data=body, headers={
+                "X-Naver-Client-Id": cid, "X-Naver-Client-Secret": sec, "Content-Type": "application/json"}))
+        except Exception as e:
+            print(f"네이버 요청 실패: {type(e).__name__}: {str(e)[:160]}")
+            continue
+        avg = {}
+        for res in d.get("results", []):
+            vals = [x.get("ratio", 0) for x in res.get("data", [])]
+            avg[res.get("title")] = sum(vals) / len(vals) if vals else 0
+        base = avg.get(anchor) or 0
+        if base <= 0:
+            continue
+        out[anchor] = 1.0
+        for c in group[1:]:
+            out[c] = round(avg.get(c, 0) / base, 4)
+    print(f"네이버 검색량: {len(out)}개 도시, 호출 {calls}회(월 한도 {NAVER_MONTHLY_LIMIT:,}회)")
+    return out
+
+
+def pct_rank(values: dict) -> dict:
+    ranked = sorted(values, key=lambda k: values[k])
+    n = len(ranked)
+    return {k: (i + 0.5) / n for i, k in enumerate(ranked)}
+
+
 def decode(b: bytes) -> str:
     for enc in ("utf-8-sig", "cp949", "euc-kr"):
         try:
@@ -128,21 +190,30 @@ def main() -> int:
         n = len(ranked)
         return {k: min(5, 1 + (i * 5) // n) for i, k in enumerate(ranked)}
 
+    search = search_interest()
+    s_pct = pct_rank(search) if search else {}
+
+    def blend(pax: dict) -> dict:
+        """여객 순위와 검색량 순위의 평균(검색량이 없는 도시는 여객 순위만)."""
+        p = pct_rank(pax)
+        return {c: (p[c] + s_pct[c]) / 2 if c in s_pct else p[c] for c in p}
+
     months = {}
     for m in range(1, 13):
         vals = {c: p for (c, mm), p in pax_m.items() if mm == m}
         if vals:
-            months[str(m)] = levels(vals)
+            months[str(m)] = levels(blend(vals))
     total = {}
     for (c, _), p in pax_m.items():
         total[c] = total.get(c, 0) + p
-    lv = levels(total)
-    cities = {c: {"level": lv[c], "pax": total[c]} for c in total}
+    lv = levels(blend(total))
+    cities = {c: {"level": lv[c], "pax": total[c], **({"search": search[c]} if c in search else {})} for c in total}
     missing = sorted({c["code"] for c in CITY_MASTER} - set(cities))
     print(f"도시 {len(cities)}개 집계, 자료에 없는 도시 {missing}")
     os.makedirs("data", exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:
-        json.dump({"basis": "인천공항 노선별 출발 여객(공공데이터 15062056)", "period": "~".join(sorted(years)),
+        basis = "인천공항 노선별 출발 여객(공공데이터 15062056)" + (" + 네이버 검색량(최근 8주)" if search else "")
+        json.dump({"basis": basis, "period": "~".join(sorted(years)),
                    "months": months, "cities": cities}, f, ensure_ascii=False, indent=1)
     print("저장:", OUT)
     return 0
