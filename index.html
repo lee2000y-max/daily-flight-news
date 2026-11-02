@@ -629,6 +629,9 @@
                 <div class="text-[11px] font-bold text-[#5C5549] mb-0.5">왕복 직항 최저가 <span x-show="item.origin === 'GMP'" class="ml-1 px-1 rounded-sm bg-[#1E3A5F] text-white">김포 출발</span></div>
                 <div class="flex items-baseline gap-2">
                   <span class="font-serif-kr text-2xl sm:text-3xl font-black text-[#1E1B18] tracking-tight" x-text="formatPrice(item.price)"></span>
+                  <span x-show="item.sellers && item.sellers.items.length > 1" class="text-xs font-mono-flap font-bold text-[#5C5549]"
+                    :title="'구글 플라이트 판매처별 가격(' + (item.sellers ? item.sellers.checkedAt : '') + ' 조회)'"
+                    x-text="item.sellers ? '~' + formatPrice(item.sellers.items[item.sellers.items.length - 1].price) : ''"></span>
                   <span 
                     x-show="item.diff !== 0"
                     class="text-xs font-mono-flap font-bold px-1.5 py-0.5 rounded-sm"
@@ -693,6 +696,10 @@
               <div class="flex items-start justify-between gap-2" x-show="!item.airline">
                 <span class="text-[#5C5549] font-semibold shrink-0">✈️ 운항 편명</span>
                 <span class="text-[#7A7164] text-right">오늘 상세 조회 실패 · 가격은 실제 조회값</span>
+              </div>
+              <div class="flex items-start justify-between gap-2" x-show="item.sellers">
+                <span class="text-[#5C5549] font-semibold shrink-0">🏷️ 판매처</span>
+                <span class="text-right text-[11px] text-[#2C2620]" x-text="sellersText(item)"></span>
               </div>
               <div class="flex items-start justify-between gap-2" x-show="fxOf(item.code)">
                 <span class="text-[#5C5549] font-semibold shrink-0">💱 현지 통화</span>
@@ -1018,6 +1025,7 @@
             leaveSaver: raw.leaveSaver || null,
             bestSeasons: Array.isArray(raw.bestSeasons) ? raw.bestSeasons : [],
             stats: stats,
+            sellers: (raw.sellers && Array.isArray(raw.sellers.items) && raw.sellers.items.length) ? raw.sellers : null,
             history: prices.slice(-5)
           };
         },
@@ -1723,6 +1731,12 @@
           a.href = URL.createObjectURL(blob); a.download = name;
           document.body.appendChild(a); a.click(); a.remove();
           setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        },
+
+        sellersText(item) {
+          const s = item && item.sellers;
+          if (!s) return '';
+          return s.items.map(x => `${x.name}${x.airline ? '(항공사)' : ''} ${this.formatPrice(x.price)}`).join(' · ');
         },
 
         priceBar(item) {

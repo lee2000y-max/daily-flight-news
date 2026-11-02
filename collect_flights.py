@@ -613,6 +613,15 @@ def main() -> None:
             print(f"🧩 묶음 {idx + 1}/{cnt}: {len(cities)}개 도시")
         print(f"📰 [{today_str}] {len(cities)}개 도시 수집 시작 (출발 {', '.join(ORIGINS)} · D+{WINDOW_START}~{WINDOW_END} · 2~8박 · 직항)")
         res = collect_phase(cities, today)
+        if os.environ.get("SELLERS", "").strip() == "1" and res["published"]:
+            # 판매처별 가격(구글 예약 옵션, 실제 화면 값). 실패한 도시는 비워 둔다
+            import sellers
+            t1 = time.time()
+            got = sellers.collect_sellers(res["published"], budget_sec=float(os.environ.get("SELLERS_BUDGET", "600")))
+            for r in res["published"]:
+                if r["code"] in got:
+                    r["sellers"] = got[r["code"]]
+            print(f"🏷️ 판매처 {len(got)}/{len(res['published'])}개 도시, {time.time() - t1:.0f}초")
         if mode == "collect":
             os.makedirs("shard_out", exist_ok=True)
             with open(f"shard_out/shard_{idx}.json", "w", encoding="utf-8") as f:
