@@ -534,7 +534,8 @@ def load_crowd() -> Dict[str, Any]:
     try:
         with open(os.path.join("data", "crowd_index.json"), "r", encoding="utf-8") as f:
             d = json.load(f)
-        return {"basis": d.get("basis", ""), "period": d.get("period", ""), "cities": d.get("cities", {})}
+        return {"basis": d.get("basis", ""), "period": d.get("period", ""), "cities": d.get("cities", {}),
+                "months": d.get("months", {})}
     except Exception:
         return {}
 
@@ -605,6 +606,24 @@ def main() -> None:
     all_cities = [m for m in CITY_MASTER if not only or m["code"] in only]
     dry = os.environ.get("DRY_RUN", "").strip() == "1"
 
+    if mode == "sellers":
+        # 판매처별 가격: API 조회를 하지 않은 새 서버에서 실행(같은 서버에서 수백 번 조회한 뒤에는 구글이 확인 화면을 띄움, 2026-11-03 실측)
+        import sellers
+        idx = int(os.environ.get("SHARD_INDEX", "0"))
+        path = f"shard_out/shard_{idx}.json"
+        if not os.path.exists(path):
+            print(f"묶음 결과 없음: {path}")
+            return
+        with open(path, encoding="utf-8") as f:
+            res = json.load(f)
+        t1 = time.time()
+        got = sellers.collect_sellers(res.get("published", []), budget_sec=float(os.environ.get("SELLERS_BUDGET", "600")))
+        os.makedirs("sellers_out", exist_ok=True)
+        with open(f"sellers_out/sellers_{idx}.json", "w", encoding="utf-8") as f:
+            json.dump(got, f, ensure_ascii=False)
+        print(f"🏷️ 판매처 {len(got)}/{len(res.get('published', []))}개 도시, {time.time() - t1:.0f}초")
+        return
+
     if mode in ("", "collect"):
         cities = all_cities
         if mode == "collect":
@@ -642,6 +661,24 @@ def main() -> None:
             if m["code"] not in seen:
                 failed.append({"date": today_str, "code": m["code"], "city": m["city"], "reason": "수집 작업 실패(해당 묶음 결과 없음)"})
         print(f"🧩 묶음 결과 합치기: 수집된 도시 {len(seen)}/{len(all_cities)}")
+        got = {}
+        for name in sorted(os.listdir("sellers_out")) if os.path.isdir("sellers_out") else []:
+            try:
+                with open(os.path.join("sellers_out", name), encoding="utf-8") as f:
+                    got.update(json.load(f))
+            except Exception as e:
+                print(f"판매처 결과 읽기 실패 {name}: {e}")
+        for r in published:
+            sv = got.get(r["code"])
+            if not sv or not sv.get("items"):
+                continue
+            lo = min(x["price"] for x in sv["items"])
+            # 판매처 최저가가 카드 가격과 5% 넘게 다르면 다른 편을 읽었을 가능성이 커 싣지 않는다(2026-11-03 도쿄 281,300 vs 300,300)
+            if abs(lo - r["price"]) > r["price"] * 0.05:
+                print(f"   판매처 제외 {r['city']}: 카드 {r['price']:,} vs 판매처 최저 {lo:,}")
+                continue
+            r["sellers"] = sv
+        print(f"🏷️ 판매처 정보 {sum(1 for r in published if r.get('sellers'))}/{len(published)}개 도시")
     cities = all_cities
     print_summary(published, failed, len(cities))
 

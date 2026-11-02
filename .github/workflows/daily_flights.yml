@@ -80,8 +80,57 @@ jobs:
           path: shard_out/
           retention-days: 3
 
-  publish:
+  # 판매처별 가격(구글 예약 옵션): API 조회를 하지 않은 새 서버에서 브라우저로 읽는다.
+  # 실패해도 발행은 계속된다(판매처 정보만 빠짐).
+  sellers:
     needs: collect
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Download shard result
+        uses: actions/download-artifact@v4
+        with:
+          name: shard-${{ matrix.shard }}
+          path: shard_out
+
+      - name: Install browser
+        run: |
+          pip install "fast-flights==2.2" "primp==0.6.2" "holidays>=0.50" playwright
+          python -m playwright install --with-deps chromium > /dev/null
+
+      - name: Read booking options
+        env:
+          PYTHONUTF8: '1'
+          PYTHONUNBUFFERED: '1'
+          MODE: sellers
+          SHARD_INDEX: ${{ matrix.shard }}
+        run: python collect_flights.py
+
+      - name: Upload sellers result
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sellers-${{ matrix.shard }}
+          path: sellers_out/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  publish:
+    needs: [collect, sellers]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -99,6 +148,14 @@ jobs:
         with:
           pattern: shard-*
           path: shard_out
+          merge-multiple: true
+
+      - name: Download sellers results
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sellers-*
+          path: sellers_out
           merge-multiple: true
 
       - name: Merge and save

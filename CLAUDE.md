@@ -18,14 +18,16 @@
 - `probe_route.py` + `.github/workflows/probe_live_price.yml`: 특정 노선 진단(수동 실행, 입력 route, mode=route).
 - `.github/workflows/daily_flights.yml`: 매일 07:30 KST. 수동 실행 입력 `only_cities`, `dry_run`. 브랜치에서 실행하면 그 브랜치에 커밋.
   - `collect` 잡: 도시를 8묶음(`SHARD_INDEX`::8)으로 나눠 서로 다른 서버에서 동시 수집(`MODE=collect` → `shard_out/shard_N.json`).
-  - `publish` 잡: 묶음 결과를 합쳐 저장(`MODE=merge`). 발행일은 묶음들이 쓴 날짜 중 다수결(자정 경계 대비). 결과가 없는 묶음의 도시는 `failed`에 기록. 발행 0건이면 저장하지 않고 실패.
+  - `sellers` 잡(8개, 새 서버): 묶음 결과의 1위 일정을 브라우저로 열어 구글 예약 옵션(판매처별 가격)을 읽음(`MODE=sellers` → `sellers_out/`). 수집한 서버에서 하면 구글이 확인 화면을 띄우므로 반드시 별도 잡. 실패해도 발행은 계속.
+  - `publish` 잡: 묶음 결과를 합쳐 저장(`MODE=merge`), 판매처 결과를 `sellers`로 붙임. 발행일은 묶음들이 쓴 날짜 중 다수결(자정 경계 대비). 결과가 없는 묶음의 도시는 `failed`에 기록. 발행 0건이면 저장하지 않고 실패.
   - `publish`는 `!cancelled()` 조건. 실행을 취소하면 저장도 하지 않는다(`always()`로 바꾸지 말 것).
 - 화면 판정(index.html): 1면 A·C와 스탬프 1·3·6·7은 실조회 이력이 필요 일수(30·7·14) 쌓인 뒤에만 켜짐(`hasHistory`). D는 `data/crowd_index.json`(level 1~5)이 있어야 켜짐.
 - `build_climate.py` → `data/climate_normals.json`(NASA POWER 월 평균기온·강수, 키 없음). 진단 워크플로 `mode=climate`로 갱신·커밋.
 - `monthly.html`: `data/reports/monthly/*.json` 월간지(이전 수집기 기록이나 부분 관측 달은 '참고용'). `feed.xml`: 수집 때 생성되는 RSS.
 - 환율(P3): 수집 합치기 단계에서 `open.er-api.com`(키 없음) 조회 → `flights_data.json`의 `fx`. 실패하면 빈 값(환율 박스 숨김, 이월 없음). 통화는 `routes.CITY_CURRENCY`.
 - 공유 이미지(P3): 카드의 '공유 이미지' 버튼이 브라우저에서 PNG를 만든다(서버 작업 없음).
-- `probe_booking.py`(진단 워크플로 `mode=booking`): 구글 플라이트 예약 옵션(판매처별 가격) 실험. 결과는 `docs/P3_booking_experiment.md`. 정식 도입은 사용자 결정 대기.
+- `sellers.py`: 판매처별 가격 읽기(사용자 결정으로 매일 수집 포함, 2026-11-03). 같은 출발 시각 직항을 못 찾으면 비움. 실험 기록 `docs/P3_booking_experiment.md`, 실험 스크립트 `probe_booking.py`.
+- 쏠림 지수: `build_crowd.py` → `data/crowd_index.json`. 인천공항 노선별 운송실적(공공데이터 파일 15062056, 키 없음) + 네이버 검색어 트렌드(Secrets `NAVER_CLIENT_ID`/`NAVER_CLIENT_SECRET` 있을 때만, 실행당 상한 40회, 사용자 월 한도 30,000회). `crowd_weekly.yml`이 매주 월 06:10 KST 갱신.
 - `check_site.py`: 로컬에서 사이트를 띄워 데스크톱·모바일 화면 검사(카드 수, 구글 버튼, 금지어, 콘솔 오류) 후 스크린샷. `probe_live_price.yml`을 `mode=site`로 실행하면 `preview/screenshots` 브랜치에 올린다.
 
 ## 알아 둘 함정
@@ -57,3 +59,4 @@
 - 2026-11-03: P0 main 병합(PR #1, 8묶음 수집, 시험 수집 56/58). 3일 연속 정기 수집 검증은 전체 작업 후 마지막에(사용자 결정). P1 착수: 브랜치 `feat/p1-frontpage`.
 - 2026-11-03: 단계별 통과 조건 없이 P1→P2→P3 연속 진행, 전체 검증은 P3 후(PLAN.md 8-1). 12월 초 10월 이력 삭제 예정. 사용량 추가 구매 금지.
 - 2026-11-03: P1(PR #2)·P2(PR #3) 병합. P3(환율·공유 이미지·판매처 실험) 브랜치 `feat/p3-extras`. 쏠림 지수(D)는 API 키 대기.
+- 2026-11-03: P3(PR #4) 병합. 판매처별 가격 매일 수집·쏠림 지수(공공데이터+네이버) 브랜치 `feat/p3b-sellers-crowd`. 네이버 키는 사용자가 Secrets 등록 대기.

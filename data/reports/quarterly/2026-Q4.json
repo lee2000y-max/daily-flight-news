@@ -1,7 +1,7 @@
 {
  "type": "quarterly",
  "period": "2026-Q4",
- "generatedAt": "2026-11-03 08:08",
+ "generatedAt": "2026-11-03 08:41",
  "coverage": {
   "days_with_data": 9,
   "days_in_period": 92,
@@ -25,12 +25,12 @@
     "value": 209850
    },
    {
-    "code": "DAD",
-    "value": 210831
-   },
-   {
     "code": "DLC",
     "value": 214125
+   },
+   {
+    "code": "DAD",
+    "value": 215055
    },
    {
     "code": "YGJ",
@@ -39,30 +39,30 @@
   ],
   "biggest_drop_pct": [
    {
+    "code": "UBN",
+    "value": -37.9
+   },
+   {
     "code": "VTE",
     "value": -37.8
    },
    {
     "code": "BWN",
-    "value": -37.7
-   },
-   {
-    "code": "UBN",
-    "value": -35.9
+    "value": -36.0
    },
    {
     "code": "KIX",
-    "value": -27.5
+    "value": -27.6
    },
    {
-    "code": "YGJ",
-    "value": -24.3
+    "code": "KOJ",
+    "value": -26.2
    }
   ],
   "biggest_rise_pct": [
    {
     "code": "CEB",
-    "value": 147.1
+    "value": 140.0
    },
    {
     "code": "TAG",
@@ -70,7 +70,7 @@
    },
    {
     "code": "CRK",
-    "value": 57.7
+    "value": 57.6
    },
    {
     "code": "HGH",
@@ -84,7 +84,7 @@
   "most_volatile_pct": [
    {
     "code": "CEB",
-    "value": 34.5
+    "value": 33.9
    },
    {
     "code": "TAG",
@@ -100,7 +100,7 @@
    },
    {
     "code": "UBN",
-    "value": 20.6
+    "value": 20.9
    }
   ]
  },
@@ -108,27 +108,27 @@
   "SEC1": {
    "major": "일본",
    "routes": 21,
-   "mean_price": 310431
+   "mean_price": 310708
   },
   "SEC2": {
    "major": "중국",
    "routes": 10,
-   "mean_price": 334786
+   "mean_price": 334783
   },
   "SEC3": {
    "major": "동남아",
    "routes": 20,
-   "mean_price": 407598
+   "mean_price": 407542
   },
   "SEC4": {
    "major": "중앙아시아",
    "routes": 3,
-   "mean_price": 943219
+   "mean_price": 942738
   },
   "SEC5": {
    "major": "중화권",
    "routes": 4,
-   "mean_price": 302831
+   "mean_price": 302826
   }
  },
  "routes": {
@@ -288,9 +288,9 @@
    },
    "max": {
     "date": "2026-11-03",
-    "price": 588226
+    "price": 583011
    },
-   "mean": 495076,
+   "mean": 494497,
    "median": 492045,
    "first": {
     "date": "2026-10-22",
@@ -298,11 +298,11 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 588226
+    "price": 583011
    },
-   "change": 121761,
-   "change_pct": 26.1,
-   "volatility_pct": 11.2,
+   "change": 116546,
+   "change_pct": 25.0,
+   "volatility_pct": 11.0,
    "city": "방콕 수완나품",
    "section": "SEC3",
    "major": "동남아",
@@ -314,21 +314,21 @@
     ],
     [
      "2026-11",
-     580533
+     577926
     ]
    ]
   },
   "BWN": {
    "n": 6,
    "min": {
-    "date": "2026-11-03",
-    "price": 557100
+    "date": "2026-11-02",
+    "price": 557200
    },
    "max": {
     "date": "2026-10-22",
     "price": 894100
    },
-   "mean": 669517,
+   "mean": 672017,
    "median": 663250,
    "first": {
     "date": "2026-10-22",
@@ -336,11 +336,11 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 557100
+    "price": 572100
    },
-   "change": -337000,
-   "change_pct": -37.7,
-   "volatility_pct": 16.8,
+   "change": -322000,
+   "change_pct": -36.0,
+   "volatility_pct": 16.4,
    "city": "반다르스리베가완",
    "section": "SEC3",
    "major": "동남아",
@@ -352,7 +352,7 @@
     ],
     [
      "2026-11",
-     557150
+     564650
     ]
    ]
   },
@@ -402,9 +402,9 @@
    },
    "max": {
     "date": "2026-11-03",
-    "price": 605773
+    "price": 588397
    },
-   "mean": 477290,
+   "mean": 471498,
    "median": 580898,
    "first": {
     "date": "2026-10-28",
@@ -412,11 +412,11 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 605773
+    "price": 588397
    },
-   "change": 360573,
-   "change_pct": 147.1,
-   "volatility_pct": 34.5,
+   "change": 343197,
+   "change_pct": 140.0,
+   "volatility_pct": 33.9,
    "city": "세부",
    "section": "SEC3",
    "major": "동남아",
@@ -428,7 +428,7 @@
     ],
     [
      "2026-11",
-     593336
+     584648
     ]
    ]
   },
@@ -440,9 +440,9 @@
    },
    "max": {
     "date": "2026-11-03",
-    "price": 427178
+    "price": 426977
    },
-   "mean": 425147,
+   "mean": 425080,
    "median": 426663,
    "first": {
     "date": "2026-10-28",
@@ -450,9 +450,9 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 427178
+    "price": 426977
    },
-   "change": 5578,
+   "change": 5377,
    "change_pct": 1.3,
    "volatility_pct": 0.6,
    "city": "치앙마이",
@@ -466,7 +466,7 @@
     ],
     [
      "2026-11",
-     426920
+     426820
     ]
    ]
   },
@@ -477,21 +477,21 @@
     "price": 233800
    },
    "max": {
-    "date": "2026-11-03",
-    "price": 368682
+    "date": "2026-11-02",
+    "price": 368542
    },
-   "mean": 323675,
-   "median": 368542,
+   "mean": 323622,
+   "median": 368524,
    "first": {
     "date": "2026-10-28",
     "price": 233800
    },
    "last": {
     "date": "2026-11-03",
-    "price": 368682
+    "price": 368524
    },
-   "change": 134882,
-   "change_pct": 57.7,
+   "change": 134724,
+   "change_pct": 57.6,
    "volatility_pct": 19.6,
    "city": "클락",
    "section": "SEC3",
@@ -504,7 +504,7 @@
     ],
     [
      "2026-11",
-     368612
+     368533
     ]
    ]
   },
@@ -592,9 +592,9 @@
    },
    "max": {
     "date": "2026-11-03",
-    "price": 226347
+    "price": 264358
    },
-   "mean": 210831,
+   "mean": 215055,
    "median": 207506,
    "first": {
     "date": "2026-10-22",
@@ -602,11 +602,11 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 226347
+    "price": 264358
    },
-   "change": 18644,
-   "change_pct": 9.0,
-   "volatility_pct": 4.1,
+   "change": 56655,
+   "change_pct": 27.3,
+   "volatility_pct": 8.7,
    "city": "다낭",
    "section": "SEC3",
    "major": "동남아",
@@ -618,7 +618,7 @@
     ],
     [
      "2026-11",
-     226242
+     245248
     ]
    ]
   },
@@ -777,10 +777,10 @@
     "price": 265600
    },
    "max": {
-    "date": "2026-11-03",
-    "price": 302400
+    "date": "2026-11-02",
+    "price": 302300
    },
-   "mean": 285460,
+   "mean": 281680,
    "median": 278700,
    "first": {
     "date": "2026-10-24",
@@ -788,11 +788,11 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 302400
+    "price": 283500
    },
-   "change": 23700,
-   "change_pct": 8.5,
-   "volatility_pct": 5.1,
+   "change": 4800,
+   "change_pct": 1.7,
+   "volatility_pct": 4.2,
    "city": "시즈오카",
    "section": "SEC1",
    "major": "일본",
@@ -804,7 +804,7 @@
     ],
     [
      "2026-11",
-     302350
+     292900
     ]
    ]
   },
@@ -856,19 +856,19 @@
     "date": "2026-10-28",
     "price": 310200
    },
-   "mean": 278679,
-   "median": 270480,
+   "mean": 273744,
+   "median": 255674,
    "first": {
     "date": "2026-10-28",
     "price": 310200
    },
    "last": {
     "date": "2026-11-03",
-    "price": 270480
+    "price": 255674
    },
-   "change": -39720,
-   "change_pct": -12.8,
-   "volatility_pct": 8.3,
+   "change": -54526,
+   "change_pct": -17.6,
+   "volatility_pct": 9.4,
    "city": "괌",
    "section": "SEC3",
    "major": "동남아",
@@ -880,7 +880,7 @@
     ],
     [
      "2026-11",
-     262918
+     255516
     ]
    ]
   },
@@ -892,9 +892,9 @@
    },
    "max": {
     "date": "2026-11-03",
-    "price": 342108
+    "price": 341767
    },
-   "mean": 309248,
+   "mean": 309210,
    "median": 300500,
    "first": {
     "date": "2026-10-22",
@@ -902,10 +902,10 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 342108
+    "price": 341767
    },
-   "change": 41608,
-   "change_pct": 13.8,
+   "change": 41267,
+   "change_pct": 13.7,
    "volatility_pct": 5.3,
    "city": "하노이",
    "section": "SEC3",
@@ -918,7 +918,7 @@
     ],
     [
      "2026-11",
-     339144
+     338974
     ]
    ]
   },
@@ -1230,13 +1230,13 @@
    "n": 5,
    "min": {
     "date": "2026-11-03",
-    "price": 234677
+    "price": 234504
    },
    "max": {
     "date": "2026-10-22",
     "price": 323700
    },
-   "mean": 279395,
+   "mean": 279361,
    "median": 285800,
    "first": {
     "date": "2026-10-22",
@@ -1244,10 +1244,10 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 234677
+    "price": 234504
    },
-   "change": -89023,
-   "change_pct": -27.5,
+   "change": -89196,
+   "change_pct": -27.6,
    "volatility_pct": 11.1,
    "city": "오사카",
    "section": "SEC1",
@@ -1260,7 +1260,7 @@
     ],
     [
      "2026-11",
-     245638
+     245552
     ]
    ]
   },
@@ -1388,7 +1388,7 @@
     "date": "2026-10-27",
     "price": 303200
    },
-   "mean": 272640,
+   "mean": 265640,
    "median": 293300,
    "first": {
     "date": "2026-10-24",
@@ -1396,11 +1396,11 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 251400
+    "price": 216400
    },
-   "change": -41900,
-   "change_pct": -14.3,
-   "volatility_pct": 12.4,
+   "change": -76900,
+   "change_pct": -26.2,
+   "volatility_pct": 15.2,
    "city": "가고시마",
    "section": "SEC1",
    "major": "일본",
@@ -1412,7 +1412,7 @@
     ],
     [
      "2026-11",
-     233750
+     216250
     ]
    ]
   },
@@ -1502,7 +1502,7 @@
     "date": "2026-10-23",
     "price": 321500
    },
-   "mean": 295249,
+   "mean": 295211,
    "median": 300400,
    "first": {
     "date": "2026-10-23",
@@ -1510,10 +1510,10 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 290844
+    "price": 290656
    },
-   "change": -30656,
-   "change_pct": -9.5,
+   "change": -30844,
+   "change_pct": -9.6,
    "volatility_pct": 6.6,
    "city": "나고야",
    "section": "SEC1",
@@ -1526,7 +1526,7 @@
     ],
     [
      "2026-11",
-     276422
+     276328
     ]
    ]
   },
@@ -1578,7 +1578,7 @@
     "date": "2026-10-23",
     "price": 343873
    },
-   "mean": 300170,
+   "mean": 302042,
    "median": 304569,
    "first": {
     "date": "2026-10-23",
@@ -1586,11 +1586,11 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 271944
+    "price": 281300
    },
-   "change": -71929,
-   "change_pct": -20.9,
-   "volatility_pct": 9.0,
+   "change": -62573,
+   "change_pct": -18.2,
+   "volatility_pct": 8.3,
    "city": "도쿄",
    "section": "SEC1",
    "major": "일본",
@@ -1602,7 +1602,7 @@
     ],
     [
      "2026-11",
-     271805
+     276483
     ]
    ]
   },
@@ -1616,19 +1616,19 @@
     "date": "2026-10-27",
     "price": 359970
    },
-   "mean": 311594,
-   "median": 324200,
+   "mean": 327394,
+   "median": 343300,
    "first": {
     "date": "2026-10-24",
     "price": 343300
    },
    "last": {
     "date": "2026-11-03",
-    "price": 265400
+    "price": 344400
    },
-   "change": -77900,
-   "change_pct": -22.7,
-   "volatility_pct": 12.7,
+   "change": 1100,
+   "change_pct": 0.3,
+   "volatility_pct": 10.1,
    "city": "오이타",
    "section": "SEC1",
    "major": "일본",
@@ -1640,7 +1640,7 @@
     ],
     [
      "2026-11",
-     265250
+     304750
     ]
    ]
   },
@@ -1654,19 +1654,19 @@
     "date": "2026-10-27",
     "price": 416900
    },
-   "mean": 357150,
-   "median": 343850,
+   "mean": 356150,
+   "median": 341850,
    "first": {
     "date": "2026-10-27",
     "price": 416900
    },
    "last": {
     "date": "2026-11-03",
-    "price": 328300
+    "price": 324300
    },
-   "change": -88600,
-   "change_pct": -21.3,
-   "volatility_pct": 10.4,
+   "change": -92600,
+   "change_pct": -22.2,
+   "volatility_pct": 10.6,
    "city": "오키나와",
    "section": "SEC1",
    "major": "일본",
@@ -1678,7 +1678,7 @@
     ],
     [
      "2026-11",
-     326150
+     324150
     ]
    ]
   },
@@ -1728,9 +1728,9 @@
    },
    "max": {
     "date": "2026-11-03",
-    "price": 363948
+    "price": 355843
    },
-   "mean": 317305,
+   "mean": 315954,
    "median": 313863,
    "first": {
     "date": "2026-10-22",
@@ -1738,11 +1738,11 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 363948
+    "price": 355843
    },
-   "change": 86547,
-   "change_pct": 31.2,
-   "volatility_pct": 10.5,
+   "change": 78442,
+   "change_pct": 28.3,
+   "volatility_pct": 10.0,
    "city": "푸꾸옥",
    "section": "SEC3",
    "major": "동남아",
@@ -1754,7 +1754,7 @@
     ],
     [
      "2026-11",
-     359652
+     355600
     ]
    ]
   },
@@ -1768,17 +1768,17 @@
     "date": "2026-10-23",
     "price": 428300
    },
-   "mean": 350446,
-   "median": 352743,
+   "mean": 350410,
+   "median": 352670,
    "first": {
     "date": "2026-10-23",
     "price": 428300
    },
    "last": {
     "date": "2026-11-03",
-    "price": 353073
+    "price": 352928
    },
-   "change": -75227,
+   "change": -75372,
    "change_pct": -17.6,
    "volatility_pct": 16.2,
    "city": "상하이",
@@ -1792,7 +1792,7 @@
     ],
     [
      "2026-11",
-     352743
+     352670
     ]
    ]
   },
@@ -1844,7 +1844,7 @@
     "date": "2026-11-02",
     "price": 382993
    },
-   "mean": 341643,
+   "mean": 341628,
    "median": 330107,
    "first": {
     "date": "2026-10-22",
@@ -1852,10 +1852,10 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 362667
+    "price": 362537
    },
-   "change": 32560,
-   "change_pct": 9.9,
+   "change": 32430,
+   "change_pct": 9.8,
    "volatility_pct": 5.5,
    "city": "호치민",
    "section": "SEC3",
@@ -1868,7 +1868,7 @@
     ],
     [
      "2026-11",
-     372830
+     372765
     ]
    ]
   },
@@ -1880,9 +1880,9 @@
    },
    "max": {
     "date": "2026-11-03",
-    "price": 427183
+    "price": 442122
    },
-   "mean": 411620,
+   "mean": 416600,
    "median": 426277,
    "first": {
     "date": "2026-10-28",
@@ -1890,11 +1890,11 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 427183
+    "price": 442122
    },
-   "change": 45783,
-   "change_pct": 12.0,
-   "volatility_pct": 5.2,
+   "change": 60722,
+   "change_pct": 15.9,
+   "volatility_pct": 6.2,
    "city": "싱가포르 창이",
    "section": "SEC3",
    "major": "동남아",
@@ -1906,7 +1906,7 @@
     ],
     [
      "2026-11",
-     426730
+     434200
     ]
    ]
   },
@@ -2110,7 +2110,7 @@
     "date": "2026-10-26",
     "price": 337719
    },
-   "mean": 310954,
+   "mean": 310935,
    "median": 321865,
    "first": {
     "date": "2026-10-22",
@@ -2118,9 +2118,9 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 267184
+    "price": 267017
    },
-   "change": -58865,
+   "change": -59032,
    "change_pct": -18.1,
    "volatility_pct": 8.5,
    "city": "타이베이",
@@ -2134,7 +2134,7 @@
     ],
     [
      "2026-11",
-     267060
+     266976
     ]
    ]
   },
@@ -2148,7 +2148,7 @@
     "date": "2026-10-22",
     "price": 672500
    },
-   "mean": 488475,
+   "mean": 487031,
    "median": 435400,
    "first": {
     "date": "2026-10-22",
@@ -2156,11 +2156,11 @@
    },
    "last": {
     "date": "2026-11-03",
-    "price": 430903
+    "price": 417903
    },
-   "change": -241597,
-   "change_pct": -35.9,
-   "volatility_pct": 20.6,
+   "change": -254597,
+   "change_pct": -37.9,
+   "volatility_pct": 20.9,
    "city": "울란바토르",
    "section": "SEC4",
    "major": "중앙아시아",
@@ -2172,7 +2172,7 @@
     ],
     [
      "2026-11",
-     418734
+     412234
     ]
    ]
   },
