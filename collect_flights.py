@@ -37,6 +37,7 @@ NIGHTS = range(2, 9)          # 2박3일 ~ 8박9일
 MAX_LEAVE_DAYS = 5
 ALT_MIN_GAP_DAYS = 3          # 2위는 1위와 출발일이 3일 이상 떨어져야 함
 DETAIL_CANDIDATES = 6         # 1·2위를 상세 검색으로 확인할 때 시도하는 최대 후보 수
+EMPTY_RETRY_SLEEP = 8          # 상세 검색 결과 0건일 때 재시도 전 대기(초, 회차마다 배수)
 DATE_SEARCH_DELAY = 0.1       # 날짜 검색 사이 대기(초)
 # 병렬 처리는 쓰지 않는다: fli 내부 병렬 처리와 겹쳐 전체 실행이 멈춘 적이 있음(2026-11-02)
 CITY_WORKERS = 1
@@ -187,14 +188,19 @@ def detail_search(org: str, dst: str, dep: datetime.date, ret: datetime.date) ->
         ],
         stops=MaxStops.NON_STOP, sort_by=SortBy.CHEAPEST)
     res = None
-    for attempt in range(2):
+    for attempt in range(3):
         try:
-            res = SearchFlights().search(f, top_n=3, currency="KRW", language="en") or []
-            break
+            # top_n=1: 가는 편 최저가 1건 + 그에 맞는 오는 편(구글 왕복가). 호출 수를 줄여 응답 지연을 피함
+            res = SearchFlights().search(f, top_n=1, currency="KRW", language="en") or []
         except Exception:
-            if attempt == 1:
+            if attempt == 2:
                 raise
-            time.sleep(2)
+            time.sleep(2 + 6 * attempt)
+            continue
+        if res or attempt == 2:
+            break
+        # 결과 0건: 같은 서버에서 연속 조회가 쌓이면 구글이 빈 결과를 주는 경우가 있어(2026-11-03 실측) 쉬었다가 재시도
+        time.sleep(EMPTY_RETRY_SLEEP * (attempt + 1))
     best, total, non_tuple, with_stops, no_price = None, 0, 0, 0, 0
     for it in res:
         total += 1
@@ -337,6 +343,9 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
             continue
         if d is None:
             diags.append(f"{c['dep']}~{c['ret']} {diag}")
+            # 확인된 일정 없이 빈 응답이 2번 연속이면 더 조회해도 같을 가능성이 커 중단(시간 절약)
+            if not verified and len(diags) >= 2 and all(x.split(" ", 1)[1].startswith("결과 0건(") for x in diags[-2:]):
+                break
             continue
         verified.append(dict(c, price=d["price"], detail=d))
         if len(verified) >= 2 and any(abs((x["dep"] - y["dep"]).days) >= ALT_MIN_GAP_DAYS
@@ -356,6 +365,13 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
         # 상세 조회가 모두 오류: 날짜 검색의 실제 가격으로 발행(항공편 정보 없이)
         first, detail = cands[0], None
         alt = pick_alt(cands, first)
+    elif diags and all(x.split(" ", 1)[1].startswith("결과 0건(") for x in diags):
+        # 상세 조회가 모두 '결과 0건'(경유만 있거나 가격 없음이 아님): 일시적 빈 응답으로 보고
+        # 날짜 검색(직항 필터)의 실제 가격으로 발행한다(항공편 정보 없이).
+        # 근거: 2026-11-03 OIT·HPH를 새 서버에서 같은 날짜로 상세 조회하니 직항이 나왔고 가격이 날짜 검색과 같았음.
+        first, detail = cands[0], None
+        alt = pick_alt(cands, first)
+        errors.append("상세 조회 결과 없음(일시적 빈 응답 추정)")
     else:
         return None, dict(base, reason="상세 조회에서 직항 확인 실패", diag=" | ".join(diags[:3]))
 

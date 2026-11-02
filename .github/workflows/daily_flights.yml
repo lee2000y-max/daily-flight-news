@@ -1,7 +1,8 @@
 name: Daily Flight News Collector
 
-# 도시를 4묶음으로 나눠 서로 다른 실행 서버에서 동시에 수집한 뒤(collect), 결과를 합쳐 저장한다(publish).
-# 한 서버에서 수백 번 연속 조회하면 구글이 응답을 크게 늦추기 때문(2026-11-02 실측: 0.16초 → 3.4초/회).
+# 도시를 8묶음으로 나눠 서로 다른 실행 서버에서 동시에 수집한 뒤(collect), 결과를 합쳐 저장한다(publish).
+# 한 서버에서 수백 번 연속 조회하면 구글이 응답을 크게 늦추기 때문(2026-11-02 실측: 0.16초 → 3.4초/회,
+# 2026-11-03 4묶음에서도 한 묶음이 7분째부터 상세 검색 빈 결과 → 8묶음).
 
 on:
   schedule:
@@ -31,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2, 3]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -68,7 +69,7 @@ jobs:
           PYTHONUNBUFFERED: '1'
           MODE: collect
           SHARD_INDEX: ${{ matrix.shard }}
-          SHARD_COUNT: '4'
+          SHARD_COUNT: '8'
           ONLY_CITIES: ${{ github.event.inputs.only_cities }}
         run: python collect_flights.py
 
@@ -120,6 +121,7 @@ jobs:
             echo "변경 사항 없음"
           else
             git commit -m "Update flights data and history"
-            git pull --rebase origin "${GITHUB_REF_NAME}"
+            # 수집 중에 같은 브랜치에 데이터가 바뀌었으면 이번 수집 결과를 우선(-X theirs = 재적용하는 이 커밋)
+            git pull --rebase -X theirs origin "${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
