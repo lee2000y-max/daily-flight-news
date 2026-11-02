@@ -24,7 +24,7 @@ concurrency:
 jobs:
   collect-and-publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -58,6 +58,7 @@ jobs:
       - name: Collect flights
         env:
           PYTHONUTF8: '1'
+          PYTHONUNBUFFERED: '1'           # 중단돼도 진행 로그가 남도록
           FAIL_ON_LOW_LIVE: '1'           # 발행 도시가 절반 미만이면 이 단계를 실패로 표시(이메일 알림)
           ONLY_CITIES: ${{ github.event.inputs.only_cities }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}

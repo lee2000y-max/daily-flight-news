@@ -25,7 +25,6 @@ import json
 import os
 import sys
 import time
-from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional, Tuple
 
 from routes import CITY_MASTER, ORIGINS, GMP_DESTINATIONS, CITIES_58_MASTER  # noqa: F401  (CITIES_58_MASTER: build_reports 호환)
@@ -39,9 +38,16 @@ MAX_LEAVE_DAYS = 5
 ALT_MIN_GAP_DAYS = 3          # 2위는 1위와 출발일이 3일 이상 떨어져야 함
 DETAIL_CANDIDATES = 6         # 1·2위를 상세 검색으로 확인할 때 시도하는 최대 후보 수
 DATE_SEARCH_DELAY = 0.1       # 날짜 검색 사이 대기(초)
-CITY_WORKERS = 3              # 도시 단위 병렬 처리 수
-DETAIL_WORKERS = 3
+# 병렬 처리는 쓰지 않는다: fli 내부 병렬 처리와 겹쳐 전체 실행이 멈춘 적이 있음(2026-11-02)
+CITY_WORKERS = 1
+DETAIL_WORKERS = 1
+TIME_BUDGET_SEC = 40 * 60     # 전체 시간 예산. 넘으면 남은 도시의 상세 확인을 건너뛰고 날짜 검색 실가격으로 발행
 KST = datetime.timezone(datetime.timedelta(hours=9))
+_START = time.monotonic()
+
+
+def over_budget() -> bool:
+    return time.monotonic() - _START > TIME_BUDGET_SEC
 
 AIRLINE_KO = {
     "7C": "제주항공", "LJ": "진에어", "TW": "티웨이항공", "BX": "에어부산", "RS": "에어서울",
@@ -316,6 +322,10 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
     for c in cands:
         if tried >= DETAIL_CANDIDATES:
             break
+        if over_budget():
+            errors.append("시간 예산 초과로 상세 확인 생략")
+            tried += 1
+            break
         # 이미 확인된 1위 후보와 출발일이 같은 후보는 2위가 될 수 없으므로 건너뜀(1위 확인 전에는 모두 시도)
         if verified and all(abs((c["dep"] - v["dep"]).days) < ALT_MIN_GAP_DAYS for v in verified):
             continue
@@ -342,7 +352,7 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
             alt = next((c for c in cands if abs((c["dep"] - first["dep"]).days) >= ALT_MIN_GAP_DAYS
                         and c["price"] >= first["price"]), None)
         detail = first["detail"]
-    elif errors and len(errors) == tried:
+    elif errors and (len(errors) == tried or errors[-1].startswith("시간 예산")):
         # 상세 조회가 모두 오류: 날짜 검색의 실제 가격으로 발행(항공편 정보 없이)
         first, detail = cands[0], None
         alt = pick_alt(cands, first)
@@ -412,10 +422,9 @@ def main() -> None:
     if full_gmp:
         print("🔎 오늘은 김포 출발 전체 공항을 다시 확인합니다(월요일 정기 점검)")
     t0 = time.time()
-    with ThreadPoolExecutor(max_workers=CITY_WORKERS) as ex:
-        found_list = list(ex.map(lambda m: collect_city(m, today, full_gmp), cities))
-    found = {m["code"]: f for m, f in zip(cities, found_list)}
+    found = {}
     for i, m in enumerate(cities, 1):
+        found[m["code"]] = collect_city(m, today, full_gmp)
         f = found[m["code"]]
         best = f["candidates"][0] if f["candidates"] else None
         print(f" · [{i:02d}/{len(cities)}] {m['city']} ({m['code']}): 날짜 검색 {f['calls']}회(오류 {f['errors']}), "
@@ -426,8 +435,11 @@ def main() -> None:
         print(f"🆕 김포 직항 목록에 없는 공항에서 김포 직항 발견: {', '.join(new_gmp)} → routes.py GMP_DESTINATIONS에 추가 검토")
 
     t1 = time.time()
-    with ThreadPoolExecutor(max_workers=DETAIL_WORKERS) as ex:
-        results = list(ex.map(lambda m: finalize_city(m, found[m["code"]], today_str), cities))
+    results = []
+    for m in cities:
+        results.append(finalize_city(m, found[m["code"]], today_str))
+        r, f = results[-1]
+        print(f"   상세 {m['city']}: " + (f"{r['price']:,}원" if r else f"미발행({f['reason']})"), flush=True)
     print(f"⏱️ 상세 검색 {time.time() - t1:.0f}초")
 
     published = [r for r, _ in results if r]
