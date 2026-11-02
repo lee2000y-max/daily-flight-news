@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>THE BOARDING PASS TIMES | 데일리 최저가 항공권 소식</title>
+  <link rel="alternate" type="application/rss+xml" title="보딩패스 타임즈" href="./feed.xml" />
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Alpine.js -->
@@ -275,6 +276,9 @@
         <span>발행처: <strong class="text-[#1E1B18]">보딩패스 타임즈 항공편집국</strong> (ICN GATEWAY DESK)</span>
         <span class="hidden md:inline">|</span>
         <span class="hidden md:inline">매일 아침 정기 발행</span>
+        <span>|</span>
+        <a href="./monthly.html" class="font-bold text-[#1E3A5F] underline">월간지</a>
+        <a href="./feed.xml" class="font-bold text-[#1E3A5F] underline">RSS</a>
         <span class="hidden md:inline">|</span>
         <span x-show="currentStatus.total" x-cloak>오늘 발행 <strong class="text-[#1E1B18]" x-text="currentStatus.published + '/' + currentStatus.total"></strong>개 도시 · <span x-text="(currentStatus.generatedAt || '').slice(11) + ' 발행'"></span></span>
       </div>
@@ -633,6 +637,19 @@
               </div>
             </div>
 
+            <!-- 가격 위치 막대: 최근 30일 실조회 최저~최고 사이에서 오늘 가격의 위치(이력 7일 이상일 때) -->
+            <div class="mb-3" x-show="priceBar(item)">
+              <div class="flex justify-between text-[10px] font-mono-flap text-[#5C5549] mb-0.5">
+                <span x-text="priceBar(item) ? '30일 최저 ' + formatPrice(priceBar(item).lo) : ''"></span>
+                <span x-text="priceBar(item) ? '최고 ' + formatPrice(priceBar(item).hi) : ''"></span>
+              </div>
+              <div class="relative h-2 rounded-full bg-gradient-to-r from-[#215E42]/70 via-[#D5CBB8] to-[#B8332A]/70" role="img"
+                :aria-label="priceBar(item) ? '최근 30일 가격 범위에서 오늘 가격은 하위 ' + priceBar(item).pct + '% 위치' : ''">
+                <span class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-[#1E1B18] border-2 border-[#FAF7F0]"
+                  :style="priceBar(item) ? 'left:' + priceBar(item).pct + '%' : ''"></span>
+              </div>
+            </div>
+
             <!-- 베이지 양피지(#F2ECE1) 운항 정보 요약 박스: 모두 오늘 실제 조회값 -->
             <div class="rounded-sm p-3 text-xs space-y-1.5 border border-[#DFD5C3]" style="background-color: var(--box-bg);">
               <div class="flex items-start justify-between gap-2">
@@ -778,6 +795,11 @@
         boardTimers: [],
         stampByCode: {},
         reduceMotion: false,
+        historyStart: '',
+        climate: {},        // 도시별 월 기후 평년값 {code: {tmean[12], precipMm[12]}}
+        climateMeta: {},
+        crowd: {},          // 한국인 쏠림 지수 {code: {level 1~5}} (1 = 가장 한적). 없으면 1면 D는 쉼
+        crowdMeta: {},   // 실조회(live) 이력 첫 날짜. 이력 판정(A·C, 스탬프 1·3·6·7)은 이 날로부터 충분한 날이 지나야 켠다
 
         sections: [
           { id: 'ALL', label: '전체 호외', icon: '🗞️' },
@@ -930,6 +952,7 @@
             const ds = Array.isArray(series.fullDates) ? series.fullDates : series.dates;
             prices = series.prices.filter((_, i) => !rowDate || !ds || String(ds[i]) <= rowDate);
           }
+          const stats = this.historyStats(series, rowDate);
           if (prices.length === 0) prices = [Number(raw.price) || 0];
           const prev = prices.length >= 2 ? prices[prices.length - 2] : null;
           return {
@@ -959,13 +982,61 @@
             holidays: Array.isArray(raw.holidays) ? raw.holidays : [],
             leaveSaver: raw.leaveSaver || null,
             bestSeasons: Array.isArray(raw.bestSeasons) ? raw.bestSeasons : [],
+            stats: stats,
             history: prices.slice(-5)
           };
+        },
+
+        // 발행일(rowDate) 이전 실조회 이력으로 판정용 수치를 만든다. 오늘 값은 넣지 않는다(오늘과 비교하기 위함)
+        historyStats(series, rowDate) {
+          const out = { min30: null, max30: null, n30: 0, median30: null, avg7: null, n7: 0, lccMedian30: null, nLcc30: 0 };
+          if (!series || !Array.isArray(series.prices) || !rowDate) return out;
+          const ds = Array.isArray(series.fullDates) ? series.fullDates : (series.dates || []);
+          const fsc = Array.isArray(series.fsc) ? series.fsc : [];
+          const back = n => this.addDays(rowDate, -n);
+          const d30 = back(30), d7 = back(7);
+          const p30 = [], p7 = [], lcc = [];
+          ds.forEach((d, i) => {
+            const p = Number(series.prices[i]);
+            if (!(p > 0) || !d || d >= rowDate) return;
+            if (d >= d30) { p30.push(p); if (String(fsc[i]) === '0') lcc.push(p); }
+            if (d >= d7) p7.push(p);
+          });
+          const median = a => { const b = [...a].sort((x, y) => x - y); const n = b.length; return n % 2 ? b[(n - 1) / 2] : (b[n / 2 - 1] + b[n / 2]) / 2; };
+          if (p30.length) { out.min30 = Math.min(...p30); out.max30 = Math.max(...p30); out.median30 = median(p30); out.n30 = p30.length; }
+          if (p7.length) { out.avg7 = p7.reduce((a, b) => a + b, 0) / p7.length; out.n7 = p7.length; }
+          if (lcc.length) { out.lccMedian30 = median(lcc); out.nLcc30 = lcc.length; }
+          return out;
+        },
+
+        addDays(iso, n) {
+          const [y, m, d] = String(iso).split('-').map(Number);
+          const t = new Date(Date.UTC(y, m - 1, d + n));
+          return t.toISOString().slice(0, 10);
+        },
+
+        // 이력이 'need'일 이상 쌓였는지(사이트 전체 실조회 시작일 기준) + 그 노선 관측이 절반 이상인지
+        hasHistory(item, need) {
+          if (!this.historyStart || !item || !item.editionDate) return false;
+          if (this.historyStart > this.addDays(item.editionDate, -need)) return false;
+          const st = item.stats || {};
+          const n = need <= 7 ? st.n7 : st.n30;
+          return n >= Math.ceil(need / 2);
         },
 
         ingestExternalPayload(extData) {
           if (!extData || typeof extData !== 'object' || extData.schemaVersion !== 2) return false;
           const hist = extData.historicalSeries || {};
+          let hs = '';
+          Object.values(hist).forEach(v => {
+            const d0 = v && (v.fullDates || v.dates || [])[0];
+            if (d0 && (!hs || d0 < hs)) hs = d0;
+          });
+          this.historyStart = hs;
+          this.climate = (extData.climate && extData.climate.cities) || {};
+          this.climateMeta = extData.climate || {};
+          this.crowd = (extData.crowd && extData.crowd.cities) || {};
+          this.crowdMeta = extData.crowd || {};
           const fresh = {};
           (Array.isArray(extData.flights) ? extData.flights : []).forEach(row => {
             if (!row || !row.date || !row.code) return;
@@ -1013,15 +1084,18 @@
         // 같은 데이터면 언제 열어도 같은 1면(무작위 없음). 요일별로 톱 유형 우선순위를 돌린다.
         // ------------------------------------------------------------------
         FRONT_ORDER: [
-          ['B', 'F', 'E'],  // 일
-          ['B', 'E', 'F'],  // 월
-          ['F', 'B', 'E'],  // 화
-          ['E', 'F', 'B'],  // 수
-          ['E', 'B', 'F'],  // 목
-          ['F', 'E', 'B'],  // 금
-          ['F', 'B', 'E']   // 토
+          ['A', 'D', 'B', 'F', 'C', 'E'],  // 일
+          ['A', 'C', 'B', 'E', 'F', 'D'],  // 월
+          ['C', 'F', 'A', 'B', 'E', 'D'],  // 화
+          ['E', 'A', 'C', 'F', 'B', 'D'],  // 수
+          ['E', 'B', 'A', 'C', 'F', 'D'],  // 목
+          ['F', 'E', 'A', 'C', 'B', 'D'],  // 금
+          ['D', 'B', 'F', 'A', 'C', 'E']   // 토
         ],
         TYPE_META: {
+          A: { label: '최저가 경신', boardLabel: '최저경신', color: '#B8332A' },
+          C: { label: '주간 급락', boardLabel: '주간급락', color: '#7A2E8C' },
+          D: { label: '한적한 여행지', boardLabel: '한적여행', color: '#3F6212' },
           B: { label: '연차 효율', boardLabel: '연차효율', color: '#215E42' },
           E: { label: '빠른 탈출', boardLabel: '빠른탈출', color: '#1E3A5F' },
           F: { label: '제철 여행지', boardLabel: '제철여행', color: '#8A5A00' },
@@ -1108,8 +1182,31 @@
           });
         },
 
+        // 출발월이 기후 평년값상 좋은 달인가. 결과: { label, temp, precip } 또는 null
+        //  - 편집 제철(bestSeasons)에 든 달: 평년 기온 5~30℃이고 강수가 그 도시 12개월 중 많은 쪽 1/4이 아니면 통과
+        //    (설경·빙설·수빙·온천은 겨울이 제철이라 기온·강수 조건을 보지 않음)
+        //  - 편집 제철에 없어도 평년 기온 15~26℃ + 강수가 그 도시 월 중앙값 이하면 '쾌적한 날씨'
+        //  - 기후 자료가 없는 도시는 편집 제철만 사용
+        seasonOf(f, month) {
+          const season = (f.bestSeasons || []).find(s => Array.isArray(s.months) && s.months.includes(month));
+          const c = this.climate[f.code];
+          if (!c || !Array.isArray(c.tmean) || c.tmean.length !== 12) {
+            return season ? { label: season.label, temp: null, precip: null } : null;
+          }
+          const i = month - 1, temp = c.tmean[i], precip = c.precipMm[i];
+          const sorted = [...c.precipMm].sort((a, b) => a - b);
+          const p75 = sorted[8], med = (sorted[5] + sorted[6]) / 2;
+          if (season) {
+            if (['설경', '빙설', '수빙', '온천'].includes(season.label)) return { label: season.label, temp, precip };
+            if (temp >= 5 && temp <= 30 && precip <= p75) return { label: season.label, temp, precip };
+            return null;
+          }
+          if (temp >= 15 && temp <= 26 && precip <= med) return { label: '쾌적한 날씨', temp, precip };
+          return null;
+        },
+
         candidatesF(flights) {
-          // 출발월이 그 도시 제철 + 가격이 같은 면(지면) 오늘 중앙값 이하
+          // 출발월이 그 도시 제철(기후 평년값) + 가격이 같은 면(지면) 오늘 중앙값 이하
           const bySec = {};
           flights.forEach(f => { const sec = this.getTaxonomy(f.code).section; (bySec[sec] = bySec[sec] || []).push(f.price); });
           const median = arr => { const a = [...arr].sort((x, y) => x - y); const n = a.length; return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2; };
@@ -1118,7 +1215,7 @@
           const out = [];
           flights.forEach(f => {
             const month = parseInt(String(f.depDate).slice(5, 7), 10);
-            const season = (f.bestSeasons || []).find(s => Array.isArray(s.months) && s.months.includes(month));
+            const season = this.seasonOf(f, month);
             const m = med[this.getTaxonomy(f.code).section];
             if (season && m && f.price <= m) out.push({ f, season, month, ratio: f.price / m });
           });
@@ -1128,12 +1225,77 @@
             const pct = Math.round((1 - ratio) * 100);
             const sec = this.sections.find(x => x.id === this.getTaxonomy(f.code).section);
             const secName = sec ? sec.label.replace(/^\d면:\s*/, '') : '같은 지면';
+            const hasClimate = season.temp != null;
             return {
               type: 'F', code: f.code, city: f.city,
               headline: `${f.city}, ${month}월 ${season.label}의 계절 — 왕복 ${p}`,
-              dek: `${f.dates} · ${secName} 오늘 가격 중앙값보다 ${pct > 0 ? pct + '% 낮음' : '같은 수준'} · ${this.originLabel(f.origin)} 출발 직항`,
-              figures: [{ k: '출발', v: `${month}월` }, { k: '지면 중앙값 대비', v: pct > 0 ? `-${pct}%` : '0%' }, { k: '왕복', v: p }],
-              note: '',
+              dek: `${f.dates}${hasClimate ? ` · ${month}월 평년 기온 ${season.temp}℃, 강수 ${season.precip}mm` : ''} · ${secName} 오늘 가격 중앙값보다 ${pct > 0 ? pct + '% 낮음' : '같은 수준'}`,
+              figures: hasClimate
+                ? [{ k: `${month}월 평년 기온`, v: `${Math.round(season.temp)}℃` }, { k: '지면 중앙값 대비', v: pct > 0 ? `-${pct}%` : '0%' }, { k: '왕복', v: p }]
+                : [{ k: '출발', v: `${month}월` }, { k: '지면 중앙값 대비', v: pct > 0 ? `-${pct}%` : '0%' }, { k: '왕복', v: p }],
+              note: hasClimate ? `기후 평년값: ${this.climateMeta.source || ''} ${this.climateMeta.period || ''}`.trim() : '',
+              url: f.googleUrl || '',
+              board: { city: f.city, origin: f.origin, dep: f.depDate, nights: f.nights, price: f.price }
+            };
+          });
+        },
+
+        candidatesA(flights) {
+          // 오늘 가격 < 그 노선 최근 30일 최저(이력 30일 필요)
+          const out = flights.filter(f => this.hasHistory(f, 30) && f.stats.min30 && f.price < f.stats.min30);
+          out.sort((a, b) => (a.price / a.stats.min30) - (b.price / b.stats.min30) || a.code.localeCompare(b.code));
+          return out.map(f => {
+            const p = this.formatPrice(f.price), gap = f.stats.min30 - f.price;
+            return {
+              type: 'A', code: f.code, city: f.city,
+              headline: `${f.city} 30일 최저가 경신, 왕복 ${p}`,
+              dek: `${f.dates} · 직전 30일 최저 ${this.formatPrice(f.stats.min30)}보다 ${gap.toLocaleString('ko-KR')}원 낮음 · ${this.originLabel(f.origin)} 출발 직항`,
+              figures: [{ k: '오늘', v: p }, { k: '30일 최저', v: this.formatPrice(f.stats.min30) }, { k: '차이', v: `-${gap.toLocaleString('ko-KR')}원` }],
+              note: '', url: f.googleUrl || '',
+              board: { city: f.city, origin: f.origin, dep: f.depDate, nights: f.nights, price: f.price }
+            };
+          });
+        },
+
+        candidatesC(flights) {
+          // 최근 7일 평균 대비 15% 이상 하락(이력 7일 필요)
+          const out = flights.filter(f => this.hasHistory(f, 7) && f.stats.avg7 && f.price <= f.stats.avg7 * 0.85);
+          out.sort((a, b) => (a.price / a.stats.avg7) - (b.price / b.stats.avg7) || a.code.localeCompare(b.code));
+          return out.map(f => {
+            const p = this.formatPrice(f.price), pct = Math.round((1 - f.price / f.stats.avg7) * 100);
+            return {
+              type: 'C', code: f.code, city: f.city,
+              headline: `${f.city} 일주일 새 ${pct}% 하락, 왕복 ${p}`,
+              dek: `${f.dates} · 최근 7일 평균 ${this.formatPrice(Math.round(f.stats.avg7))} · ${this.originLabel(f.origin)} 출발 직항`,
+              figures: [{ k: '오늘', v: p }, { k: '7일 평균', v: this.formatPrice(Math.round(f.stats.avg7)) }, { k: '변화', v: `-${pct}%` }],
+              note: '', url: f.googleUrl || '',
+              board: { city: f.city, origin: f.origin, dep: f.depDate, nights: f.nights, price: f.price }
+            };
+          });
+        },
+
+        candidatesD(flights) {
+          // 한국인 쏠림 지수 하위 2단계 + 가격이 노선 30일 중앙값 이하(이력 14일 전에는 같은 면 오늘 중앙값 이하)
+          if (!Object.keys(this.crowd).length) return [];
+          const bySec = {};
+          flights.forEach(f => { const sec = this.getTaxonomy(f.code).section; (bySec[sec] = bySec[sec] || []).push(f.price); });
+          const median = arr => { const a = [...arr].sort((x, y) => x - y); const n = a.length; return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2; };
+          const out = [];
+          flights.forEach(f => {
+            const c = this.crowd[f.code];
+            if (!c || !(c.level <= 2)) return;
+            const ref = this.hasHistory(f, 14) && f.stats.median30 ? f.stats.median30 : median(bySec[this.getTaxonomy(f.code).section] || [f.price]);
+            if (f.price <= ref) out.push({ f, level: c.level, ratio: f.price / ref });
+          });
+          out.sort((a, b) => a.level - b.level || a.ratio - b.ratio || a.f.code.localeCompare(b.f.code));
+          return out.map(({ f, level }) => {
+            const p = this.formatPrice(f.price);
+            return {
+              type: 'D', code: f.code, city: f.city,
+              headline: `붐비지 않는 ${f.city}, 왕복 ${p}`,
+              dek: `${f.dates} · 한국인 쏠림 지수 ${level}단계(5단계 중 낮을수록 한적) · ${this.originLabel(f.origin)} 출발 직항`,
+              figures: [{ k: '쏠림 지수', v: `${level}/5` }, { k: '일정', v: `${f.nights}박 ${f.nights + 1}일` }, { k: '왕복', v: p }],
+              note: `쏠림 지수는 최근 통계 기준이며 실시간이 아닙니다${this.crowdMeta.basis ? ' (' + this.crowdMeta.basis + ')' : ''}.`,
               url: f.googleUrl || '',
               board: { city: f.city, origin: f.origin, dep: f.depDate, nights: f.nights, price: f.price }
             };
@@ -1156,7 +1318,8 @@
           const empty = { top: null, sides: [], boardRows: [] };
           if (!Array.isArray(flights) || flights.length === 0) return empty;
           const deco = a => Object.assign(a, this.TYPE_META[a.type]);
-          const cands = { B: this.candidatesB(flights), E: this.candidatesE(flights), F: this.candidatesF(flights) };
+          const cands = { A: this.candidatesA(flights), B: this.candidatesB(flights), C: this.candidatesC(flights), D: this.candidatesD(flights),
+                          E: this.candidatesE(flights), F: this.candidatesF(flights) };
           const order = this.FRONT_ORDER[this.weekdayOf(dateStr)];
           const byPrice = [...flights].sort((a, b) => a.price - b.price || a.code.localeCompare(b.code));
 
@@ -1186,9 +1349,9 @@
           const seen = new Set();
           const pushRow = (type, b) => { if (b && !seen.has(b.city)) { rows.push({ type, ...b }); seen.add(b.city); } };   // 한 도시는 한 행만
           pushRow('L', this.articleLowest(byPrice[0]).board);
-          ['B', 'E', 'F'].forEach(t => { if (cands[t][0]) pushRow(t, cands[t][0].board); });
+          order.forEach(t => { if (rows.length < 5 && cands[t] && cands[t][0]) pushRow(t, cands[t][0].board); });
           const golden = byPrice.find(f => this.isGoldenSchedule(f));
-          if (golden) pushRow('G', { city: golden.city, origin: golden.origin, dep: golden.depDate, nights: golden.nights, price: golden.price });
+          if (golden && rows.length < 5) pushRow('G', { city: golden.city, origin: golden.origin, dep: golden.depDate, nights: golden.nights, price: golden.price });
           for (const f of byPrice) {
             if (rows.length >= 5) break;
             pushRow('L', { city: f.city, origin: f.origin, dep: f.depDate, nights: f.nights, price: f.price });
@@ -1412,24 +1575,44 @@
         },
 
         rawStamp(item) {
+          // docs/PLAN.md 4장 순위. 이력이 필요한 스탬프(1·3·6·7)는 이력이 쌓인 뒤에만
+          const st = item.stats || {};
+          if (this.hasHistory(item, 30) && st.min30 && item.price < st.min30) return { key: 'LOWEST', top: '🏆 LOWEST EVER', color: '#8A1C1C' };
           if (item.price > 0 && item.price <= 230000) return { key: 'SUPER', top: '🔥 SUPER DEAL', color: '#B8332A' };
+          if (this.hasHistory(item, 14) && st.median30 && item.price <= st.median30 * 0.8) return { key: 'HOT', top: '💥 HOT PRICE', color: '#C2410C' };
           if (item.nights >= 3 && item.leaveDays != null && item.leaveDays <= 1) return { key: 'LEAVE', top: '🗓️ LEAVE SAVER', color: '#215E42' };
           if (this.isGoldenSchedule(item)) return { key: 'GOLDEN', top: '🌅 GOLDEN PICK', color: '#1E3A5F' };
+          if (item.isFSC && this.hasHistory(item, 14) && st.lccMedian30 && st.nLcc30 >= 3 && item.price <= st.lccMedian30) return { key: 'FSC', top: '✈️ FSC DEAL', color: '#0F4C5C' };
+          if (this.hasHistory(item, 7) && st.avg7 && item.price <= st.avg7 * 0.85) return { key: 'DROP', top: '📉 PRICE DROP', color: '#7A2E8C' };
           return null;
+        },
+
+        discountOf(item) {
+          // 할인폭: 30일 중앙값 대비 하락률(이력이 없으면 0)
+          const m = item.stats && item.stats.median30;
+          return m ? (m - item.price) / m : 0;
         },
 
         computeStamps(flights) {
           // 스탬프 카드가 전체의 25%를 넘으면 정리. SUPER DEAL은 상한에서 제외(항상 표시).
-          // 할인폭 이력이 쌓이기 전(P1)에는 가격이 낮은 카드부터 남긴다.
+          // 할인폭(30일 중앙값 대비)이 큰 순, 같으면 가격이 낮은 순으로 남긴다.
           const map = {};
           const list = (flights || []).map(f => ({ f, s: this.rawStamp(f) })).filter(x => x.s);
           list.filter(x => x.s.key === 'SUPER').forEach(x => { map[x.f.code] = x.s; });
           const cap = Math.floor((flights || []).length * 0.25);
           list.filter(x => x.s.key !== 'SUPER')
-            .sort((a, b) => a.f.price - b.f.price || a.f.code.localeCompare(b.f.code))
+            .sort((a, b) => this.discountOf(b.f) - this.discountOf(a.f) || a.f.price - b.f.price || a.f.code.localeCompare(b.f.code))
             .slice(0, cap)
             .forEach(x => { map[x.f.code] = x.s; });
           return map;
+        },
+
+        priceBar(item) {
+          const st = item && item.stats;
+          if (!st || !this.hasHistory(item, 7) || st.min30 == null) return null;
+          const lo = Math.min(st.min30, item.price), hi = Math.max(st.max30, item.price);
+          if (hi <= lo) return null;
+          return { lo, hi, pct: Math.round(((item.price - lo) / (hi - lo)) * 100) };
         },
 
         formatPrice(val) {

@@ -439,7 +439,9 @@ def archive_and_report(rows: List[Dict[str, Any]], failed: List[Dict[str, Any]],
     if removed:
         print(f"🗄️ [전체 이력] 오늘 발행하지 못한 도시의 같은 날 기록 {removed}건 삭제")
     obs = [{"date": r["date"], "code": r["code"], "price": r["price"], "source": "live",
-            "dep": r["depDate"], "ret": r["retDate"]} for r in rows]
+            "dep": r["depDate"], "ret": r["retDate"],
+            "airline": (f"{r['outbound']['airlineCode']}/{r['inbound']['airlineCode']}" if r.get("outbound") else ""),
+            "fsc": (bool(r["isFSC"]) if r.get("outbound") else None)} for r in rows]
     res = history_store.upsert_observations(obs)
     print(f"🗄️ [전체 이력] {res['accepted']}건 보관, 새로 쓰거나 바뀐 행 {res['changed']}건")
     meta = {m["code"]: m for m in CITY_MASTER}
@@ -448,13 +450,76 @@ def archive_and_report(rows: List[Dict[str, Any]], failed: List[Dict[str, Any]],
 
 def series_from_history(codes: List[str]) -> Dict[str, Dict[str, List[Any]]]:
     import history_store
-    per: Dict[str, List[Tuple[str, int]]] = {}
+    per: Dict[str, List[Tuple[str, int, str]]] = {}
     for r in history_store.iter_all():
-        # 화면 추이는 v2 수집기 실조회(live)만. 이전 수집기(sheet, 2026-10)는 탐색 조건이 달라 섞지 않는다(파일에는 보존)
+        # 화면 추이·판정은 v2 수집기 실조회(live)만. 이전 수집기(sheet, 2026-10)는 탐색 조건이 달라 섞지 않는다(파일에는 보존)
         if r["code"] in codes and r.get("source") == "live":
-            per.setdefault(r["code"], []).append((r["date"], r["price"]))
-    return {c: {"fullDates": [d for d, _ in sorted(v)], "dates": [d for d, _ in sorted(v)],
-                "prices": [p for _, p in sorted(v)]} for c, v in per.items()}
+            per.setdefault(r["code"], []).append((r["date"], r["price"], r.get("fsc", "")))
+    out = {}
+    for c, v in per.items():
+        v.sort()
+        out[c] = {"fullDates": [d for d, _, _ in v], "dates": [d for d, _, _ in v],
+                  "prices": [p for _, p, _ in v], "fsc": [f for _, _, f in v]}
+    return out
+
+
+SITE_URL = "https://lee2000y-max.github.io/daily-flight-news/"
+FEED_PATH = "feed.xml"
+
+
+def write_feed(data: Dict[str, Any]) -> None:
+    """RSS 2.0(feed.xml): 발행호마다 1건. 내용은 그날 실제 조회한 최저가 상위 5개 도시."""
+    from email.utils import format_datetime
+    from xml.sax.saxutils import escape
+    items = []
+    for d in data.get("availableDates", []):
+        rows = sorted([r for r in data.get("flights", []) if r.get("date") == d], key=lambda r: r["price"])
+        if not rows:
+            continue
+        st = data.get("status", {}).get(d, {})
+        y, m, dd = d.split("-")
+        title = f"{y}년 {int(m)}월 {int(dd)}일 발행호 — 최저가 {rows[0]['city']} {rows[0]['price']:,}원 외 {len(rows) - 1}개 도시"
+        lines = [f"{i + 1}. {r['city']} ({r['origin']}→{r['dest']}) {r['price']:,}원 · {r['dates']}" for i, r in enumerate(rows[:5])]
+        lines.append(f"오늘 발행 {st.get('published', len(rows))}/{st.get('total', '-')}개 도시. 가격은 발행일 아침 실제 조회값입니다.")
+        gen = st.get("generatedAt") or f"{d} 07:30"
+        pub = datetime.datetime.strptime(gen, "%Y-%m-%d %H:%M").replace(tzinfo=KST)
+        items.append(
+            "    <item>\n"
+            f"      <title>{escape(title)}</title>\n"
+            f"      <link>{SITE_URL}</link>\n"
+            f"      <guid isPermaLink=\"false\">boarding-pass-times-{d}</guid>\n"
+            f"      <pubDate>{format_datetime(pub)}</pubDate>\n"
+            f"      <description>{escape(chr(10).join(lines))}</description>\n"
+            "    </item>")
+    xml = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\">\n  <channel>\n"
+           "    <title>보딩패스 타임즈 — 인천·김포 출발 직항 최저가</title>\n"
+           f"    <link>{SITE_URL}</link>\n"
+           "    <description>매일 아침 인천·김포 출발 직항 노선의 실제 왕복 최저가</description>\n"
+           "    <language>ko</language>\n" + "\n".join(items) + "\n  </channel>\n</rss>\n")
+    with open(FEED_PATH, "w", encoding="utf-8") as f:
+        f.write(xml)
+    print(f"📰 {FEED_PATH} 저장 ({len(items)}건)")
+
+
+def load_crowd() -> Dict[str, Any]:
+    """한국인 쏠림 지수(data/crowd_index.json). 형식: {"basis": "...", "period": "...", "cities": {code: {"level": 1~5}}}
+    level 1 = 가장 한적, 5 = 가장 붐빔. 파일이 없으면 빈 값(1면 D 유형은 쉼)."""
+    try:
+        with open(os.path.join("data", "crowd_index.json"), "r", encoding="utf-8") as f:
+            d = json.load(f)
+        return {"basis": d.get("basis", ""), "period": d.get("period", ""), "cities": d.get("cities", {})}
+    except Exception:
+        return {}
+
+
+def load_climate() -> Dict[str, Any]:
+    """도시별 월 기후 평년값(build_climate.py 결과). 없으면 빈 값(1면 F는 편집 제철 정보만 사용)."""
+    try:
+        with open(os.path.join("data", "climate_normals.json"), "r", encoding="utf-8") as f:
+            d = json.load(f)
+        return {"source": d.get("source", ""), "period": d.get("period", ""), "cities": d.get("cities", {})}
+    except Exception:
+        return {}
 
 
 def collect_phase(cities: List[Dict[str, Any]], today: datetime.date) -> Dict[str, Any]:
@@ -585,12 +650,15 @@ def main() -> None:
         "flights": flights,
         "failed": failed_all,
         "historicalSeries": series,
+        "climate": load_climate(),
+        "crowd": load_crowd(),
     }
     tmp = DATA_JSON_PATH + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     os.replace(tmp, DATA_JSON_PATH)
     print(f"✅ {DATA_JSON_PATH} 저장 (발행일 {len(dates)}개)")
+    write_feed(out)
 
     if os.environ.get("FAIL_ON_LOW_LIVE", "").strip() == "1" and len(published) < len(cities) / 2:
         print(f"[경고] 발행 도시 {len(published)}/{len(cities)} — 절반 미만이라 작업을 실패로 표시합니다(데이터는 저장됨)")
