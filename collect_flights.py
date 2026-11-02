@@ -84,7 +84,7 @@ def kr_holidays():
     if _HOLIDAYS is None:
         import holidays  # type: ignore
         y = kst_today().year
-        _HOLIDAYS = holidays.country_holidays("KR", years=[y, y + 1])
+        _HOLIDAYS = holidays.country_holidays("KR", years=[y, y + 1], language="ko")  # 이름을 한국어로(기본은 영어)
     return _HOLIDAYS
 
 
