@@ -410,14 +410,9 @@ def series_from_history(codes: List[str]) -> Dict[str, Dict[str, List[Any]]]:
                 "prices": [p for _, p in sorted(v)]} for c, v in per.items()}
 
 
-def main() -> None:
-    today = kst_today()
+def collect_phase(cities: List[Dict[str, Any]], today: datetime.date) -> Dict[str, Any]:
+    """날짜 검색 + 상세 검색. 결과(발행·미발행)를 돌려준다(저장은 하지 않음)."""
     today_str = today.isoformat()
-    only = {c.strip() for c in os.environ.get("ONLY_CITIES", "").split(",") if c.strip()}
-    cities = [m for m in CITY_MASTER if not only or m["code"] in only]
-    dry = os.environ.get("DRY_RUN", "").strip() == "1"
-    print(f"📰 [{today_str}] {len(cities)}개 도시 수집 시작 (출발 {', '.join(ORIGINS)} · D+{WINDOW_START}~{WINDOW_END} · 2~8박 · 직항)")
-
     full_gmp = today.weekday() == 0 or os.environ.get("FULL_GMP_SCAN", "").strip() == "1"
     if full_gmp:
         print("🔎 오늘은 김포 출발 전체 공항을 다시 확인합니다(월요일 정기 점검)")
@@ -441,16 +436,68 @@ def main() -> None:
         r, f = results[-1]
         print(f"   상세 {m['city']}: " + (f"{r['price']:,}원" if r else f"미발행({f['reason']})"), flush=True)
     print(f"⏱️ 상세 검색 {time.time() - t1:.0f}초")
+    return {"date": today_str,
+            "published": [r for r, _ in results if r],
+            "failed": [f for _, f in results if f],
+            "codes": [m["code"] for m in cities]}
 
-    published = [r for r, _ in results if r]
-    failed = [f for _, f in results if f]
+
+def print_summary(published: List[Dict[str, Any]], failed: List[Dict[str, Any]], total: int) -> None:
     for r in published:
         tag = "" if r.get("outbound") else " (항공편 정보 없음: " + r.get("detailError", "")[:60] + ")"
         alt = f" | 2위 {r['alt']['price']:,}원 {r['alt']['depDate']}" if r.get("alt") else ""
         print(f" ✓ {r['city']}: {r['price']:,}원 {r['origin']}→{r['dest']} {r['dates']} {r['airline']} {r['timeSlot']}{tag}{alt}")
     for f in failed:
         print(f" ✗ {f['city']}: {f['reason']}" + (f" [{f['diag']}]" if f.get("diag") else ""))
-    print(f"📌 발행 {len(published)}/{len(cities)}개 도시, 미발행 {len(failed)}개")
+    print(f"📌 발행 {len(published)}/{total}개 도시, 미발행 {len(failed)}개")
+
+
+def main() -> None:
+    """
+    MODE=collect  SHARD_INDEX=i SHARD_COUNT=n : 도시의 i번째 묶음만 수집해 shard_out/shard_i.json 에 저장
+    MODE=merge                                 : shard_out/*.json 을 합쳐 flights_data.json·이력 저장
+    MODE 없음                                  : 한 번에 수집 + 저장(로컬·소규모 검증용)
+    여러 서버에 나누는 이유: 한 서버에서 수백 번 연속 조회하면 구글이 응답을 20배 가까이 늦춤(2026-11-02 실측).
+    """
+    today = kst_today()
+    today_str = today.isoformat()
+    mode = os.environ.get("MODE", "").strip()
+    only = {c.strip() for c in os.environ.get("ONLY_CITIES", "").split(",") if c.strip()}
+    all_cities = [m for m in CITY_MASTER if not only or m["code"] in only]
+    dry = os.environ.get("DRY_RUN", "").strip() == "1"
+
+    if mode in ("", "collect"):
+        cities = all_cities
+        if mode == "collect":
+            idx, cnt = int(os.environ.get("SHARD_INDEX", "0")), int(os.environ.get("SHARD_COUNT", "1"))
+            cities = all_cities[idx::cnt]
+            print(f"🧩 묶음 {idx + 1}/{cnt}: {len(cities)}개 도시")
+        print(f"📰 [{today_str}] {len(cities)}개 도시 수집 시작 (출발 {', '.join(ORIGINS)} · D+{WINDOW_START}~{WINDOW_END} · 2~8박 · 직항)")
+        res = collect_phase(cities, today)
+        if mode == "collect":
+            os.makedirs("shard_out", exist_ok=True)
+            with open(f"shard_out/shard_{idx}.json", "w", encoding="utf-8") as f:
+                json.dump(res, f, ensure_ascii=False)
+            print_summary(res["published"], res["failed"], len(cities))
+            return
+        published, failed = res["published"], res["failed"]
+    else:  # merge
+        published, failed, seen = [], [], set()
+        for name in sorted(os.listdir("shard_out")) if os.path.isdir("shard_out") else []:
+            with open(os.path.join("shard_out", name), encoding="utf-8") as f:
+                res = json.load(f)
+            if res.get("date") != today_str:
+                print(f"[주의] {name} 날짜 {res.get('date')} ≠ 오늘 {today_str}, 건너뜀")
+                continue
+            published += res["published"]
+            failed += res["failed"]
+            seen |= set(res["codes"])
+        for m in all_cities:
+            if m["code"] not in seen:
+                failed.append({"date": today_str, "code": m["code"], "city": m["city"], "reason": "수집 작업 실패(해당 묶음 결과 없음)"})
+        print(f"🧩 묶음 결과 합치기: 수집된 도시 {len(seen)}/{len(all_cities)}")
+    cities = all_cities
+    print_summary(published, failed, len(cities))
 
     if dry:
         print("DRY_RUN=1: 저장하지 않음")

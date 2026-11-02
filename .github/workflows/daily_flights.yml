@@ -1,5 +1,8 @@
 name: Daily Flight News Collector
 
+# 도시를 4묶음으로 나눠 서로 다른 실행 서버에서 동시에 수집한 뒤(collect), 결과를 합쳐 저장한다(publish).
+# 한 서버에서 수백 번 연속 조회하면 구글이 응답을 크게 늦추기 때문(2026-11-02 실측: 0.16초 → 3.4초/회).
+
 on:
   schedule:
     - cron: '30 22 * * *'   # 매일 07:30 KST (GitHub cron은 UTC 기준)
@@ -22,9 +25,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  collect-and-publish:
+  collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -55,10 +62,49 @@ jobs:
           print("공항 코드 확인 완료:", len(codes), "개")
           PY
 
-      - name: Collect flights
+      - name: Collect shard
         env:
           PYTHONUTF8: '1'
-          PYTHONUNBUFFERED: '1'           # 중단돼도 진행 로그가 남도록
+          PYTHONUNBUFFERED: '1'
+          MODE: collect
+          SHARD_INDEX: ${{ matrix.shard }}
+          SHARD_COUNT: '4'
+          ONLY_CITIES: ${{ github.event.inputs.only_cities }}
+        run: python collect_flights.py
+
+      - name: Upload shard result
+        uses: actions/upload-artifact@v4
+        with:
+          name: shard-${{ matrix.shard }}
+          path: shard_out/
+          retention-days: 3
+
+  publish:
+    needs: collect
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Download shard results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: shard-*
+          path: shard_out
+          merge-multiple: true
+
+      - name: Merge and save
+        env:
+          PYTHONUTF8: '1'
+          PYTHONUNBUFFERED: '1'
+          MODE: merge
           FAIL_ON_LOW_LIVE: '1'           # 발행 도시가 절반 미만이면 이 단계를 실패로 표시(이메일 알림)
           ONLY_CITIES: ${{ github.event.inputs.only_cities }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
