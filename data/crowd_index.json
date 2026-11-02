@@ -1,0 +1,579 @@
+{
+ "basis": "인천공항 노선별 출발 여객(공공데이터 15062056)",
+ "period": "2026",
+ "months": {
+  "1": {
+   "AOJ": 1,
+   "BWN": 1,
+   "KMQ": 1,
+   "NGS": 1,
+   "DYG": 1,
+   "SDJ": 1,
+   "ALA": 1,
+   "KKJ": 1,
+   "HSG": 1,
+   "OIT": 1,
+   "HPH": 1,
+   "YGJ": 1,
+   "HRB": 2,
+   "XIY": 2,
+   "KMJ": 2,
+   "HIJ": 2,
+   "SPN": 2,
+   "FSZ": 2,
+   "MYJ": 2,
+   "TAK": 2,
+   "TAS": 2,
+   "CRK": 2,
+   "VTE": 2,
+   "YNT": 3,
+   "KOJ": 3,
+   "HKT": 3,
+   "UBN": 3,
+   "KHH": 3,
+   "HGH": 3,
+   "DPS": 3,
+   "MFM": 3,
+   "BKI": 3,
+   "DLC": 3,
+   "TAG": 3,
+   "CNX": 4,
+   "GUM": 4,
+   "CAN": 4,
+   "CEB": 4,
+   "NGO": 4,
+   "OKA": 4,
+   "PKX": 4,
+   "SGN": 4,
+   "PQC": 4,
+   "HAN": 4,
+   "TAO": 4,
+   "SIN": 5,
+   "CTS": 5,
+   "CXR": 5,
+   "PVG": 5,
+   "DAD": 5,
+   "BKK": 5,
+   "TPE": 5,
+   "HKG": 5,
+   "FUK": 5,
+   "KIX": 5,
+   "NRT": 5
+  },
+  "2": {
+   "BWN": 1,
+   "KMQ": 1,
+   "AOJ": 1,
+   "NGS": 1,
+   "DYG": 1,
+   "SDJ": 1,
+   "ALA": 1,
+   "KKJ": 1,
+   "HSG": 1,
+   "OIT": 1,
+   "YGJ": 1,
+   "HPH": 1,
+   "TAS": 2,
+   "KMJ": 2,
+   "XIY": 2,
+   "HIJ": 2,
+   "FSZ": 2,
+   "SPN": 2,
+   "MYJ": 2,
+   "TAK": 2,
+   "HRB": 2,
+   "YNT": 2,
+   "VTE": 2,
+   "CRK": 3,
+   "KOJ": 3,
+   "HKT": 3,
+   "DPS": 3,
+   "UBN": 3,
+   "KHH": 3,
+   "HGH": 3,
+   "MFM": 3,
+   "BKI": 3,
+   "CNX": 3,
+   "TAG": 3,
+   "DLC": 4,
+   "GUM": 4,
+   "CAN": 4,
+   "CEB": 4,
+   "NGO": 4,
+   "OKA": 4,
+   "PKX": 4,
+   "SGN": 4,
+   "PQC": 4,
+   "HAN": 4,
+   "TAO": 4,
+   "CTS": 5,
+   "SIN": 5,
+   "CXR": 5,
+   "PVG": 5,
+   "BKK": 5,
+   "DAD": 5,
+   "TPE": 5,
+   "HKG": 5,
+   "FUK": 5,
+   "KIX": 5,
+   "NRT": 5
+  },
+  "3": {
+   "BWN": 1,
+   "AOJ": 1,
+   "KMQ": 1,
+   "NGS": 1,
+   "HSG": 1,
+   "SDJ": 1,
+   "HPH": 1,
+   "ALA": 1,
+   "OIT": 1,
+   "KKJ": 1,
+   "YGJ": 1,
+   "HRB": 1,
+   "SPN": 2,
+   "BKI": 2,
+   "DYG": 2,
+   "KMJ": 2,
+   "VTE": 2,
+   "XIY": 2,
+   "HIJ": 2,
+   "MYJ": 2,
+   "FSZ": 2,
+   "TAS": 2,
+   "KOJ": 2,
+   "TAK": 3,
+   "CNX": 3,
+   "TAG": 3,
+   "HKT": 3,
+   "DPS": 3,
+   "CRK": 3,
+   "YNT": 3,
+   "UBN": 3,
+   "KHH": 3,
+   "MFM": 3,
+   "GUM": 3,
+   "CEB": 4,
+   "HGH": 4,
+   "DLC": 4,
+   "PQC": 4,
+   "OKA": 4,
+   "CAN": 4,
+   "SGN": 4,
+   "CTS": 4,
+   "PKX": 4,
+   "NGO": 4,
+   "CXR": 4,
+   "HAN": 5,
+   "TAO": 5,
+   "SIN": 5,
+   "DAD": 5,
+   "BKK": 5,
+   "PVG": 5,
+   "TPE": 5,
+   "HKG": 5,
+   "FUK": 5,
+   "KIX": 5,
+   "NRT": 5
+  },
+  "4": {
+   "SPN": 1,
+   "NGS": 1,
+   "BWN": 1,
+   "OIT": 1,
+   "HSG": 1,
+   "AOJ": 1,
+   "YGJ": 1,
+   "KMQ": 1,
+   "HPH": 1,
+   "SDJ": 1,
+   "KOJ": 1,
+   "KKJ": 1,
+   "VTE": 2,
+   "CNX": 2,
+   "KMJ": 2,
+   "ALA": 2,
+   "HIJ": 2,
+   "BKI": 2,
+   "MYJ": 2,
+   "FSZ": 2,
+   "DYG": 2,
+   "TAG": 2,
+   "HRB": 2,
+   "TAK": 3,
+   "CRK": 3,
+   "XIY": 3,
+   "HKT": 3,
+   "TAS": 3,
+   "GUM": 3,
+   "CEB": 3,
+   "KHH": 3,
+   "DPS": 3,
+   "YNT": 3,
+   "UBN": 3,
+   "HGH": 4,
+   "MFM": 4,
+   "DLC": 4,
+   "CTS": 4,
+   "CAN": 4,
+   "PQC": 4,
+   "OKA": 4,
+   "NGO": 4,
+   "SGN": 4,
+   "CXR": 4,
+   "PKX": 4,
+   "HAN": 5,
+   "TAO": 5,
+   "DAD": 5,
+   "BKK": 5,
+   "SIN": 5,
+   "PVG": 5,
+   "TPE": 5,
+   "HKG": 5,
+   "FUK": 5,
+   "KIX": 5,
+   "NRT": 5
+  },
+  "5": {
+   "BWN": 1,
+   "NGS": 1,
+   "OIT": 1,
+   "VTE": 1,
+   "AOJ": 1,
+   "HSG": 1,
+   "YGJ": 1,
+   "HPH": 1,
+   "KMQ": 1,
+   "SDJ": 1,
+   "KOJ": 1,
+   "KKJ": 2,
+   "TAG": 2,
+   "BKI": 2,
+   "KMJ": 2,
+   "CNX": 2,
+   "DYG": 2,
+   "HKT": 2,
+   "MYJ": 2,
+   "HRB": 2,
+   "HIJ": 2,
+   "CRK": 2,
+   "FSZ": 3,
+   "TAK": 3,
+   "ALA": 3,
+   "XIY": 3,
+   "GUM": 3,
+   "TAS": 3,
+   "KHH": 3,
+   "CEB": 3,
+   "YNT": 3,
+   "MFM": 3,
+   "DPS": 3,
+   "HGH": 4,
+   "UBN": 4,
+   "PQC": 4,
+   "DLC": 4,
+   "CAN": 4,
+   "OKA": 4,
+   "CTS": 4,
+   "SGN": 4,
+   "CXR": 4,
+   "NGO": 4,
+   "HAN": 4,
+   "PKX": 5,
+   "BKK": 5,
+   "DAD": 5,
+   "TAO": 5,
+   "SIN": 5,
+   "TPE": 5,
+   "PVG": 5,
+   "HKG": 5,
+   "FUK": 5,
+   "KIX": 5,
+   "NRT": 5
+  },
+  "6": {
+   "SPN": 1,
+   "NGS": 1,
+   "BWN": 1,
+   "OIT": 1,
+   "KOJ": 1,
+   "HSG": 1,
+   "AOJ": 1,
+   "YGJ": 1,
+   "VTE": 1,
+   "HPH": 1,
+   "KMQ": 1,
+   "SDJ": 1,
+   "KKJ": 2,
+   "TAG": 2,
+   "CNX": 2,
+   "BKI": 2,
+   "KMJ": 2,
+   "HKT": 2,
+   "DYG": 2,
+   "TAK": 2,
+   "FSZ": 2,
+   "MYJ": 2,
+   "HIJ": 2,
+   "XIY": 3,
+   "ALA": 3,
+   "CRK": 3,
+   "GUM": 3,
+   "HRB": 3,
+   "CEB": 3,
+   "TAS": 3,
+   "KHH": 3,
+   "MFM": 3,
+   "DPS": 3,
+   "YNT": 3,
+   "HGH": 4,
+   "PQC": 4,
+   "DLC": 4,
+   "OKA": 4,
+   "CAN": 4,
+   "UBN": 4,
+   "NGO": 4,
+   "SGN": 4,
+   "CXR": 4,
+   "HAN": 4,
+   "CTS": 4,
+   "BKK": 5,
+   "DAD": 5,
+   "PKX": 5,
+   "TAO": 5,
+   "SIN": 5,
+   "TPE": 5,
+   "PVG": 5,
+   "HKG": 5,
+   "FUK": 5,
+   "KIX": 5,
+   "NRT": 5
+  }
+ },
+ "cities": {
+  "CTS": {
+   "level": 4,
+   "pax": 305523
+  },
+  "FUK": {
+   "level": 5,
+   "pax": 897910
+  },
+  "NRT": {
+   "level": 5,
+   "pax": 1387417
+  },
+  "KIX": {
+   "level": 5,
+   "pax": 1172433
+  },
+  "NGO": {
+   "level": 4,
+   "pax": 261028
+  },
+  "OKA": {
+   "level": 4,
+   "pax": 224770
+  },
+  "SDJ": {
+   "level": 1,
+   "pax": 21142
+  },
+  "CAN": {
+   "level": 4,
+   "pax": 199471
+  },
+  "DLC": {
+   "level": 4,
+   "pax": 147521
+  },
+  "HGH": {
+   "level": 3,
+   "pax": 115798
+  },
+  "HRB": {
+   "level": 2,
+   "pax": 57423
+  },
+  "PKX": {
+   "level": 4,
+   "pax": 313262
+  },
+  "PVG": {
+   "level": 5,
+   "pax": 550957
+  },
+  "XIY": {
+   "level": 2,
+   "pax": 61422
+  },
+  "TPE": {
+   "level": 5,
+   "pax": 608857
+  },
+  "HKG": {
+   "level": 5,
+   "pax": 689484
+  },
+  "UBN": {
+   "level": 4,
+   "pax": 125539
+  },
+  "DAD": {
+   "level": 5,
+   "pax": 464014
+  },
+  "HAN": {
+   "level": 5,
+   "pax": 349269
+  },
+  "SGN": {
+   "level": 4,
+   "pax": 273024
+  },
+  "SIN": {
+   "level": 5,
+   "pax": 452341
+  },
+  "BKK": {
+   "level": 5,
+   "pax": 464937
+  },
+  "HKT": {
+   "level": 3,
+   "pax": 75429
+  },
+  "CEB": {
+   "level": 4,
+   "pax": 131416
+  },
+  "CRK": {
+   "level": 3,
+   "pax": 72386
+  },
+  "VTE": {
+   "level": 2,
+   "pax": 48066
+  },
+  "TAG": {
+   "level": 3,
+   "pax": 85618
+  },
+  "MFM": {
+   "level": 3,
+   "pax": 105760
+  },
+  "TAK": {
+   "level": 2,
+   "pax": 62047
+  },
+  "YGJ": {
+   "level": 1,
+   "pax": 27016
+  },
+  "DYG": {
+   "level": 1,
+   "pax": 41370
+  },
+  "CXR": {
+   "level": 4,
+   "pax": 345254
+  },
+  "GUM": {
+   "level": 3,
+   "pax": 112801
+  },
+  "BKI": {
+   "level": 3,
+   "pax": 73266
+  },
+  "KHH": {
+   "level": 3,
+   "pax": 93470
+  },
+  "TAO": {
+   "level": 5,
+   "pax": 403135
+  },
+  "YNT": {
+   "level": 3,
+   "pax": 89473
+  },
+  "KOJ": {
+   "level": 2,
+   "pax": 54649
+  },
+  "PQC": {
+   "level": 4,
+   "pax": 234080
+  },
+  "CNX": {
+   "level": 3,
+   "pax": 84306
+  },
+  "DPS": {
+   "level": 3,
+   "pax": 99234
+  },
+  "FSZ": {
+   "level": 2,
+   "pax": 59525
+  },
+  "HIJ": {
+   "level": 2,
+   "pax": 58587
+  },
+  "MYJ": {
+   "level": 2,
+   "pax": 59707
+  },
+  "OIT": {
+   "level": 1,
+   "pax": 21408
+  },
+  "SPN": {
+   "level": 1,
+   "pax": 29437
+  },
+  "KKJ": {
+   "level": 1,
+   "pax": 30551
+  },
+  "AOJ": {
+   "level": 1,
+   "pax": 13567
+  },
+  "KMJ": {
+   "level": 2,
+   "pax": 52106
+  },
+  "KMQ": {
+   "level": 1,
+   "pax": 16711
+  },
+  "NGS": {
+   "level": 1,
+   "pax": 11759
+  },
+  "ALA": {
+   "level": 2,
+   "pax": 42103
+  },
+  "TAS": {
+   "level": 2,
+   "pax": 68788
+  },
+  "BWN": {
+   "level": 1,
+   "pax": 9052
+  },
+  "HSG": {
+   "level": 1,
+   "pax": 21274
+  },
+  "HPH": {
+   "level": 1,
+   "pax": 25775
+  }
+ }
+}
