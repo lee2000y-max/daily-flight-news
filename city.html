@@ -7,7 +7,7 @@
   <meta name="description" content="보딩패스 타임즈 도시 상세: 오늘 실제 조회한 직항 왕복 최저가 일정, 가격 이력, 월별 기후, 한국인 쏠림 지수." />
   <link rel="alternate" type="application/rss+xml" title="보딩패스 타임즈" href="./feed.xml" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
@@ -32,7 +32,7 @@
     [x-cloak] { display: none !important; }
   </style>
 </head>
-<body class="min-h-screen pb-16 antialiased" x-data="cityPage()" x-init="init()">
+<body class="min-h-screen pb-16 antialiased" x-data="cityPage()">
   <header class="max-w-5xl mx-auto px-4 pt-5 pb-3">
     <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-[#5C5549] border-t-2 border-b border-[#2C2620] py-1.5 px-1 font-medium">
       <a :href="'./index.html#' + code" href="./index.html" class="font-bold text-[#1E3A5F] underline">← 오늘 일간지로</a>
