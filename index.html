@@ -1867,12 +1867,12 @@
         photoCredit(code) {
           const p = this.photos[code];
           if (!p) return '';
-          return `사진 ${p.artist} / ${p.license} / 위키미디어 공용`;
+          return `사진: ${p.place ? p.place + ' · ' : ''}${p.artist} / ${p.license} / 위키미디어 공용`;
         },
 
         photoCaption(code) {
-          const credit = this.photoCredit(code);
-          return `${this.photoPlace(code)} · ${credit || '임시 사진(Unsplash)'}`;
+          if (this.photos[code]) return `${this.photoPlace(code)} · 사진 ${this.photos[code].artist} / ${this.photos[code].license} / 위키미디어 공용`;
+          return `${this.photoPlace(code)} · 임시 사진(Unsplash)`;
         },
 
         isMorningDeparture(scheduleStr) {

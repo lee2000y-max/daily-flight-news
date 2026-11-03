@@ -107,6 +107,33 @@ REQUERY = {
 }
 N_MORE = 4
 
+# 고른 사진의 장소(사진 설명·1면 캡션용). 사진을 바꾸면 함께 고친다.
+PLACE_KO = {
+    "AKJ": "비에이 패치워크 언덕", "AOJ": "오이라세 계류", "BKI": "코타키나발루 시티 모스크", "BKK": "왓 아룬(새벽 사원)",
+    "BWN": "오마르 알리 사이푸딘 모스크", "CEB": "막탄섬 해변", "CNX": "도이수텝 사원", "CRK": "피나투보 화산 분화구 호수",
+    "CXR": "나트랑 만", "DAD": "바나힐 골든브릿지", "DLC": "다롄 등대와 시가지", "DYG": "장가계 국가삼림공원",
+    "FSZ": "후지산과 신칸센", "FUK": "후쿠오카 모모치 해변", "GUM": "투몬만 산호초", "HAN": "하노이 기찻길 마을",
+    "HGH": "항저우 뇌봉탑", "HIJ": "이쓰쿠시마 신사 해상 도리이", "HKG": "빅토리아 하버 정크선", "HKT": "피피섬 마야베이",
+    "HPH": "하롱베이", "HSG": "다케오 온천 누문", "KHH": "롄츠탄 용호탑", "KIX": "도톤보리 글리코 간판",
+    "KKJ": "고쿠라성", "KMJ": "구마모토성", "KMQ": "가나자와 겐로쿠엔", "MFM": "성 바울 성당 유적",
+    "MYJ": "도고온천 본관", "NGO": "나고야성", "NGS": "나가사키 메가네바시", "NRT": "도쿄타워와 도심 야경",
+    "OIT": "벳푸 우미지옥", "OKA": "오키나와 만좌모", "PQC": "혼텀섬 해상 케이블카", "PVG": "동방명주와 푸둥 스카이라인",
+    "SDJ": "마쓰시마만", "SGN": "사이공 노트르담 대성당", "SIN": "마리나베이 샌즈", "TAG": "팡라오 알로나 해변",
+    "TAK": "다카마쓰 리쓰린 공원", "TAO": "칭다오 잔교", "TAS": "하즈라티 이맘 단지", "TPE": "지우펀",
+    "UBN": "고르히-테렐지 국립공원", "YGJ": "돗토리 사구", "YNT": "옌타이 해안 시가지",
+}
+
+# 공용의 Artist 칸에 틀 문구가 붙어 오는 경우(예: 태국어 "작성자/공용에 올림 - 이름") 이름만 남긴다
+ARTIST_PREFIXES = ["ผู้สร้างสรรค์ผลงาน/ส่งข้อมูลเก็บในคลังข้อมูลเสรีวิกิมีเดียคอมมอนส์ - "]
+
+
+def clean_artist(a: str) -> str:
+    for pre in ARTIST_PREFIXES:
+        if a.startswith(pre):
+            a = a[len(pre):]
+    return a.strip()[:80] or "작자 미상"
+
+
 ALLOWED = re.compile(r"^(public domain|pd|cc0|cc[- ]by( |-)?(sa)?[- ]?\d(\.\d)?.*|cc[- ]by(-sa)?)$", re.I)
 
 
@@ -244,6 +271,9 @@ def fetch(selection: str) -> None:
             im = img if img.width <= w else img.resize((w, round(img.height * w / img.width)), Image.LANCZOS)
             im.save(f"{IMG_DIR}/{code}{suffix}.jpg", "JPEG", quality=82, optimize=True, progressive=True)
         photos["cities"][code] = {k: c[k] for k in ("title", "page", "license", "artist", "description")}
+        photos["cities"][code]["artist"] = clean_artist(c["artist"])
+        if code in PLACE_KO:
+            photos["cities"][code]["place"] = PLACE_KO[code]
         print(f"{code}: {c['title']} ({c['license']}, {c['artist']})", flush=True)
         time.sleep(0.3)
     photos["updatedAt"] = time.strftime("%Y-%m-%d")
