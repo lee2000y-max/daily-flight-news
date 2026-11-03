@@ -381,24 +381,22 @@
       </div>
     </div>
 
-    <!-- [제호 3안 확정] 고전 항공 판화 일러스트 & 편집국 공인 인장(Seal) -->
+    <!-- 제호: 왼쪽 엠블럼(images/brand/emblem.svg) · 가운데 제목 · 오른쪽 붉은 인장. 1024px 미만은 엠블럼·인장을 한 줄에 -->
     <div class="py-5 double-rule-bottom">
+      <!-- 휴대폰·태블릿: 엠블럼과 인장 한 줄 -->
+      <div class="flex lg:hidden items-center justify-center gap-6 mb-4">
+        <img src="./images/brand/emblem.svg" width="96" height="96" class="w-24 h-24 shrink-0 select-none" alt="THE BOARDING PASS TIMES 엠블럼 — MORNING EDITION · EST. 2026 · ICN SEOUL">
+        <div class="w-24 h-24 rounded-full border-4 double border-[#B8332A] text-[#B8332A] bg-[#FAF7F0]/90 flex flex-col items-center justify-center text-center p-1 shadow-sm transform -rotate-12 select-none shrink-0">
+          <span class="text-[9px] font-mono-flap font-extrabold tracking-tighter">BOARDING PASS</span>
+          <span class="text-xs font-serif-kr font-black leading-tight my-0.5 border-y border-[#B8332A] px-1">항공특가<br/>공인인증</span>
+          <span class="text-[9px] font-mono-flap font-bold">MORNING EDITION</span>
+        </div>
+      </div>
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
-        <!-- 좌측 고전 지구본·방위 나침반 판화 일러스트 -->
-        <div class="lg:col-span-3 flex items-center justify-center lg:justify-start gap-3">
-          <div class="w-16 h-16 rounded-full border-2 border-[#5C5549] bg-[#FAF7F0] flex items-center justify-center shadow-inner shrink-0">
-            <svg class="w-12 h-12 text-[#3E3932]" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6">
-              <circle cx="32" cy="32" r="26" stroke-dasharray="2 2"/>
-              <circle cx="32" cy="32" r="21"/>
-              <ellipse cx="32" cy="32" rx="11" ry="21"/>
-              <line x1="11" y1="32" x2="53" y2="32"/>
-              <line x1="14" y1="22" x2="50" y2="22"/>
-              <line x1="14" y1="42" x2="50" y2="42"/>
-              <path d="M32 7 L35 15 L32 13 L29 15 Z" fill="currentColor"/>
-            </svg>
-          </div>
+        <!-- 데스크톱 왼쪽: 엠블럼 + 캡션·좌표 -->
+        <div class="hidden lg:flex lg:col-span-3 items-center justify-start gap-3">
+          <img src="./images/brand/emblem.svg" width="96" height="96" class="w-24 h-24 shrink-0 select-none" alt="THE BOARDING PASS TIMES 엠블럼 — MORNING EDITION · EST. 2026 · ICN SEOUL">
           <div class="text-xs text-[#4A433B]">
-            <div class="font-masthead font-bold text-[#1E1B18] tracking-wider">EST. 2026 · SEOUL ICN</div>
             <div class="text-[11px] text-[#5C5549]" x-text="'인천·김포 출발 직항 ' + (currentStatus.total || '') + '개 도시 운임 관측소'"></div>
             <div class="text-[11px] font-mono-flap font-bold text-[#1E3A5F] mt-0.5">37°27'N 126°26'E</div>
           </div>
@@ -420,13 +418,19 @@
           </div>
         </div>
 
-        <!-- 우측 붉은 편집국 공인 인장 (Seal) -->
-        <div class="lg:col-span-3 flex justify-center lg:justify-end">
-          <div class="w-24 h-24 rounded-full border-4 double border-[#B8332A] text-[#B8332A] bg-[#FAF7F0]/90 flex flex-col items-center justify-center text-center p-1 shadow-sm transform -rotate-12 select-none">
+        <!-- 데스크톱 오른쪽: 붉은 편집국 공인 인장 -->
+        <div class="hidden lg:flex lg:col-span-3 justify-end">
+          <div class="w-24 h-24 rounded-full border-4 double border-[#B8332A] text-[#B8332A] bg-[#FAF7F0]/90 flex flex-col items-center justify-center text-center p-1 shadow-sm transform -rotate-12 select-none shrink-0">
             <span class="text-[9px] font-mono-flap font-extrabold tracking-tighter">BOARDING PASS</span>
             <span class="text-xs font-serif-kr font-black leading-tight my-0.5 border-y border-[#B8332A] px-1">항공특가<br/>공인인증</span>
             <span class="text-[9px] font-mono-flap font-bold">MORNING EDITION</span>
           </div>
+        </div>
+
+        <!-- 휴대폰·태블릿: 캡션·좌표 -->
+        <div class="lg:hidden text-center text-xs text-[#4A433B]">
+          <div class="text-[11px] text-[#5C5549]" x-text="'인천·김포 출발 직항 ' + (currentStatus.total || '') + '개 도시 운임 관측소'"></div>
+          <div class="text-[11px] font-mono-flap font-bold text-[#1E3A5F] mt-0.5">37°27'N 126°26'E</div>
         </div>
       </div>
     </div>
@@ -827,6 +831,7 @@
 
   <footer class="max-w-7xl mx-auto px-4 mt-14">
     <div class="double-rule-top pt-6 pb-8 text-center text-xs text-[#5C5549] space-y-1.5">
+      <img src="./images/brand/emblem.svg" width="96" height="96" class="w-24 h-24 mx-auto mb-3 select-none" alt="">
       <div class="font-masthead font-bold text-sm text-[#1E1B18] tracking-widest">
         THE BOARDING PASS TIMES · 보딩패스 타임즈 항공편집국
       </div>
