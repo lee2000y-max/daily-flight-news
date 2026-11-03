@@ -128,4 +128,5 @@
   - 전광판은 다시 볼 때마다 재생 · 이미지 파일 저장 기능 없앰 · 공유 버튼 '🔗 이 특가 공유'.
   - 썸네일 용량: GitHub Pages를 워크플로 배포(`pages.yml`)로 바꾸고 `s/`는 커밋하지 않음. 저장소 설정 Pages Source = GitHub Actions(병합 때 사용자가 변경).
   - 사진: 47개 도시 확정(`data/photos.json`), 11개 도시 다시 찾기(CTS KOJ DLI PKX XIY CAN HRB ALA VTE SPN DPS).
-  - 추가 화면: A·B·C·F·G·H 도입, D(탐색 지도)·E(주말·연휴 달력) 빼기. 단계 계획은 `docs/P5_PLAN.md`.
+  - 추가 화면: A·B·C·F·G·H 도입, D(탐색 지도)·E(주말·연휴 달력) 빼기. 단계 계획은 `docs/P5_PLAN.md`(승인, 신규 김포 노선은 자동 추가).
+  - 사진 2차: 11개 도시 확정(58개 도시 모두 위키미디어 공용 사진).
