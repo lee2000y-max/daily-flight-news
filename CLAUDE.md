@@ -25,10 +25,13 @@
 - `build_climate.py` → `data/climate_normals.json`(NASA POWER 월 평균기온·강수, 키 없음). 진단 워크플로 `mode=climate`로 갱신·커밋.
 - `monthly.html`: `data/reports/monthly/*.json` 월간지(이전 수집기 기록이나 부분 관측 달은 '참고용'). `feed.xml`: 수집 때 생성되는 RSS.
 - 환율(P3): 수집 합치기 단계에서 `open.er-api.com`(키 없음) 조회 → `flights_data.json`의 `fx`. 실패하면 빈 값(환율 박스 숨김, 이월 없음). 통화는 `routes.CITY_CURRENCY`.
-- 공유 이미지(P3): 카드의 '공유 이미지' 버튼이 브라우저에서 PNG를 만든다(서버 작업 없음).
+- 링크 공유(P4, 공유 이미지 버튼 대체): 카드의 '🔗 이 특가 공유' → `s/<도시>/?d=YYYYMMDD` 주소를 공유(휴대폰 공유 창, 컴퓨터 복사). `build_share.py`가 사이트 배포 때 `s/<도시>/index.html`(og 태그만, 열면 `./#<도시>`로 이동)과 `thumb.jpg`(1200×630, Pillow + fonts-noto-cjk), `s/og.jpg`(사이트 기본 미리보기 = 오늘 최저가 도시)를 만든다. `s/`는 커밋하지 않는다(.gitignore). 미발행 도시는 가격 없는 썸네일·"오늘은 발행되지 않았습니다". 실패해도 배포는 계속.
+- 배포(P4, 2026-11-03 사용자 결정): GitHub Pages를 브랜치 배포에서 워크플로 배포(`.github/workflows/pages.yml`)로. main 푸시, 또는 매일 수집·쏠림 지수·진단 워크플로가 main에서 끝나면(`workflow_run`) 저장소 + `s/`를 묶어 배포. 브랜치에서 수동 실행하면 묶기만(배포 안 함). 저장소 설정 Pages Source = "GitHub Actions" 필요.
+- 도시 사진(P4): `data/photos.json`(출처: title·page·license·artist, 선택 place) + `images/cities/<도시>.jpg`(1600)·`_640.jpg`. 위키미디어 공용만, 출처 표기 필수(카드·1면 사진 설명). 고르기: 진단 워크플로 `mode=photos`(후보 3장 → `preview/photos` 브랜치) → 사용자가 고르면 `mode=photos_fetch`, route에 `"YGJ:2 SDJ:1 ..."`. 마음에 드는 후보가 없는 도시는 `mode=photos_more`, route에 `"CTS KOJ"`(검색어 `build_photos.REQUERY`, 4번부터 덧붙임). 사진이 없는 도시는 기존 Unsplash 임시 사진.
+- 1면 전광판(P4): `FlapBoard` 엔진(index.html, rAF 루프 하나, 윗장 낙하·아랫장 펼침). 열 [유형 4|도시 7|도착 3|일정 11 `MM.DD-MM.DD`|왕복 가격 10]. 화면에 절반 이상 들어오면 재생(나갔다 다시 들어오면 재생), 휴대폰은 2줄 + 유형은 왼쪽 색 막대·범례. 한 줄 배치는 1024px 이상.
 - `sellers.py`: 판매처별 가격 읽기(사용자 결정으로 매일 수집 포함, 2026-11-03). 같은 출발 시각 직항을 못 찾으면 비움. 실험 기록 `docs/P3_booking_experiment.md`, 실험 스크립트 `probe_booking.py`.
 - 쏠림 지수: `build_crowd.py` → `data/crowd_index.json`. 인천공항 노선별 운송실적(공공데이터 파일 15062056, 키 없음) + 네이버 검색어 트렌드(Secrets `NAVER_CLIENT_ID`/`NAVER_CLIENT_SECRET` 있을 때만, 실행당 상한 40회, 사용자 월 한도 30,000회). `crowd_weekly.yml`이 매주 월 06:10 KST 갱신.
-- `check_site.py`: 로컬에서 사이트를 띄워 데스크톱·모바일 화면 검사(카드 수, 구글 버튼, 금지어, 콘솔 오류) 후 스크린샷. `probe_live_price.yml`을 `mode=site`로 실행하면 `preview/screenshots` 브랜치에 올린다.
+- `check_site.py`: 로컬에서 사이트를 띄워 데스크톱·모바일 화면 검사(카드 수, 구글 버튼, 금지어, 콘솔 오류, P4 전광판·사진·링크 공유·공유 페이지·360~1366px 넘침) 후 스크린샷. 전광판 부드러움(CPU 4배 느림)은 참고 수치(서버 화면 처리가 실제 기기와 달라 실패로 치지 않음). `probe_live_price.yml`을 `mode=site`로 실행하면 `preview/screenshots` 브랜치에 올린다.
 
 ## 알아 둘 함정
 - fli는 0.9.0으로 고정. 0.10부터는 구글이 달력 API에 브라우저 서명을 요구해 날짜마다 페이지를 받으므로 수십 배 느림.
@@ -60,3 +63,4 @@
 - 2026-11-03: 단계별 통과 조건 없이 P1→P2→P3 연속 진행, 전체 검증은 P3 후(PLAN.md 8-1). 12월 초 10월 이력 삭제 예정. 사용량 추가 구매 금지.
 - 2026-11-03: P1(PR #2)·P2(PR #3) 병합. P3(환율·공유 이미지·판매처 실험) 브랜치 `feat/p3-extras`. 쏠림 지수(D)는 API 키 대기.
 - 2026-11-03: P3(PR #4) 병합. 판매처별 가격 매일 수집·쏠림 지수(공공데이터+네이버) 브랜치 `feat/p3b-sellers-crowd`. 네이버 키는 사용자가 Secrets 등록 대기.
+- 2026-11-03: P4 기획안(2판) 착수: 전광판 재작성·1면 사진·링크 공유·위키미디어 사진 후보. main 병합은 11/5 '3일 연속 수집' 판정 뒤.
