@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>도시 상세 | 보딩패스 타임즈</title>
-  <meta name="description" content="보딩패스 타임즈 도시 상세: 오늘 실제 조회한 직항 왕복 최저가 일정, 가격 이력, 월별 기후, 한국인 쏠림 지수." />
+  <meta name="description" content="보딩패스 타임즈 도시 상세: 오늘 실제 조회한 직항 왕복 최저가 일정, 가격 이력, 월별 기후." />
   <link rel="alternate" type="application/rss+xml" title="보딩패스 타임즈" href="./feed.xml" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
@@ -125,8 +125,8 @@
           </div>
         </section>
 
-        <!-- 기후·시즌·쏠림 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- 기후·시즌 -->
+        <div class="grid grid-cols-1 gap-5">
           <section class="sec p-5" id="climate">
             <h2 class="text-xl mb-1">월별 평년 기온·강수</h2>
             <p class="text-xs text-[#5C5549] mb-3" x-text="climateSource"></p>
@@ -138,23 +138,6 @@
               </template>
             </div>
             <p class="text-xs text-[#5C5549] mt-1.5" x-text="seasonText"></p>
-          </section>
-          <section class="sec p-5" id="crowd">
-            <h2 class="text-xl mb-1">한국인 쏠림 지수</h2>
-            <p class="text-xs text-[#5C5549] mb-3">5단계 중 낮을수록 한적합니다. 최근 통계 기준이며 실시간이 아닙니다.</p>
-            <template x-if="crowdLevel">
-              <div>
-                <div class="flex gap-1"><template x-for="l in 5" :key="l"><span class="flex-1 h-6" :style="'background:' + (l <= crowdLevel ? '#7A2E8C' : '#EFE8DA')"></span></template></div>
-                <p class="text-sm mt-2"><strong x-text="crowdLevel + '단계'"></strong> / 5 <span class="text-xs text-[#5C5549]" x-text="crowdPax"></span></p>
-                <div class="grid grid-cols-12 gap-0.5 mt-3 text-[10px] text-center" x-show="crowdMonths.length" aria-label="월별 쏠림 단계">
-                  <template x-for="cm in crowdMonths" :key="cm.m">
-                    <span class="py-1 rounded-sm" :style="'background:' + crowdColor(cm.level) + ';color:' + (cm.level >= 4 ? '#fff' : '#1E1B18')" :title="cm.m + '월 ' + (cm.level || '-') + '단계'" x-text="cm.m"></span>
-                  </template>
-                </div>
-                <p class="text-[11px] text-[#7A7164] mt-1.5" x-text="crowdBasis"></p>
-              </div>
-            </template>
-            <p class="text-sm text-[#5C5549]" x-show="!crowdLevel">쏠림 지수 자료가 없습니다.</p>
           </section>
         </div>
       </div>
@@ -181,7 +164,6 @@
         photo: {}, photoUrl: '', photoCaption: '',
         hist: [], histSvg: '', histStats: {},
         climateSvg: '', climateSource: '', bestMonths: new Set(), seasonText: '',
-        crowdLevel: 0, crowdPax: '', crowdMonths: [], crowdBasis: '',
 
         copyMsg: '',
         get feedUrl() { return new URL(`feed/${this.code}.xml`, location.href.split('?')[0]).href; },
@@ -199,7 +181,6 @@
           const dur = l.durationMin ? ` · ${Math.floor(l.durationMin / 60)}시간${l.durationMin % 60 ? ' ' + (l.durationMin % 60) + '분' : ''}` : '';
           return `${l.airline || l.airlineCode || ''} ${l.flightNo || ''} · ${l.dep}→${l.arr}${l.arrDayOffset ? '(+' + l.arrDayOffset + ')' : ''}${dur}`;
         },
-        crowdColor(l) { return ['#EFE8DA', '#E9DDF0', '#CDB4DB', '#A57BB8', '#7A2E8C', '#4E1A5C'][l || 0]; },
         get sellersText() {
           const s = this.f && this.f.sellers;
           if (!s) return '';
@@ -272,16 +253,6 @@
           this.bestMonths = new Set(seasons.flatMap(s => s.months || []));
           this.seasonText = seasons.length ? '추천 시즌: ' + seasons.map(s => `${s.months.join('·')}월 ${s.label}`).join(' / ') : '';
 
-          // 쏠림 지수
-          const cr = d.crowd || {};
-          const cc = (cr.cities || {})[this.code];
-          if (cc && cc.level) {
-            this.crowdLevel = cc.level;
-            this.crowdPax = cc.pax ? `· 인천공항 출발 여객 ${Number(cc.pax).toLocaleString('ko-KR')}명` : '';
-            const mm = cr.months || {};
-            this.crowdMonths = Object.keys(mm).length ? Array.from({ length: 12 }, (_, i) => ({ m: i + 1, level: (mm[String(i + 1)] || {})[this.code] || 0 })) : [];
-            this.crowdBasis = `${cr.basis || ''}${cr.period ? ', ' + cr.period + '년' : ''} · 외국인 포함${this.crowdMonths.length ? ' · 아래 칸은 월별 단계' : ''}`;
-          }
           this.state = 'ok';
         },
 
