@@ -190,9 +190,10 @@
     }
     .fp-row {
       display: grid;
-      grid-template-areas: "city price" "dest sched";
-      grid-template-columns: auto 1fr;
-      column-gap: 0.4em;
+      /* 휴대폰 2줄: [도시 | 가격] / [도착 | 일정]. 3열로 두어 일정이 가격 칸 폭까지 쓰게 함(360px에서 넘치지 않게) */
+      grid-template-areas: "city city price" "dest sched sched";
+      grid-template-columns: auto auto 1fr;
+      column-gap: 0.35em;
       row-gap: 0.25em;
       align-items: center;
       padding: 0.35em 0 0.35em 6px;
@@ -768,7 +769,7 @@
               <div 
                 x-show="stampByCode[item.code]"
                 class="passport-stamp shrink-0 text-[10px] leading-tight"
-                :style="'color:' + (stampByCode[item.code] || {}).color">
+                :style="{ color: (stampByCode[item.code] || {}).color || '' }">
                 <span x-text="(stampByCode[item.code] || {}).top"></span>
                 <span class="text-[9px] font-normal opacity-90" x-text="item.origin + '✈' + item.dest"></span>
               </div>

@@ -27,8 +27,10 @@ jobs:
       - name: 화면 검증·스크린샷
         if: github.event.inputs.mode == 'site'
         run: |
-          pip install -q playwright
+          pip install -q playwright pillow
           python -m playwright install --with-deps chromium > /dev/null
+          sudo apt-get -qq install -y fonts-noto-cjk > /dev/null
+          python build_share.py          # 공유 페이지·썸네일(검사용, 이 브랜치에 커밋하지 않음)
           python check_site.py; rc=$?
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
