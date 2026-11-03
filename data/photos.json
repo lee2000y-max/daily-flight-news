@@ -1,4 +1,334 @@
 {
- "cities": {},
- "updatedAt": ""
+ "cities": {
+  "AKJ": {
+   "artist": "taku-k",
+   "description": "Patchwork hills / biei",
+   "license": "CC BY 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Patchwork_hills_-_biei_-_panoramio.jpg",
+   "title": "File:Patchwork hills - biei - panoramio.jpg"
+  },
+  "AOJ": {
+   "artist": "lumoplank",
+   "description": "The Oirase Stream flowing over moss-covered boulders through Oirase Gorge during autumn foliage season.",
+   "license": "CC0",
+   "page": "https://commons.wikimedia.org/wiki/File:Oirase_Gorge_-_OiraseGorge7015.jpg",
+   "title": "File:Oirase Gorge - OiraseGorge7015.jpg"
+  },
+  "BKI": {
+   "artist": "CEphoto, Uwe Aranas",
+   "description": "Kota Kinabalu, Sabah: City Mosque in Likas (south side).",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:KotaKinabalu_Sabah_CityMosque-08.jpg",
+   "title": "File:KotaKinabalu Sabah CityMosque-08.jpg"
+  },
+  "BKK": {
+   "artist": "Diego Delso",
+   "description": "This is a photo of a monument in Thailand identified by the ID",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Templo_Wat_Arun,_Bangkok,_Tailandia,_2013-08-22,_DD_30.jpg",
+   "title": "File:Templo Wat Arun, Bangkok, Tailandia, 2013-08-22, DD 30.jpg"
+  },
+  "BWN": {
+   "artist": "Yu Chu Chin",
+   "description": "Yayasan Sultan Haji Hassanal Bolkiah Complex, Brunei on 18 January 2026.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Yayasan_Sultan_Haji_Hassanal_Bolkiah_Complex,_Brunei_(DSCF1413).jpg",
+   "title": "File:Yayasan Sultan Haji Hassanal Bolkiah Complex, Brunei (DSCF1413).jpg"
+  },
+  "CEB": {
+   "artist": "Øyvind Holmstad",
+   "description": "Blue Waters Mactan beach",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:BB_Blue_Waters_Mactan_beach_4.jpg",
+   "title": "File:BB Blue Waters Mactan beach 4.jpg"
+  },
+  "CNX": {
+   "artist": "ผู้สร้างสรรค์ผลงาน/ส่งข้อมูลเก็บในคลังข้อมูลเสรีวิกิมีเดียคอมมอนส์ - เทวประภาส มากคล้าย",
+   "description": "Wat Phrathat Doi Suthep, Chiang Mai, Thailand.Location: Wat Phrathat Doi Suthep Chiang Mai.",
+   "license": "CC BY 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Phra_That_Doi_Suthep_01.jpg",
+   "title": "File:Phra That Doi Suthep 01.jpg"
+  },
+  "CRK": {
+   "artist": "Lance Vanlewen",
+   "description": "Crater Lake at the Mount Pinatubo Caldera in the Philippines",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Crater_Lake_at_the_Mount_Pinatubo_Caldera_in_the_Philippines.jpg",
+   "title": "File:Crater Lake at the Mount Pinatubo Caldera in the Philippines.jpg"
+  },
+  "CXR": {
+   "artist": "bvi4092",
+   "description": "A faint rainbow emerging in Nha Trang Bay, Vietnam",
+   "license": "CC BY 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Arriving_in_Nha_Trang_-_Vietnam.jpg",
+   "title": "File:Arriving in Nha Trang - Vietnam.jpg"
+  },
+  "DAD": {
+   "artist": "DvTor8303",
+   "description": "Photo of the Golden Bridge at Ba Na Hills taken on 18.07.2025",
+   "license": "CC0",
+   "page": "https://commons.wikimedia.org/wiki/File:Golden_Bridge_at_Ba_Na_Hills_20250718.jpg",
+   "title": "File:Golden Bridge at Ba Na Hills 20250718.jpg"
+  },
+  "DLC": {
+   "artist": "CEphoto, Uwe Aranas",
+   "description": "Dalian, Liaoning, China: Lighthouse in Dalian Bay",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Dalian_China_Lighthouse-in-Dalian-Bay-01.jpg",
+   "title": "File:Dalian China Lighthouse-in-Dalian-Bay-01.jpg"
+  },
+  "DYG": {
+   "artist": "Kuruman from Tokyo, Japan",
+   "description": "Zhangjiajie National Forest Park",
+   "license": "CC BY 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Zhangjiajie_National_Forest_Park.jpg",
+   "title": "File:Zhangjiajie National Forest Park.jpg"
+  },
+  "FSZ": {
+   "artist": "MaedaAkihiko",
+   "description": "東海道新幹線の三島 - 新富士間を走行するJR東海所属のN700系（N700A）",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Series-N700a-Mt.Fuji.jpg",
+   "title": "File:Series-N700a-Mt.Fuji.jpg"
+  },
+  "FUK": {
+   "artist": "Nryate",
+   "description": "Fukuoka Skyline of Seaside Momochi",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Fukuoka_Skyline_of_Seaside_Momochi.jpg",
+   "title": "File:Fukuoka Skyline of Seaside Momochi.jpg"
+  },
+  "GUM": {
+   "artist": "Curt Storlazzi, USGS Pacific Coastal and Marine Science Center",
+   "description": "A healthy coral reef in the Tumon Bay Marine Preserve off Tumon, Guam, showing a number of different species of fish swimming over a high coral cover reef composed of a number of hard and soft coral s",
+   "license": "Public domain",
+   "page": "https://commons.wikimedia.org/wiki/File:Corals_and_fish_of_Tumon_Bay,_Guam_in_2012.jpg",
+   "title": "File:Corals and fish of Tumon Bay, Guam in 2012.jpg"
+  },
+  "HAN": {
+   "artist": "Shyamal",
+   "description": "train street, Hanoi",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Train_street,_Hanoi_4.jpg",
+   "title": "File:Train street, Hanoi 4.jpg"
+  },
+  "HGH": {
+   "artist": "lienyuan lee",
+   "description": "Leifeng Pagoda 雷峰塔",
+   "license": "CC BY 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Leifeng_Pagoda_%E9%9B%B7%E5%B3%B0%E5%A1%94_-_panoramio.jpg",
+   "title": "File:Leifeng Pagoda 雷峰塔 - panoramio.jpg"
+  },
+  "HIJ": {
+   "artist": "Jakub Hałun",
+   "description": "Floating torii gate in Miyajima at sunset",
+   "license": "CC BY 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Itsukushima-jinja_torii_at_sunset,_Miyajima,_Japan,_20240816_1812_4144.jpg",
+   "title": "File:Itsukushima-jinja torii at sunset, Miyajima, Japan, 20240816 1812 4144.jpg"
+  },
+  "HKG": {
+   "artist": "Jtmorgan",
+   "description": "Reproduction Chinese junk in Hong Kong harbor.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Chinese_junk_hong_kong.JPG",
+   "title": "File:Chinese junk hong kong.JPG"
+  },
+  "HKT": {
+   "artist": "Diego Delso",
+   "description": "Long-tail boats in Maya Beach, Ko Phi Phi Lee, Thailand.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Playa_Maya,_Ko_Phi_Phi,_Tailandia,_2013-08-19,_DD_13.JPG",
+   "title": "File:Playa Maya, Ko Phi Phi, Tailandia, 2013-08-19, DD 13.JPG"
+  },
+  "HPH": {
+   "artist": "Jakub Hałun",
+   "description": "View of sea and tourist boats from Titov Island, Ha Long Bay, Vietnam",
+   "license": "CC BY 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:View_of_sea_from_Titov_Island,_Ha_Long_Bay,_Vietnam,_20240128_1337_3732.jpg",
+   "title": "File:View of sea from Titov Island, Ha Long Bay, Vietnam, 20240128 1337 3732.jpg"
+  },
+  "HSG": {
+   "artist": "Viy4092",
+   "description": "Takeo Onsen Romon,Takeo,Saga,Japan",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Takeo_Onsen_Romon_20230510.jpg",
+   "title": "File:Takeo Onsen Romon 20230510.jpg"
+  },
+  "KHH": {
+   "artist": "CEphoto, Uwe Aranas",
+   "description": "Kaohsiung, Taiwan: TDragon and Tiger Pagodas at the Lotus Pond.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Kaohsiung_Taiwan_Dragon-and-Tiger-Pagodas-01.jpg",
+   "title": "File:Kaohsiung Taiwan Dragon-and-Tiger-Pagodas-01.jpg"
+  },
+  "KIX": {
+   "artist": "Schellack",
+   "description": "Glico Man sign, Dotonbori as seen from Ebisu-bashi",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Glico_Man_sign,_Dotonbori.JPG",
+   "title": "File:Glico Man sign, Dotonbori.JPG"
+  },
+  "KKJ": {
+   "artist": "Stjepko Krehula",
+   "description": "A castle in Kitakyushu, Japan.",
+   "license": "CC BY 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Kokura_Castle_2024-09-04.jpg",
+   "title": "File:Kokura Castle 2024-09-04.jpg"
+  },
+  "KMJ": {
+   "artist": "663highland",
+   "description": "Kumamoto Castle, Kumamoto, Kumamoto prefecture, Japan",
+   "license": "CC BY 2.5",
+   "page": "https://commons.wikimedia.org/wiki/File:Kumamoto_Castle_02n3200.jpg",
+   "title": "File:Kumamoto Castle 02n3200.jpg"
+  },
+  "KMQ": {
+   "artist": "663highland",
+   "description": "At Kenroku-en in Kanazawa, Ishikawa prefecture, Japan.",
+   "license": "CC BY 2.5",
+   "page": "https://commons.wikimedia.org/wiki/File:131109_Kenrokuen_Kanazawa_Ishikawa_pref_Japan05s3.jpg",
+   "title": "File:131109 Kenrokuen Kanazawa Ishikawa pref Japan05s3.jpg"
+  },
+  "MFM": {
+   "artist": "Diego Delso",
+   "description": "Remains of the Cathedral of St. Paul, Macau",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Restos_de_la_Catedral_de_San_Pablo,_Macao,_2013-08-08,_DD_41.jpg",
+   "title": "File:Restos de la Catedral de San Pablo, Macao, 2013-08-08, DD 41.jpg"
+  },
+  "MYJ": {
+   "artist": "z tanuki",
+   "description": "Dogo Onsen Honkan (Main bulding) , 道後温泉 本館",
+   "license": "CC BY 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Dogo_Onsen_Honkan_(Main_building),_%E9%81%93%E5%BE%8C%E6%B8%A9%E6%B3%89_%E6%9C%AC%E9%A4%A8_-_panoramio_(5).jpg",
+   "title": "File:Dogo Onsen Honkan (Main building), 道後温泉 本館 - panoramio (5).jpg"
+  },
+  "NGO": {
+   "artist": "Base64",
+   "description": "The keep of Nagoya Castle (名古屋城, Nagoya-jō) located in Nagoya, Aichi Prefecture, Japan. Originally built around 1525, destroyed during World War II. Reconstructed in 1959, currently under exhibition.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Nagoya_Castle(Larger).jpg",
+   "title": "File:Nagoya Castle(Larger).jpg"
+  },
+  "NGS": {
+   "artist": "Jakub Hałun",
+   "description": "Megane Bridge in Nagasaki, Japan",
+   "license": "CC BY 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Megane_Bridge_in_Nagasaki,_Japan,_20240815_1441_3704.jpg",
+   "title": "File:Megane Bridge in Nagasaki, Japan, 20240815 1441 3704.jpg"
+  },
+  "NRT": {
+   "artist": "David Kernan",
+   "description": "A high-angle night photograph of Tokyo, Japan. The Tokyo Tower is prominently illuminated in its traditional orange \"Landmark Light.\" To the left, several modern skyscrapers are visible, including the",
+   "license": "CC BY 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Tokyo_Tower,_Minato_City.jpg",
+   "title": "File:Tokyo Tower, Minato City.jpg"
+  },
+  "OIT": {
+   "artist": "663highland",
+   "description": "Umi Jigoku of Beppu Jigokumeguri, Beppu, Oita prefecture, Japan",
+   "license": "CC BY 2.5",
+   "page": "https://commons.wikimedia.org/wiki/File:Beppu_Umi-jigoku04n4272.jpg",
+   "title": "File:Beppu Umi-jigoku04n4272.jpg"
+  },
+  "OKA": {
+   "artist": "CEphoto, Uwe Aranas",
+   "description": "Onna, Okinawa, Japan: The scenic area of Cape Manzamo Cliffs.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Onna_Okinawa_Japan_Cape-Manzamo-01.jpg",
+   "title": "File:Onna Okinawa Japan Cape-Manzamo-01.jpg"
+  },
+  "PQC": {
+   "artist": "Klientos",
+   "description": "Канатная дорога Хонтхом, участок над посёлком Антхой (остров Фукуок).",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:H%C3%B2n_Th%C6%A1m_cable_car_above_the_An_Th%E1%BB%9Bi_township.jpg",
+   "title": "File:Hòn Thơm cable car above the An Thới township.jpg"
+  },
+  "PVG": {
+   "artist": "Ermell",
+   "description": "View of Pudong with the Oriental Pearl Tower seen from the Shanghai People's Heroes Memorial Tower.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Shanghai_Oriental_Pearl_Tower-20150516-RM-123453.jpg",
+   "title": "File:Shanghai Oriental Pearl Tower-20150516-RM-123453.jpg"
+  },
+  "SDJ": {
+   "artist": "Chensiyuan",
+   "description": "Matsushima Miyagi Japan",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Matsushima_miyagi_z.JPG",
+   "title": "File:Matsushima miyagi z.JPG"
+  },
+  "SGN": {
+   "artist": "Maksim Sokolov (maxergon.com)",
+   "description": "Basilica of Our Lady of the Immaculate Conception is a Roman Catholic minor basilica and parish church in Guelph, Ontario, Canada. A Gothic Revival style building constructed between 1876 and 1888 by ",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Basilica_of_Our_Lady_Immaculate.jpg",
+   "title": "File:Basilica of Our Lady Immaculate.jpg"
+  },
+  "SIN": {
+   "artist": "Basile Morin",
+   "description": "Panoramic view of Marina Bay Sands and the illuminated polyhedral building Louis Vuitton over the water at Marina Bay in the evening at blue hour with pink clouds, in Singapore. Long-exposure photogra",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Marina_Bay_Sands_and_illuminated_polyhedral_building_Louis_Vuitton_over_the_water_at_blue_hour_with_pink_clouds_in_Singapore.jpg",
+   "title": "File:Marina Bay Sands and illuminated polyhedral building Louis Vuitton over the water at blue hour with pink clouds in Singapore.jpg"
+  },
+  "TAG": {
+   "artist": "Jeroen36",
+   "description": "Alona Beach, Panglao",
+   "license": "CC BY 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Alona_Beach,_Panglao_-_panoramio.jpg",
+   "title": "File:Alona Beach, Panglao - panoramio.jpg"
+  },
+  "TAK": {
+   "artist": "Sei F",
+   "description": "Ritsurin Garden is one of the most famous historical gardens in Japan. The garden is situated in the city of Takamatsu and is considered one of its main attractions. The garden contains a tea house, v",
+   "license": "CC BY-SA 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Ritsurin_Garden,_Kagawa_Prefecture;_November_2019_(03).jpg",
+   "title": "File:Ritsurin Garden, Kagawa Prefecture; November 2019 (03).jpg"
+  },
+  "TAO": {
+   "artist": "Windmemories",
+   "description": "Zhanqiao Pier, one of the landmarks of Qingdao",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:20240729_Zhanqiao_02.jpg",
+   "title": "File:20240729 Zhanqiao 02.jpg"
+  },
+  "TAS": {
+   "artist": "LBM1948",
+   "description": "Partial view of the ensemble Hazrat Imam. Tashkent, Uzbekistan",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Hazrat_Imam_01.jpg",
+   "title": "File:Hazrat Imam 01.jpg"
+  },
+  "TPE": {
+   "artist": "Another Believer",
+   "description": "Jiufen Old Street, Taiwan",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Jiufen,_November_28,_2024_-_030.jpg",
+   "title": "File:Jiufen, November 28, 2024 - 030.jpg"
+  },
+  "UBN": {
+   "artist": "Marcin Konsek",
+   "description": "Landscape. Gorkhi-Terelj National Park. Mongolia.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Krajobraz_w_Parku_Narodowym_Gorchi-Tereld%C5%BC_63.JPG",
+   "title": "File:Krajobraz w Parku Narodowym Gorchi-Tereldż 63.JPG"
+  },
+  "YGJ": {
+   "artist": "Hashi photo",
+   "description": "Tottori Sakyu ( Tottori Sand Dune ) in Tottori Prefecture, Japan",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Tottori-Sakyu_Tottori_Japan.JPG",
+   "title": "File:Tottori-Sakyu Tottori Japan.JPG"
+  },
+  "YNT": {
+   "artist": "HaoLinFotos",
+   "description": "Coast, skyline",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Yantai2017.jpg",
+   "title": "File:Yantai2017.jpg"
+  }
+ },
+ "updatedAt": "2026-11-03"
 }
