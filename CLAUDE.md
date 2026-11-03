@@ -23,6 +23,7 @@
   - `publish`는 `!cancelled()` 조건. 실행을 취소하면 저장도 하지 않는다(`always()`로 바꾸지 말 것).
 - 화면 판정(index.html): 1면 A·C와 스탬프 1·3·6·7은 실조회 이력이 필요 일수(30·7·14) 쌓인 뒤에만 켜짐(`hasHistory`). D는 `data/crowd_index.json`(level 1~5)이 있어야 켜짐.
 - `build_climate.py` → `data/climate_normals.json`(NASA POWER 월 평균기온·강수, 키 없음). 진단 워크플로 `mode=climate`로 갱신·커밋.
+- `about.html`(P5-1): 만드는 방법·원칙·1면 유형·스탬프·자료 출처·**사진 출처 전체 목록**(`data/photos.json`, 라이선스 링크). 이번 호 미발행 도시는 `flights_data.json`에서. 상단 발행 줄·1면 전광판 안내·판권에서 링크.
 - `monthly.html`: `data/reports/monthly/*.json` 월간지(이전 수집기 기록이나 부분 관측 달은 '참고용'). `feed.xml`: 수집 때 생성되는 RSS.
 - 환율(P3): 수집 합치기 단계에서 `open.er-api.com`(키 없음) 조회 → `flights_data.json`의 `fx`. 실패하면 빈 값(환율 박스 숨김, 이월 없음). 통화는 `routes.CITY_CURRENCY`.
 - 링크 공유(P4, 공유 이미지 버튼 대체): 카드의 '🔗 이 특가 공유' → `s/<도시>/?d=YYYYMMDD` 주소를 공유(휴대폰 공유 창, 컴퓨터 복사). `build_share.py`가 사이트 배포 때 `s/<도시>/index.html`(og 태그만, 열면 `./#<도시>`로 이동)과 `thumb.jpg`(1200×630, Pillow + fonts-noto-cjk), `s/og.jpg`(사이트 기본 미리보기 = 오늘 최저가 도시)를 만든다. `s/`는 커밋하지 않는다(.gitignore). 미발행 도시는 가격 없는 썸네일·"오늘은 발행되지 않았습니다". 실패해도 배포는 계속.
@@ -64,3 +65,4 @@
 - 2026-11-03: P1(PR #2)·P2(PR #3) 병합. P3(환율·공유 이미지·판매처 실험) 브랜치 `feat/p3-extras`. 쏠림 지수(D)는 API 키 대기.
 - 2026-11-03: P3(PR #4) 병합. 판매처별 가격 매일 수집·쏠림 지수(공공데이터+네이버) 브랜치 `feat/p3b-sellers-crowd`. 네이버 키는 사용자가 Secrets 등록 대기.
 - 2026-11-03: P4 기획안(2판) 착수: 전광판 재작성·1면 사진·링크 공유·위키미디어 사진 후보. main 병합은 11/5 '3일 연속 수집' 판정 뒤.
+- 2026-11-03: P4 PR #6(병합은 11/5 판정 뒤). P5 기획안 승인(`docs/P5_PLAN.md`), 브랜치 `feat/p5-pages`(P4 브랜치에서 분기, P4 병합 뒤 main 기준으로 정리). P5-1 소개 페이지 착수.

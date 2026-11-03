@@ -244,6 +244,31 @@ with sync_playwright() as p:
         import shutil
         for r_ in today[:4]:
             shutil.copyfile(f"s/{r_['code']}/thumb.jpg", f"screenshots/thumb_{r_['code']}.jpg")
+    # 만드는 방법(P5-1): 사진 출처 목록 = data/photos.json, 원본 링크는 모두 위키미디어 공용
+    page = b.new_page(viewport={"width": 390, "height": 844})
+    aerr = []
+    page.on("pageerror", lambda e: aerr.append(str(e)))
+    page.on("console", lambda m: aerr.append(m.text) if m.type == "error" else None)
+    page.goto(f"http://127.0.0.1:{PORT}/about.html", wait_until="networkidle")
+    page.wait_for_timeout(1500)
+    rows_a = page.locator("#photoList li").count()
+    links = page.eval_on_selector_all("#photoList a.lic-src", "els => els.map(a => a.href)")
+    lic_links = page.eval_on_selector_all("#photoList a[href*=creativecommons]", "els => els.length")
+    failed_a = page.locator("#rules li").count()
+    ov_a = page.evaluate("document.documentElement.scrollWidth - window.innerWidth")
+    print(f"[about] 사진 출처 {rows_a}행(데이터 {len(photos)}), 라이선스 링크 {lic_links}개, 미발행 {failed_a}건(데이터 {expected_failed}), 가로 넘침 {ov_a}px, 오류 {len(aerr)}건")
+    if rows_a != len(photos):
+        problems.append(f"about: 사진 출처 {rows_a}행 != {len(photos)}")
+    if any("commons.wikimedia.org" not in u for u in links):
+        problems.append("about: 위키미디어 공용이 아닌 원본 링크")
+    if failed_a != expected_failed:
+        problems.append(f"about: 미발행 목록 {failed_a} != {expected_failed}")
+    if ov_a > 0:
+        problems.append(f"about: 가로 넘침 {ov_a}px")
+    if aerr:
+        problems.append(f"about: 오류 {aerr[:3]}")
+    page.screenshot(path="screenshots/about.png", full_page=True)
+    page.close()
     # 월간지
     page = b.new_page(viewport={"width": 1366, "height": 900})
     merr = []
