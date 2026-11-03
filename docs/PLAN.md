@@ -130,3 +130,8 @@
   - 사진: 47개 도시 확정(`data/photos.json`), 11개 도시 다시 찾기(CTS KOJ DLI PKX XIY CAN HRB ALA VTE SPN DPS).
   - 추가 화면: A·B·C·F·G·H 도입, D(탐색 지도)·E(주말·연휴 달력) 빼기. 단계 계획은 `docs/P5_PLAN.md`(승인, 신규 김포 노선은 자동 추가).
   - 사진 2차: 11개 도시 확정(58개 도시 모두 위키미디어 공용 사진).
+
+## 10. P5 진행(2026-11-03, 브랜치 `feat/p5-pages`)
+- P5-1 `about.html`, P5-2 `city.html?code=`, P5-3 관심 도시(localStorage)·도시별 RSS(`feed/`, 배포 때 생성), P5-4 `archive.html`(`data/archive.json`, 배포 때 생성).
+- P5-5 데이터 형식 추가: `flights_data.json`의 `newRoutes`, 상태 파일 `data/gmp_auto.json`(신규 김포 노선 자동 추가·4주 미감지 제외). 1면 유형 '신규 취항'(N)이 감지된 주에 톱.
+- P5-6(H 예약 시점 통계): 실조회 90일 이후(2027-01-31~).

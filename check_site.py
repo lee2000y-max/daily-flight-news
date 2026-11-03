@@ -244,6 +244,137 @@ with sync_playwright() as p:
         import shutil
         for r_ in today[:4]:
             shutil.copyfile(f"s/{r_['code']}/thumb.jpg", f"screenshots/thumb_{r_['code']}.jpg")
+    # 만드는 방법(P5-1): 사진 출처 목록 = data/photos.json, 원본 링크는 모두 위키미디어 공용
+    page = b.new_page(viewport={"width": 390, "height": 844})
+    aerr = []
+    page.on("pageerror", lambda e: aerr.append(str(e)))
+    page.on("console", lambda m: aerr.append(m.text) if m.type == "error" else None)
+    page.goto(f"http://127.0.0.1:{PORT}/about.html", wait_until="networkidle")
+    page.wait_for_timeout(1500)
+    rows_a = page.locator("#photoList li").count()
+    links = page.eval_on_selector_all("#photoList a.lic-src", "els => els.map(a => a.href)")
+    lic_links = page.eval_on_selector_all("#photoList a[href*=creativecommons]", "els => els.length")
+    failed_a = page.locator("#rules li").count()
+    ov_a = page.evaluate("document.documentElement.scrollWidth - window.innerWidth")
+    print(f"[about] 사진 출처 {rows_a}행(데이터 {len(photos)}), 라이선스 링크 {lic_links}개, 미발행 {failed_a}건(데이터 {expected_failed}), 가로 넘침 {ov_a}px, 오류 {len(aerr)}건")
+    if rows_a != len(photos):
+        problems.append(f"about: 사진 출처 {rows_a}행 != {len(photos)}")
+    if any("commons.wikimedia.org" not in u for u in links):
+        problems.append("about: 위키미디어 공용이 아닌 원본 링크")
+    if failed_a != expected_failed:
+        problems.append(f"about: 미발행 목록 {failed_a} != {expected_failed}")
+    if ov_a > 0:
+        problems.append(f"about: 가로 넘침 {ov_a}px")
+    if aerr:
+        problems.append(f"about: 오류 {aerr[:3]}")
+    page.screenshot(path="screenshots/about.png", full_page=True)
+    page.close()
+    # 도시 상세(P5-2): 발행 도시는 오늘 가격 = 데이터, 미발행 도시는 '오늘은 발행되지 않았습니다'(가격 없음)
+    today_f = sorted([r_ for r_ in data["flights"] if r_["date"] == latest], key=lambda r_: r_["price"])
+    failed_today = [r_ for r_ in data["failed"] if r_["date"] == latest]
+    cases = [("pub", today_f[0])] + ([("fail", failed_today[0])] if failed_today else [])
+    for kind, rec in cases:
+        for vw in (390, 1280):
+            page = b.new_page(viewport={"width": vw, "height": 900})
+            cerr = []
+            page.on("pageerror", lambda e: cerr.append(str(e)))
+            page.on("console", lambda m: cerr.append(m.text) if m.type == "error" else None)
+            page.goto(f"http://127.0.0.1:{PORT}/city.html?code={rec['code']}", wait_until="networkidle")
+            page.wait_for_timeout(1500)
+            h1 = page.locator("h1").inner_text().strip()
+            today_txt = page.locator("#today").inner_text()
+            opts = page.locator("#citySel option").count()
+            ov_c = page.evaluate("document.documentElement.scrollWidth - window.innerWidth")
+            hist_n = len((data.get("historicalSeries", {}).get(rec["code"]) or {}).get("prices", []))
+            chart = page.locator("#histChart svg").count()
+            wait_vis = page.locator("#histWait").is_visible()
+            img_w = page.evaluate("(() => { const i = document.getElementById('heroImg'); return i ? i.naturalWidth : -1; })()")
+            print(f"[city {rec['code']} {kind} {vw}px] 제목 {h1}, 도시 목록 {opts}개, 이력 {hist_n}일(그래프 {chart}, 대기 문구 {wait_vis}), 사진 {img_w}px, 넘침 {ov_c}px, 오류 {len(cerr)}건")
+            if h1 != rec["city"]:
+                problems.append(f"city {rec['code']}: 제목 '{h1}' != {rec['city']}")
+            if kind == "pub" and f"{rec['price']:,}" not in today_txt:
+                problems.append(f"city {rec['code']}: 오늘 가격 {rec['price']:,} 없음")
+            if kind == "fail" and ("오늘은 발행되지 않았습니다" not in today_txt or "₩" in today_txt):
+                problems.append(f"city {rec['code']}: 미발행 표시 이상")
+            if (hist_n >= 7) != (chart == 1) or (hist_n < 7) != wait_vis:
+                problems.append(f"city {rec['code']}: 가격 이력 표시 이상(이력 {hist_n}일)")
+            if photos.get(rec["code"]) and img_w <= 0:
+                problems.append(f"city {rec['code']}: 사진을 불러오지 못함")
+            if opts < 58:
+                problems.append(f"city: 도시 목록 {opts}개")
+            if ov_c > 0:
+                problems.append(f"city {rec['code']} {vw}px: 가로 넘침 {ov_c}px")
+            if cerr:
+                problems.append(f"city {rec['code']}: 오류 {cerr[:3]}")
+            page.screenshot(path=f"screenshots/city_{rec['code']}_{vw}.png", full_page=True)
+            page.close()
+    # 관심 도시(P5-3): ☆ 누르면 띠에 나타나고, 새로고침해도 남고, 다시 누르면 빠짐
+    page = b.new_page(viewport={"width": 390, "height": 844})
+    page.goto(f"http://127.0.0.1:{PORT}/index.html", wait_until="networkidle")
+    page.wait_for_timeout(1500)
+    first = page.locator("article.newspaper-card").first
+    fav_city = first.locator("h3").inner_text().strip()
+    first.locator("button.fav-star").click()
+    page.wait_for_timeout(200)
+    strip1 = page.locator("#favStrip").is_visible() and fav_city in page.locator("#favStrip").inner_text()
+    page.reload(wait_until="networkidle")
+    page.wait_for_timeout(1500)
+    strip2 = page.locator("#favStrip").is_visible() and fav_city in page.locator("#favStrip").inner_text()
+    page.locator("article.newspaper-card").first.locator("button.fav-star").click()
+    page.wait_for_timeout(200)
+    strip3 = page.locator("#favStrip").is_visible()
+    print(f"[관심 도시] {fav_city}: 넣기 {strip1}, 새로고침 뒤 {strip2}, 빼기 뒤 띠 보임 {strip3}")
+    if not (strip1 and strip2 and not strip3):
+        problems.append("관심 도시 넣기·저장·빼기 이상")
+    rss_links = page.locator("article.newspaper-card a[href*='feed/']").count()
+    if rss_links != expected:
+        problems.append(f"카드 RSS 링크 {rss_links} != {expected}")
+    # 보관함에서 들어오는 ?d= (최근 14발행일 안)
+    avail = data.get("availableDates", [])
+    if len(avail) > 1:
+        page.goto(f"http://127.0.0.1:{PORT}/index.html?d={avail[1]}", wait_until="networkidle")
+        page.wait_for_timeout(1500)
+        sel_d = page.eval_on_selector("select[x-model='selectedDate']", "e => e.value")
+        print(f"[?d=] {avail[1]} → 선택된 호 {sel_d}")
+        if sel_d != avail[1]:
+            problems.append(f"?d={avail[1]} 로 그날 호가 열리지 않음({sel_d})")
+    page.close()
+    # 도시별 RSS(P5-3)·보관함(P5-4): 배포 때 만드는 파일(build_extras.py)
+    if os.path.isdir("feed"):
+        import xml.etree.ElementTree as ET
+        bad_feed = []
+        for c in [r_["code"] for r_ in data["flights"] if r_["date"] == latest] + [r_["code"] for r_ in data["failed"] if r_["date"] == latest]:
+            try:
+                ET.parse(f"feed/{c}.xml")
+            except Exception:
+                bad_feed.append(c)
+        print(f"[도시별 RSS] {len(os.listdir('feed'))}개, 읽기 실패 {bad_feed or '없음'}")
+        if bad_feed:
+            problems.append(f"도시별 RSS 이상 {bad_feed[:5]}")
+    if os.path.exists("data/archive.json"):
+        arc = json.load(open("data/archive.json", encoding="utf-8"))["issues"]
+        page = b.new_page(viewport={"width": 390, "height": 844})
+        perr = []
+        page.on("pageerror", lambda e: perr.append(str(e)))
+        page.goto(f"http://127.0.0.1:{PORT}/archive.html", wait_until="networkidle")
+        page.wait_for_timeout(1500)
+        n_items = page.locator("#issueList > li").count()
+        n_links = page.locator("#issueList a:visible:has-text('그날 호 보기')").count()
+        exp_links = sum(1 for i in arc if i["date"] in avail)
+        n_ref = page.locator("#issueList h2 span:visible:has-text('참고용')").count()
+        exp_ref = sum(1 for i in arc if i["source"] == "reference")
+        ov_r = page.evaluate("document.documentElement.scrollWidth - window.innerWidth")
+        print(f"[보관함] {n_items}개 호(데이터 {len(arc)}), 그날 호 링크 {n_links}(기대 {exp_links}), 참고용 {n_ref}(기대 {exp_ref}), 넘침 {ov_r}px, 오류 {len(perr)}건")
+        if n_items != len(arc) or n_links != exp_links or n_ref != exp_ref or ov_r > 0 or perr:
+            problems.append("보관함 표시 이상")
+        if os.path.exists("data/leadtime.json"):
+            lt = json.load(open("data/leadtime.json", encoding="utf-8"))
+            bars = page.locator("#leadtime div[aria-label]:visible").count()
+            print(f"[예약 시점 통계] 실조회 {lt['liveDays']}일, 공개 {lt['ready']}, 화면 막대 묶음 {bars}")
+            if lt["ready"] != (bars > 0):
+                problems.append("예약 시점 통계: 공개 조건과 화면이 다름(90일 전에는 숨김)")
+        page.screenshot(path="screenshots/archive.png", full_page=True)
+        page.close()
     # 월간지
     page = b.new_page(viewport={"width": 1366, "height": 900})
     merr = []

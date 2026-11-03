@@ -12,8 +12,8 @@
   3. 후보를 가격순으로 상세 검색(최대 6개)해 직항이 확인된 일정끼리 1위·2위(출발일 3일 이상 차이) 선정. 화면 가격 = 상세 검색 가격.
      상세 미확인 2위는 날짜 검색 가격 중 1위 이상만. 상세가 모두 오류이거나 모두 빈 결과(0건)면 날짜 검색 가격으로 발행(항공편 정보 없음, `detailError`에 사유). 경유만 나오면 발행하지 않음.
   4. 직항 0건·조건 불일치·조회 오류 도시는 발행하지 않고 `failed`에 사유 기록.
-  5. 월요일엔 김포 출발을 모든 공항으로 조회해 새 노선을 로그에 보고(`🆕`).
-- `flights_data.json` v2: `schemaVersion`, `latestDate`, `availableDates`(최근 14발행일), `status`(날짜별 발행 수), `flights`(1위 + `alt` 2위 + `leaveSaver` 연차 절약 일정 + `holidays` + `bestSeasons`), `failed`, `historicalSeries`(영구 이력 live만, `fsc` 포함), `climate`(월 기후 평년값), `crowd`(쏠림 지수, 파일 있을 때만).
+  5. 월요일엔 김포 출발을 모든 공항으로 조회(수동 실행 입력 `full_gmp=1`로도). `GMP_DESTINATIONS`에 없는 공항에서 김포 직항이 보이면 `data/gmp_auto.json`에 **자동 추가**(P5-5)해 다음 수집부터 매일 김포도 조회, 월요일 점검 4번 연속 미감지면 자동 제외(조회 오류는 세지 않음). 로그 `🆕`/`➖`. 로직은 `gmp_auto.py`.
+- `flights_data.json` v2: `schemaVersion`, `latestDate`, `availableDates`(최근 14발행일), `status`(날짜별 발행 수), `flights`(1위 + `alt` 2위 + `leaveSaver` 연차 절약 일정 + `holidays` + `bestSeasons`), `failed`, `newRoutes`(P5-5: 신규 김포 노선이 감지된 주 7일 동안 그날 실제 조회한 김포 출발 최저 일정 — date·dest·code·city·addedOn·price·depDate·retDate·nights, 그날 1위가 그 노선이면 airline·googleUrl. 1면 '신규 취항' 기사가 톱), `historicalSeries`(영구 이력 live만, `fsc` 포함), `climate`(월 기후 평년값), `crowd`(쏠림 지수, 파일 있을 때만).
 - `history_store.py` / `data/history/YYYY-MM.csv`: 영구 이력(1위만). 열: date,code,price,source,dep,ret,airline,fsc(2026-11 airline·fsc 추가). `build_reports.py` / `data/reports/`: 월간·분기·연간 리포트.
 - `probe_route.py` + `.github/workflows/probe_live_price.yml`: 특정 노선 진단(수동 실행, 입력 route, mode=route).
 - `.github/workflows/daily_flights.yml`: 매일 07:30 KST. 수동 실행 입력 `only_cities`, `dry_run`. 브랜치에서 실행하면 그 브랜치에 커밋.
@@ -23,6 +23,12 @@
   - `publish`는 `!cancelled()` 조건. 실행을 취소하면 저장도 하지 않는다(`always()`로 바꾸지 말 것).
 - 화면 판정(index.html): 1면 A·C와 스탬프 1·3·6·7은 실조회 이력이 필요 일수(30·7·14) 쌓인 뒤에만 켜짐(`hasHistory`). D는 `data/crowd_index.json`(level 1~5)이 있어야 켜짐.
 - `build_climate.py` → `data/climate_normals.json`(NASA POWER 월 평균기온·강수, 키 없음). 진단 워크플로 `mode=climate`로 갱신·커밋.
+- `about.html`(P5-1): 만드는 방법·원칙·1면 유형·스탬프·자료 출처·**사진 출처 전체 목록**(`data/photos.json`, 라이선스 링크). 이번 호 미발행 도시는 `flights_data.json`에서. 상단 발행 줄·1면 전광판 안내·판권에서 링크.
+- `city.html?code=YGJ`(P5-2): 도시 상세. 오늘 1위·2위·연차 절약(실조회), 항공편·판매처, 가격 이력(`historicalSeries` 실조회 1위만, **7일 이상부터 그래프**), 월별 기후·추천 시즌, 쏠림 지수(월별). 미발행 도시는 사유만(가격 없음). 카드 도시 이름·'가격 이력·날씨·쏠림 지수 →'에서 연결.
+- 관심 도시(P5-3): 카드 ☆ → localStorage `bpt-favs`(이 브라우저만). 1면 아래 '내 관심 도시' 띠(미발행이면 가격 없이 '이 호에는 미발행').
+- `build_extras.py`(P5-3·4, 배포 때 실행, 커밋 안 함): `feed/<도시>.xml` 도시별 RSS(영구 이력 live만, 최근 30건) + `data/archive.json` 보관함 요약(날짜별 발행 수·하위 5곳, 이전 수집기 기록은 `source: reference`).
+- 예약 시점 통계(P5-6): `build_extras.py`가 `data/leadtime.json`(지역별 1위 일정의 출발까지 남은 날 분포, 실조회 live만)을 만들고 `archive.html` 위에 표시. **실조회 90일 미만이면 숫자 없이 안내만**(`ready=false`).
+- `archive.html`(P5-4): 지난 호 보관함. 최근 14발행일은 `index.html?d=YYYY-MM-DD`로 그날 호 열기. 10월 기록은 '참고용'.
 - `monthly.html`: `data/reports/monthly/*.json` 월간지(이전 수집기 기록이나 부분 관측 달은 '참고용'). `feed.xml`: 수집 때 생성되는 RSS.
 - 환율(P3): 수집 합치기 단계에서 `open.er-api.com`(키 없음) 조회 → `flights_data.json`의 `fx`. 실패하면 빈 값(환율 박스 숨김, 이월 없음). 통화는 `routes.CITY_CURRENCY`.
 - 링크 공유(P4, 공유 이미지 버튼 대체): 카드의 '🔗 이 특가 공유' → `s/<도시>/?d=YYYYMMDD` 주소를 공유(휴대폰 공유 창, 컴퓨터 복사). `build_share.py`가 사이트 배포 때 `s/<도시>/index.html`(og 태그만, 열면 `./#<도시>`로 이동)과 `thumb.jpg`(1200×630, Pillow + fonts-noto-cjk), `s/og.jpg`(사이트 기본 미리보기 = 오늘 최저가 도시)를 만든다. `s/`는 커밋하지 않는다(.gitignore). 미발행 도시는 가격 없는 썸네일·"오늘은 발행되지 않았습니다". 실패해도 배포는 계속.
@@ -64,3 +70,4 @@
 - 2026-11-03: P1(PR #2)·P2(PR #3) 병합. P3(환율·공유 이미지·판매처 실험) 브랜치 `feat/p3-extras`. 쏠림 지수(D)는 API 키 대기.
 - 2026-11-03: P3(PR #4) 병합. 판매처별 가격 매일 수집·쏠림 지수(공공데이터+네이버) 브랜치 `feat/p3b-sellers-crowd`. 네이버 키는 사용자가 Secrets 등록 대기.
 - 2026-11-03: P4 기획안(2판) 착수: 전광판 재작성·1면 사진·링크 공유·위키미디어 사진 후보. main 병합은 11/5 '3일 연속 수집' 판정 뒤.
+- 2026-11-03: P4 PR #6(병합은 11/5 판정 뒤). P5 기획안 승인(`docs/P5_PLAN.md`), 브랜치 `feat/p5-pages`(P4 브랜치에서 분기, P4 병합 뒤 main 기준으로 정리). P5-1 소개 페이지 착수.

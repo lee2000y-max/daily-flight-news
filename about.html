@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>만드는 방법 | 보딩패스 타임즈</title>
+  <meta name="description" content="보딩패스 타임즈가 인천·김포 출발 직항 최저가를 매일 조회하고 싣는 방법, 원칙, 자료 출처, 사진 출처." />
+  <link rel="alternate" type="application/rss+xml" title="보딩패스 타임즈" href="./feed.xml" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper-bg: #EFECE4; --card-bg: #FAF7F0; --ink: #1E1B18; --muted: #5C5549; --rule: #2C2620; --line: #D5CBB8; }
+    body {
+      background-color: var(--paper-bg); color: var(--ink); font-family: 'Noto Sans KR', sans-serif;
+      background-image: radial-gradient(rgba(44, 38, 32, 0.045) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    .font-serif-kr { font-family: 'Noto Serif KR', serif; }
+    .font-masthead { font-family: 'Playfair Display', 'Noto Serif KR', serif; }
+    .font-mono { font-family: 'JetBrains Mono', 'Noto Sans KR', monospace; }
+    .double-rule-bottom { border-bottom: 3px double var(--rule); }
+    .double-rule-top { border-top: 3px double var(--rule); }
+    .sec { background: var(--card-bg); border: 1px solid var(--line); }
+    .sec h2 { font-family: 'Noto Serif KR', serif; font-weight: 900; }
+    .sec p, .sec li { line-height: 1.75; }
+    table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.t th, table.t td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+    table.t th { font-size: 12px; color: var(--muted); font-weight: 700; white-space: nowrap; }
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body class="min-h-screen pb-16 antialiased" x-data="aboutPage()" x-init="init()">
+  <header class="max-w-4xl mx-auto px-4 pt-5 pb-3">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-[#5C5549] border-t-2 border-b border-[#2C2620] py-1.5 px-1 font-medium">
+      <a href="./index.html" class="font-bold text-[#1E3A5F] underline">← 오늘 일간지로</a>
+      <span x-text="latest ? latest.replace(/-/g, '.') + ' 발행호 기준' : ''"></span>
+    </div>
+    <div class="py-5 text-center double-rule-bottom">
+      <div class="font-masthead text-xs sm:text-sm tracking-[0.22em] font-bold text-[#3E3932]">THE BOARDING PASS TIMES · ABOUT</div>
+      <h1 class="font-serif-kr text-3xl sm:text-5xl font-black tracking-tight mt-1">만드는 방법</h1>
+      <p class="text-sm text-[#3E3932] mt-2">매일 아침 실제로 조회한 직항 왕복 가격만 싣습니다</p>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 space-y-5">
+    <section class="sec p-5" id="collect">
+      <h2 class="text-xl mb-2">매일 아침 7시 30분, 58개 도시를 직접 조회합니다</h2>
+      <ul class="list-disc pl-5 text-sm text-[#2C2620] space-y-1">
+        <li>출발: <strong>인천(ICN)</strong>, 그리고 김포 직항이 있는 도시는 <strong>김포(GMP)</strong>도 함께.</li>
+        <li>출발일: 발행일로부터 <strong>14~60일 뒤</strong>. 여행 길이: <strong>2박 3일 ~ 8박 9일</strong>.</li>
+        <li>토요일과 일요일이 모두 들어가고, 연차(공휴일이 아닌 평일)가 <strong>5일 이하</strong>인 일정만 봅니다.</li>
+        <li><strong>직항만</strong> 봅니다. 경유편은 아무리 싸도 싣지 않습니다.</li>
+        <li>날짜별 가격으로 후보를 고른 뒤, 싼 일정부터 다시 조회해 실제 항공편(항공사·편명·시각)이 확인된 일정을 1위로 싣습니다. 1위와 출발일이 3일 이상 떨어진 일정 중 가장 싼 것을 '다른 일정 제안'으로 함께 싣습니다.</li>
+        <li>다시 조회가 모두 실패한 날에는 날짜별 가격(역시 그날 실제 조회값)만 싣고, 항공편 칸은 비워 둡니다.</li>
+        <li>조회는 구글 항공권에서 합니다. 판매처별 가격은 같은 1위 일정의 구글 예약 옵션 화면에서 읽습니다.</li>
+      </ul>
+      <p class="text-xs text-[#5C5549] mt-3" x-show="status.published != null" x-cloak>
+        이번 호: <span x-text="status.total"></span>개 도시 중 <strong x-text="status.published"></strong>곳 발행 · <span x-text="status.generatedAt"></span> 발행
+      </p>
+    </section>
+
+    <section class="sec p-5" id="rules">
+      <h2 class="text-xl mb-2">실제 조회값만 싣습니다</h2>
+      <p class="text-sm text-[#2C2620]">가격·항공사·편명·출도착 시각은 모두 그날 아침 조회한 값입니다. 조회하지 못했거나 조건에 맞는 직항이 없으면 그 도시는 그날 싣지 않고, 아래에 이유를 적습니다. 어제 가격을 이어 쓰거나, 기준가·추정값으로 채우지 않습니다.</p>
+      <p class="text-sm text-[#2C2620] mt-2">가격은 조회 시점 기준이라 예약할 때 바뀔 수 있습니다. 카드의 구글 플라이트·네이버·스카이스캐너 버튼으로 최종 가격을 확인하세요. 구글 결과에는 정확한 수하물 정보가 없어 수하물은 싣지 않습니다.</p>
+      <div class="mt-3" x-show="failed.length" x-cloak>
+        <h3 class="font-bold text-sm mb-1">이번 호에 싣지 못한 도시</h3>
+        <ul class="text-sm text-[#3E3932] space-y-0.5">
+          <template x-for="f in failed" :key="f.code">
+            <li><strong x-text="f.city"></strong> <span class="font-mono text-xs text-[#7A7164]" x-text="'(' + f.code + ')'"></span> — <span x-text="f.reason"></span></li>
+          </template>
+        </ul>
+      </div>
+    </section>
+
+    <section class="sec p-5" id="frontpage">
+      <h2 class="text-xl mb-2">1면 기사는 이렇게 고릅니다</h2>
+      <p class="text-sm text-[#2C2620] mb-3">조건에 맞는 노선 중에서 자동으로 고릅니다. 신규 취항이 있는 주에는 그 기사가 먼저입니다. 같은 데이터면 언제 열어도 같은 1면이고, 요일마다 유형의 우선순위를 바꿉니다. 조건에 맞는 기사가 없으면 '오늘의 최저가'를 싣습니다.</p>
+      <div class="overflow-x-auto"><table class="t">
+        <thead><tr><th>유형</th><th>조건</th><th>켜지는 때</th></tr></thead>
+        <tbody>
+          <tr><td>신규 취항</td><td>월요일 김포 전체 노선 점검에서 처음 확인된 김포 직항(그 주 7일, 그날 조회한 김포 출발 최저가). 확인된 노선은 다음 날부터 매일 조회 목록에 자동으로 들어가고, 4주 연속 안 보이면 빠집니다</td><td>감지된 주</td></tr>
+          <tr><td>최저가 경신</td><td>오늘 가격이 그 도시 최근 30일 최저보다 낮음</td><td>실조회 30일 이후</td></tr>
+          <tr><td>연차 효율</td><td>공휴일·주말 덕분에 연차 1일 이하로 3박 이상</td><td>항상</td></tr>
+          <tr><td>주간 급락</td><td>최근 7일 평균보다 15% 이상 하락</td><td>실조회 7일 이후</td></tr>
+          <tr><td>한적한 여행지</td><td>한국인 쏠림 지수 하위 2단계 + 가격이 중앙값 이하</td><td>쏠림 지수가 있을 때</td></tr>
+          <tr><td>빠른 탈출</td><td>금요일 19시 이후 출발 + 비행 2시간 30분 이내</td><td>항상</td></tr>
+          <tr><td>제철 여행지</td><td>출발월이 그 도시의 좋은 계절(평년 기온·강수) + 가격이 같은 지면 중앙값 이하</td><td>항상</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="sec p-5" id="stamps">
+      <h2 class="text-xl mb-2">카드 스탬프 뜻</h2>
+      <p class="text-sm text-[#2C2620] mb-3">카드마다 위에서부터 처음 맞는 하나만 찍습니다. 한 호에서 스탬프 카드가 전체의 25%를 넘으면 할인 폭이 큰 순으로 남깁니다(SUPER DEAL은 예외).</p>
+      <div class="overflow-x-auto"><table class="t">
+        <thead><tr><th>스탬프</th><th>조건</th><th>켜지는 때</th></tr></thead>
+        <tbody>
+          <tr><td>🏆 LOWEST EVER</td><td>최근 30일 최저보다 낮음</td><td>실조회 30일 이후</td></tr>
+          <tr><td>🔥 SUPER DEAL</td><td>왕복 230,000원 이하</td><td>항상</td></tr>
+          <tr><td>💥 HOT PRICE</td><td>최근 30일 중앙값의 80% 이하</td><td>실조회 14일 이후</td></tr>
+          <tr><td>🗓️ LEAVE SAVER</td><td>3박 이상 + 연차 1일 이하</td><td>항상</td></tr>
+          <tr><td>🌅 GOLDEN PICK</td><td>가는 편 06~11시 출발 + 오는 편 15시 이후 출발</td><td>항상</td></tr>
+          <tr><td>✈️ FSC DEAL</td><td>대형 항공사 일정인데 그 노선 저가항공 중앙값 이하</td><td>실조회 14일 이후</td></tr>
+          <tr><td>📉 PRICE DROP</td><td>최근 7일 평균보다 15% 이상 하락</td><td>실조회 7일 이후</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="sec p-5" id="sources">
+      <h2 class="text-xl mb-2">자료 출처</h2>
+      <div class="overflow-x-auto"><table class="t">
+        <tbody>
+          <tr><th>항공권 가격·항공편</th><td>구글 항공권(Google Flights). 매일 아침 조회</td></tr>
+          <tr><th>판매처별 가격</th><td>같은 1위 일정의 구글 항공권 예약 옵션 화면</td></tr>
+          <tr><th>공휴일</th><td>한국 공휴일(Python holidays 라이브러리)</td></tr>
+          <tr><th>월별 평년 기온·강수</th><td x-text="climateText"></td></tr>
+          <tr><th>한국인 쏠림 지수</th><td x-text="crowdText"></td></tr>
+          <tr><th>환율</th><td>open.er-api.com. 수집할 때 조회, 실패하면 싣지 않음</td></tr>
+          <tr><th>도시 사진</th><td>위키미디어 공용(Wikimedia Commons). 아래 목록</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section class="sec p-5" id="photos">
+      <h2 class="text-xl mb-2">사진 출처</h2>
+      <p class="text-sm text-[#2C2620] mb-3">도시 사진은 모두 위키미디어 공용에서 자유 이용 허락(퍼블릭 도메인·CC0·CC BY·CC BY-SA)으로 공개된 사진입니다. 일부는 크기를 줄이거나 잘라 썼습니다. 원본과 라이선스 전문은 각 링크에서 볼 수 있습니다.</p>
+      <p class="text-sm text-[#7A7164]" x-show="photoRows.length === 0" x-cloak>사진 목록을 불러오지 못했습니다.</p>
+      <ul id="photoList" class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 text-sm" x-show="photoRows.length" x-cloak>
+        <template x-for="r in photoRows" :key="r.code">
+          <li class="py-2 border-b border-[#D5CBB8] min-w-0">
+            <div><strong x-text="r.city"></strong> <span class="font-mono text-[11px] text-[#7A7164]" x-text="r.code"></span> · <span x-text="r.place"></span></div>
+            <div class="text-xs text-[#5C5549] mt-0.5 break-words">
+              <span x-text="'사진 ' + r.artist"></span> ·
+              <a class="underline text-[#1E3A5F]" :href="licenseUrl(r.license)" target="_blank" rel="noopener noreferrer" x-show="licenseUrl(r.license)" x-text="r.license"></a><span x-show="!licenseUrl(r.license)" x-text="r.license"></span> ·
+              <a class="lic-src underline text-[#1E3A5F]" :href="r.page" target="_blank" rel="noopener noreferrer" :title="r.file">원본 보기</a>
+            </div>
+          </li>
+        </template>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="max-w-4xl mx-auto px-4 mt-10">
+    <div class="double-rule-top pt-5 text-center text-xs text-[#5C5549] space-x-3">
+      <a href="./index.html" class="font-bold text-[#1E3A5F] underline">오늘 일간지</a>
+      <a href="./monthly.html" class="font-bold text-[#1E3A5F] underline">월간지</a>
+      <a href="./archive.html" class="font-bold text-[#1E3A5F] underline">지난 호</a>
+      <a href="./feed.xml" class="font-bold text-[#1E3A5F] underline">RSS</a>
+    </div>
+  </footer>
+
+  <script>
+    function aboutPage() {
+      return {
+        latest: '',
+        status: {},
+        failed: [],
+        photoRows: [],
+        climateText: 'NASA POWER(미국 항공우주국) 월별 기후값. 도시 중심 격자 기준',
+        crowdText: '인천공항 노선별 출발 여객(공공데이터) 기준. 최근 통계이며 실시간이 아님',
+
+        licenseUrl(lic) {
+          const s = String(lic || '').trim();
+          if (/^cc0/i.test(s)) return 'https://creativecommons.org/publicdomain/zero/1.0/deed.ko';
+          const m = s.match(/^cc[- ]by(-sa)?[- ](\d\.\d)/i);
+          if (m) return `https://creativecommons.org/licenses/by${m[1] ? '-sa' : ''}/${m[2]}/deed.ko`;
+          return '';
+        },
+
+        async init() {
+          let names = {};
+          try {
+            const r = await fetch('./flights_data.json?t=' + Date.now(), { cache: 'no-store' });
+            const d = await r.json();
+            this.latest = d.latestDate || '';
+            this.status = (d.status && d.status[this.latest]) || {};
+            this.failed = (d.failed || []).filter(f => f.date === this.latest);
+            (d.flights || []).concat(d.failed || []).forEach(f => { if (f.code && f.city) names[f.code] = f.city; });
+            const yrs = String((d.climate && d.climate.period) || '').match(/(\d{4})\D+(\d{4})/);
+            if (yrs) this.climateText = `NASA POWER(미국 항공우주국) ${yrs[1]}~${yrs[2]}년 월평균. 도시 중심 격자 기준`;
+            if (d.crowd && d.crowd.basis) this.crowdText = `${d.crowd.basis}${d.crowd.period ? ', ' + d.crowd.period + '년' : ''}. 최근 통계이며 실시간이 아니고 외국인 포함`;
+          } catch (e) { /* 발행 정보 없이도 나머지는 보여 줌 */ }
+          try {
+            const r = await fetch('./data/photos.json', { cache: 'no-cache' });
+            const p = (await r.json()).cities || {};
+            this.photoRows = Object.entries(p).map(([code, v]) => ({
+              code, city: names[code] || code, place: v.place || '', artist: v.artist || '작자 미상',
+              license: v.license || '', page: v.page || '', file: String(v.title || '').replace(/^File:/, '')
+            })).sort((a, b) => a.city.localeCompare(b.city, 'ko'));
+          } catch (e) { this.photoRows = []; }
+        }
+      };
+    }
+  </script>
+</body>
+</html>
