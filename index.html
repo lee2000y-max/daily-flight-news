@@ -17,6 +17,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Alpine.js -->
+  <script src="./js/common.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
   <!-- Google Fonts: 정통 신문 명조체 + 본문 고딕 + 전광판 모노스페이스 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,7 +39,54 @@
       --stamp-red: #B8332A;
       --stamp-navy: #1E3A5F;
       --stamp-green: #215E42;
+      --brand-google: #1A73E8;
+      --brand-naver: #03C75A;
+      --brand-skyscanner: #0770E3;
+      --on-brand: #FFFFFF;
+      --price-down: #065F46;
+      --price-down-bg: #E2E7DD;
+      --price-up: #9F1239;
+      --price-up-bg: #F1DFDC;
     }
+
+    /* 이모지·국기 그림(문자 이모지 대신 SVG) */
+    .emo { display: inline-block; height: 1.1em; width: auto; vertical-align: -0.15em; }
+    .flag { height: .75em; width: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px rgba(30,27,24,.18); flex: none; }
+
+    /* 도시 카드(S3 리뉴얼) */
+    .card-city { display: flex; align-items: center; gap: 8px; line-height: 30px; }
+    .card-tools { display: flex; align-items: center; flex: none; background: rgba(250,247,240,.92); border: 1px solid var(--border-vintage);
+      border-radius: 9999px; padding: 2px; box-shadow: 0 1px 3px rgba(30,27,24,.08); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+    .card-tools button { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 9999px; color: var(--ink-dark); background: transparent; border: 0; cursor: pointer; }
+    .card-tools button:hover { background: var(--box-bg); }
+    .card-tools button:focus-visible { outline: 2px solid var(--stamp-navy); outline-offset: 1px; }
+    .card-tools .sep { width: 1px; height: 16px; background: var(--border-vintage); }
+    .card-tools svg { width: 18px; height: 18px; }
+    .card-tools .fav-star[aria-pressed="true"] svg { fill: #C99A06; stroke: #8A6A04; }
+    .price-delta { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 2px; }
+    .price-delta.is-down { color: var(--price-down); background: var(--price-down-bg); }
+    .price-delta.is-up { color: var(--price-up); background: var(--price-up-bg); }
+    .card-info { background: var(--box-bg); border: 1px solid var(--border-vintage); border-radius: 4px; padding: 12px 16px; display: grid; gap: 8px; }
+    .card-info .row { display: grid; grid-template-columns: 22px 1fr; align-items: start; column-gap: 8px; font-size: 14px; line-height: 20px; min-width: 0; }
+    .card-info .row > .emo { height: 18px; margin-top: 1px; justify-self: center; vertical-align: 0; }
+    .card-info .nights { color: var(--ink-muted); font-weight: 500; }
+    .card-info .times { display: block; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--ink-muted); margin-top: 2px; }
+    .card-info .times span + span::before { content: "·"; margin: 0 6px; color: #8C8275; }
+    .card-info .term { font-weight: 700; }
+    .card-info .term i { font-style: normal; color: var(--ink-muted); margin: 0 4px; }
+    .card-info .term .dir { font-weight: 500; color: var(--ink-muted); font-size: 12px; }
+    .book-btns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .book-btns a { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 6px; border-radius: 2px;
+      font-size: 13px; font-weight: 700; text-decoration: none; box-shadow: 0 1px 2px rgba(30,27,24,.12); white-space: nowrap; min-width: 0; }
+    .book-btns a:hover { filter: brightness(.93); }
+    .book-btns a:focus-visible { outline: 2px solid var(--ink-dark); outline-offset: 2px; }
+    .book-btns .bk-logo { width: 16px; height: 16px; flex: none; }
+    .book-btns .bk-logo-box { width: 18px; height: 18px; flex: none; border-radius: 4px; background: #fff; display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+    .book-btns .bk-logo-box img { width: 14px; height: 14px; }
+    .bk-google { background: var(--brand-google); color: var(--on-brand); }
+    .bk-naver { background: var(--brand-naver); color: var(--ink-dark); }
+    .bk-sky { background: var(--brand-skyscanner); color: var(--on-brand); }
+    @media (max-width: 380px) { .book-btns a { font-size: 12px; gap: 4px; padding: 0 4px; } }
 
     body {
       background-color: var(--paper-bg);
@@ -645,209 +693,115 @@
     <!-- 도시별 보딩패스 신문 카드 그리드 (스타일 A 전면 적용) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       <template x-for="item in filteredFlights" :key="item.code">
-        <article class="newspaper-card rounded-sm p-5 flex flex-col justify-between" :id="'card-' + item.code">
-          
-          <!-- [스타일 A] 우측 상단 도시별 상징 랜드마크 소프트 워터마크 -->
+        <article class="newspaper-card rounded-sm p-5 flex flex-col justify-between" :id="'card-' + item.code" :aria-label="item.city + ' 특가 카드'">
+
+          <!-- 우측 상단 도시 사진 워터마크 -->
           <div class="landmark-watermark-wrap">
-            <img 
-              :src="cityPhoto(item.code)" 
-              :alt="item.city + ' 랜드마크'"
+            <img
+              :src="cityPhoto(item.code)"
+              alt=""
               loading="lazy"
               @error="handleImageFallback($event, item.code)"
               class="landmark-watermark-img" />
           </div>
 
-          <!-- 카드 상단 영역 (z-10) -->
           <div class="relative z-10">
-            <!-- 대분류 · 소분류 배지 -->
-            <div class="flex flex-wrap items-center justify-between gap-1.5 mb-2.5">
+            <!-- 배지 + 관심·공유 툴바 -->
+            <div class="flex items-center justify-between gap-1.5 mb-2.5">
               <div class="flex flex-wrap items-center gap-1.5">
-                <span 
-                  class="px-2 py-0.5 text-[11px] font-bold text-white rounded-sm tracking-tight"
-                  style="background-color: var(--badge-primary);"
-                  x-text="getTaxonomy(item.code).major"></span>
-                <span 
-                  class="px-2 py-0.5 text-[11px] font-bold text-white rounded-sm tracking-tight"
-                  style="background-color: var(--badge-sub);"
-                  x-text="getTaxonomy(item.code).sub"></span>
+                <span class="px-2 py-0.5 text-[11px] font-bold text-white rounded-sm tracking-tight" style="background-color: var(--badge-primary);" x-text="getTaxonomy(item.code).major"></span>
+                <span class="px-2 py-0.5 text-[11px] font-bold text-white rounded-sm tracking-tight" style="background-color: var(--badge-sub);" x-text="getTaxonomy(item.code).sub"></span>
               </div>
-              <span class="flex items-center gap-1.5">
-                <span class="font-mono-flap text-[11px] font-bold text-[#5C5549]" x-text="item.origin + ' ✈ ' + item.dest"></span>
-                <button type="button" class="fav-star text-lg leading-none px-0.5" @click="toggleFav(item.code)"
+              <div class="card-tools">
+                <button type="button" class="fav-star" @click="toggleFav(item.code)"
                   :aria-pressed="isFav(item.code) ? 'true' : 'false'"
-                  :aria-label="item.city + (isFav(item.code) ? ' 관심 도시에서 빼기' : ' 관심 도시에 넣기')"
-                  :style="{ color: isFav(item.code) ? '#C99A06' : '#A89E8E' }"
-                  x-text="isFav(item.code) ? '★' : '☆'"></button>
-              </span>
-            </div>
-
-            <!-- 도시명 & 왕복 최저가 헤드라인 -->
-            <div class="mb-3">
-              <div class="flex items-baseline gap-1.5">
-                <h3 class="font-serif-kr text-2xl font-black text-[#1E1B18] tracking-tight"><a :href="'./city.html?code=' + item.code" class="hover:underline" x-text="item.city" :title="item.city + ' 도시 상세'"></a></h3>
-                <span class="font-mono-flap text-xs font-bold text-[#5C5549]" x-text="'(' + item.code + ')'"></span>
-              </div>
-              <p class="text-[11px] text-[#5C5549] font-medium mt-0.5" x-text="getLandmarkCaption(item.code)"></p>
-              <p x-show="photoCredit(item.code)" class="text-[10px] text-[#7A7164] mt-0.5" x-text="photoCredit(item.code)"></p>
-              <span class="inline-flex flex-wrap gap-x-3 mt-0.5 text-[11px] font-bold">
-                <a :href="'./city.html?code=' + item.code" class="text-[#1E3A5F] underline">가격 이력·날씨 →</a>
-                <a :href="'./feed/' + item.code + '.xml'" class="text-[#B45309] underline" :title="item.city + ' RSS'">RSS</a>
-              </span>
-            </div>
-
-            <!-- 가격 및 직전호 등락 & 최근 가격 변동 그래프 (가장 좌측 과거 가격 숫자 표기) -->
-            <div class="flex items-end justify-between gap-2 mb-3.5 pb-2.5 border-b border-[#D5CBB8]/80">
-              <div>
-                <div class="text-[11px] font-bold text-[#5C5549] mb-0.5">왕복 직항 최저가 <span x-show="item.origin === 'GMP'" class="ml-1 px-1 rounded-sm bg-[#1E3A5F] text-white">김포 출발</span></div>
-                <div class="flex items-baseline gap-2">
-                  <span class="font-serif-kr text-2xl sm:text-3xl font-black text-[#1E1B18] tracking-tight" x-text="formatPrice(item.price)"></span>
-                  <span 
-                    x-show="item.diff !== 0"
-                    class="text-xs font-mono-flap font-bold px-1.5 py-0.5 rounded-sm"
-                    :class="item.diff < 0 ? 'bg-emerald-900/10 text-emerald-800' : 'bg-rose-900/10 text-rose-800'"
-                    x-text="formatDiff(item.diff)"></span>
-                </div>
-                <div x-show="item.sellers && item.sellers.items.length > 1" class="text-[11px] font-mono-flap font-bold text-[#5C5549] mt-0.5"
-                  :title="'구글 플라이트 판매처별 가격(' + (item.sellers ? item.sellers.checkedAt : '') + ' 조회)'"
-                  x-text="item.sellers ? '~ ' + formatPrice(item.sellers.items[item.sellers.items.length - 1].price) + ' (판매처 ' + item.sellers.items.length + '곳)' : ''"></div>
-              </div>
-
-              <!-- 미니 운임 추이 스파크라인 ('최근 가격 변동' + 가장 좌측 과거 시작 가격 숫자 병기) -->
-              <div class="text-right shrink-0" x-show="item.history && item.history.length > 1">
-                <div class="text-[10px] font-mono-flap font-semibold text-[#6E6557] mb-0.5">최근 가격 변동</div>
-                <div class="flex items-center justify-end gap-1.5">
-                  <span 
-                    class="text-[10px] font-mono-flap font-bold text-[#5C5549] bg-[#EFECE4] px-1 py-0.2 rounded border border-[#D5CBB8]" 
-                    title="비교 시작일 요금"
-                    x-text="formatPrice(item.history[0])"></span>
-                  <svg class="w-16 h-6 overflow-visible" viewBox="0 0 80 24">
-                    <circle
-                      :cx="getSparklineFirstPoint(item.history).x"
-                      :cy="getSparklineFirstPoint(item.history).y"
-                      r="2.3"
-                      :fill="item.diff <= 0 ? '#215E42' : '#B8332A'" />
-                    <polyline
-                      fill="none"
-                      :stroke="item.diff <= 0 ? '#215E42' : '#B8332A'"
-                      stroke-width="2.2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      :points="getSparklinePoints(item.history)" />
-                  </svg>
-                </div>
+                  :aria-label="isFav(item.code) ? item.city + ' 관심 도시에서 빼기' : item.city + ' 관심 도시에 추가'">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"/></svg>
+                </button>
+                <span class="sep" aria-hidden="true"></span>
+                <button type="button" class="share-btn" @click="shareLink(item)" :aria-label="item.city + ' 특가 공유'">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1"/></svg>
+                </button>
               </div>
             </div>
 
-            <!-- 가격 위치 막대: 최근 30일 실조회 최저~최고 사이에서 오늘 가격의 위치(이력 7일 이상일 때) -->
-            <div class="mb-3" x-show="priceBar(item)">
-              <div class="flex justify-between text-[10px] font-mono-flap text-[#5C5549] mb-0.5">
-                <span x-text="priceBar(item) ? '30일 최저 ' + formatPrice(priceBar(item).lo) : ''"></span>
-                <span x-text="priceBar(item) ? '최고 ' + formatPrice(priceBar(item).hi) : ''"></span>
-              </div>
-              <div class="relative h-2 rounded-full bg-gradient-to-r from-[#215E42]/70 via-[#D5CBB8] to-[#B8332A]/70" role="img"
-                :aria-label="priceBar(item) ? '최근 30일 가격 범위에서 오늘 가격은 하위 ' + priceBar(item).pct + '% 위치' : ''">
-                <span class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-[#1E1B18] border-2 border-[#FAF7F0]"
-                  :style="priceBar(item) ? 'left:' + priceBar(item).pct + '%' : ''"></span>
+            <!-- 국기 + 도시명 -->
+            <h3 class="card-city font-serif-kr text-2xl font-black text-[#1E1B18] tracking-tight">
+              <img class="flag" :src="flagSrc(item.code)" x-show="flagSrc(item.code)" alt="" aria-hidden="true">
+              <a :href="'./city.html?code=' + item.code" class="hover:underline" x-text="item.city" :title="item.city + ' 도시 상세'"></a>
+              <span class="font-mono-flap text-xs font-bold text-[#5C5549] tracking-normal" x-text="'(' + item.code + ')'"></span>
+            </h3>
+            <p class="text-[12px] text-[#5C5549] font-medium mt-0.5 mb-3.5" x-text="photoPlaceOnly(item.code)"></p>
+
+            <!-- 왕복 직항 최저가 + 직전호 대비 -->
+            <div class="pb-3 mb-3.5 border-b border-[#D5CBB8]">
+              <div class="text-[11px] font-bold text-[#5C5549]">왕복 직항 최저가</div>
+              <div class="flex items-center gap-2.5">
+                <span class="font-serif-kr text-[30px] leading-[34px] font-black text-[#1E1B18] tracking-tight" x-text="formatPrice(item.price)"></span>
+                <span x-show="item.diff !== 0" class="price-delta" :class="item.diff < 0 ? 'is-down' : 'is-up'" x-text="formatDiff(item.diff)"></span>
               </div>
             </div>
 
-            <!-- 베이지 양피지(#F2ECE1) 운항 정보 요약 박스: 모두 오늘 실제 조회값 -->
-            <div class="rounded-sm p-3 text-xs space-y-1.5 border border-[#DFD5C3]" style="background-color: var(--box-bg);">
-              <div class="flex items-start justify-between gap-2">
-                <span class="text-[#5C5549] font-semibold shrink-0">📅 최저가 일정</span>
-                <span class="font-bold text-[#1E1B18] text-right" x-text="item.dates"></span>
+            <!-- 상세 정보: 라벨 없이 아이콘 -->
+            <div class="card-info">
+              <div class="row">
+                <img class="emo" :src="emoSrc('1f4c5')" role="img" alt="일정" aria-label="일정">
+                <span>
+                  <b x-text="fmtRange(item.depDate, item.retDate)"></b> <span class="nights" x-text="fmtNights(item.nights)"></span>
+                  <span class="times" x-show="item.outbound && item.inbound">
+                    <span x-text="item.outbound ? '출국 ' + item.outbound.dep + '→' + item.outbound.arr + (item.outbound.arrDayOffset ? '(+' + item.outbound.arrDayOffset + ')' : '') : ''"></span><span x-text="item.inbound ? '귀국 ' + item.inbound.dep + '→' + item.inbound.arr + (item.inbound.arrDayOffset ? '(+' + item.inbound.arrDayOffset + ')' : '') : ''"></span>
+                  </span>
+                </span>
               </div>
-              <div class="flex items-start justify-between gap-2" x-show="item.airline">
-                <span class="text-[#5C5549] font-semibold shrink-0">✈️ 운항 편명</span>
-                <span class="font-bold text-[#1E1B18] text-right" x-text="item.airline + (item.flightNos ? ' (' + item.flightNos + ')' : '')"></span>
+              <div class="row">
+                <img class="emo" :src="emoSrc('2708')" role="img" alt="항공사" aria-label="항공사">
+                <span x-show="item.airline"><b x-text="item.airline"></b></span>
+                <span x-show="!item.airline" class="text-[#7A7164] text-[13px]">항공편 상세 조회 실패 · 가격은 실제 조회값</span>
               </div>
-              <div class="flex items-start justify-between gap-2" x-show="item.schedule">
-                <span class="text-[#5C5549] font-semibold shrink-0">🕒 출도착 시각</span>
-                <span class="font-mono-flap font-semibold text-[#2C2620] text-right text-[11px]" x-text="item.schedule"></span>
-              </div>
-              <div class="flex items-start justify-between gap-2" x-show="!item.airline">
-                <span class="text-[#5C5549] font-semibold shrink-0">✈️ 운항 편명</span>
-                <span class="text-[#7A7164] text-right">오늘 상세 조회 실패 · 가격은 실제 조회값</span>
-              </div>
-              <div class="flex items-start justify-between gap-2" x-show="item.sellers">
-                <span class="text-[#5C5549] font-semibold shrink-0">🏷️ 판매처</span>
-                <span class="text-right text-[11px] text-[#2C2620]" x-text="sellersText(item)"></span>
-              </div>
-              <div class="flex items-start justify-between gap-2" x-show="fxOf(item.code)">
-                <span class="text-[#5C5549] font-semibold shrink-0">💱 현지 통화</span>
-                <span class="font-mono-flap text-[11px] text-[#2C2620] text-right" x-text="fxOf(item.code) ? fxOf(item.code).label + ' = ' + fxOf(item.code).krwText : ''"></span>
-              </div>
-              <!-- 다른 일정 제안(2위): 가격 추이·이력에는 포함하지 않음 -->
-              <div class="pt-1.5 border-t border-[#E2D9C8]" x-show="item.alt">
-                <div class="flex items-start justify-between gap-2">
-                  <span class="text-[#5C5549] font-semibold shrink-0">💡 다른 일정 제안</span>
-                  <span class="text-right">
-                    <span class="font-bold text-[#1E1B18]" x-text="item.alt ? formatPrice(item.alt.price) : ''"></span>
-                    <span class="block text-[11px] text-[#5C5549]" x-text="item.alt ? item.alt.dates + (item.alt.origin === 'GMP' ? ' · 김포 출발' : '') : ''"></span>
+              <template x-if="terminalsOf(item)">
+                <div class="row">
+                  <img class="emo" :src="emoSrc('1f6eb')" role="img" alt="터미널" aria-label="터미널">
+                  <span class="term">
+                    <template x-if="terminalsOf(item).same">
+                      <span><span x-text="terminalsOf(item).home"></span><i>⇄</i><span x-text="terminalsOf(item).away"></span></span>
+                    </template>
+                    <template x-if="!terminalsOf(item).same">
+                      <span class="block">
+                        <span class="block"><span class="dir">가는 편</span> <span x-text="terminalsOf(item).outFrom"></span><i>→</i><span x-text="terminalsOf(item).away"></span></span>
+                        <span class="block"><span class="dir">오는 편</span> <span x-text="terminalsOf(item).away"></span><i>→</i><span x-text="terminalsOf(item).inTo"></span></span>
+                      </span>
+                    </template>
                   </span>
                 </div>
-                <div class="flex justify-end gap-2 mt-1 text-[11px]" x-show="item.alt">
-                  <a x-show="item.alt && item.alt.googleUrl" :href="item.alt ? item.alt.googleUrl : '#'" target="_blank" rel="noopener noreferrer" class="underline text-[#1E3A5F] font-semibold">구글</a>
-                  <a :href="item.alt ? item.alt.naverUrl : '#'" target="_blank" rel="noopener noreferrer" class="underline text-[#1E3A5F] font-semibold">네이버</a>
-                  <a :href="item.alt ? item.alt.skyUrl : '#'" target="_blank" rel="noopener noreferrer" class="underline text-[#1E3A5F] font-semibold">스카이스캐너</a>
-                </div>
-              </div>
+              </template>
             </div>
           </div>
 
-          <!-- 보딩패스 절취선(Tear-off Stub) + 에디터 노트 + 여권 스탬프 + 예약 링크 -->
+          <!-- 절취선 + 현지 메모 + 도장 + 예약 버튼 -->
           <div class="relative z-10 mt-1">
-            <!-- 양옆 반원 홈(Notch) 점선 절취선 -->
             <div class="boarding-stub-divider"></div>
 
-            <!-- 빈티지 황토색(#EAD49B) 에디터 노트 & 여권 도장 스탬프 -->
             <div class="rounded-sm p-3 mb-3 border border-[#D8BE7F] flex items-center justify-between gap-2.5" style="background-color: var(--note-bg);">
-              <div class="text-xs text-[#2C2416] leading-snug flex-1">
-                <span class="font-extrabold mr-1">📌 편집국 노트:</span>
+              <div class="text-[13px] text-[#2C2416] leading-snug flex-1">
+                <span class="font-extrabold mr-1"><img class="emo" :src="emoSrc('1f4cc')" alt="" aria-hidden="true"> 현지 메모:</span>
                 <span x-text="item.note"></span>
               </div>
-
-              <!-- 기울어진 여권 입국 도장(Passport Stamp) 배지 -->
-              <div 
+              <div
                 x-show="stampByCode[item.code]"
                 class="passport-stamp shrink-0 text-[10px] leading-tight"
                 :style="{ color: (stampByCode[item.code] || {}).color || '' }">
-                <span x-text="(stampByCode[item.code] || {}).top"></span>
-                <span class="text-[9px] font-normal opacity-90" x-text="item.origin + '✈' + item.dest"></span>
+                <span class="whitespace-nowrap"><img class="emo" :src="emoSrc((stampByCode[item.code] || {}).icon || '1f525')" alt="" aria-hidden="true"> <span x-text="(stampByCode[item.code] || {}).label"></span></span>
+                <span class="text-[9px] font-normal opacity-90" x-text="item.origin + '→' + item.dest"></span>
               </div>
             </div>
 
-            <!-- 하단 예약 바로가기 버튼 3종 (구글 플라이트 = 가격 출처) -->
-            <div class="grid grid-cols-3 gap-2">
-              <a 
-                :href="item.googleUrl || '#'" 
-                x-show="item.googleUrl"
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="py-2 px-2 rounded-sm bg-[#1E3A5F] hover:bg-[#16304F] text-[#FAF7F0] text-xs font-bold text-center transition flex items-center justify-center gap-1 shadow-sm">
-                <span>구글 플라이트</span>
-                <span class="text-[10px] opacity-80">↗</span>
-              </a>
-              <a 
-                :href="item.naverUrl" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="py-2 px-2 rounded-sm bg-[#2C2620] hover:bg-[#1E1B18] text-[#FAF7F0] text-xs font-bold text-center transition flex items-center justify-center gap-1 shadow-sm">
-                <span>네이버</span>
-                <span class="text-[10px] opacity-80">↗</span>
-              </a>
-              <a 
-                :href="item.skyUrl" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="py-2 px-2 rounded-sm bg-[#EFECE4] hover:bg-[#E2DDD0] text-[#1E1B18] border border-[#8C8275] text-xs font-bold text-center transition flex items-center justify-center gap-1">
-                <span>스카이스캐너</span>
-                <span class="text-[10px] opacity-80">↗</span>
-              </a>
-            </div>
-            <div class="flex justify-end mt-2">
-              <button type="button" @click="shareLink(item)"
-                class="text-[11px] font-bold text-[#5C5549] underline hover:text-[#1E1B18]">🔗 이 특가 공유</button>
+            <div class="book-btns">
+              <a x-show="item.googleUrl" :href="item.googleUrl || '#'" target="_blank" rel="noopener noreferrer" class="bk-google">
+                <img src="./images/brands/google-flights.svg" alt="" aria-hidden="true" class="bk-logo">구글 플라이트</a>
+              <a :href="item.naverUrl" target="_blank" rel="noopener noreferrer" class="bk-naver">
+                <img src="./images/brands/naver.svg" alt="" aria-hidden="true" class="bk-logo">네이버</a>
+              <a :href="item.skyUrl" target="_blank" rel="noopener noreferrer" class="bk-sky">
+                <span class="bk-logo-box" aria-hidden="true"><img src="./images/brands/skyscanner.png" alt=""></span>스카이스캐너</a>
             </div>
           </div>
 
@@ -1416,6 +1370,10 @@
           } catch (e) {
             this.loadState = 'error';
           }
+          try {
+            const tr = await fetch('./data/terminals.json', { cache: 'no-cache' });
+            if (tr.ok) this.terminals = await tr.json();
+          } catch (e) { this.terminals = null; }
           this.loadFavs();
           try {
             const pr = await fetch('./data/photos.json', { cache: 'no-cache' });
@@ -1901,6 +1859,34 @@
           img.src = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=640&q=80';
         },
 
+        // 공용 함수(js/common.js) 연결
+        fmtMD(iso) { return window.BPT ? BPT.fmtMD(iso) : ''; },
+        fmtRange(a, b) { return window.BPT ? BPT.fmtRange(a, b) : ''; },
+        fmtNights(n) { return window.BPT ? BPT.fmtNights(n) : ''; },
+        emoSrc(cp) { return './images/emoji/' + cp + '.svg'; },
+        flagSrc(code) { return window.BPT ? BPT.flagSrc(code) : ''; },
+
+        // 카드 부제: 국기·국가명 없이 장소만(국기는 도시명 왼쪽 SVG)
+        photoPlaceOnly(code) {
+          const cap = this.getLandmarkCaption(code);
+          return cap.includes(' · ') ? cap.split(' · ').slice(1).join(' · ') : cap;
+        },
+
+        // 터미널(인천공항 공식 '취항정보'의 항공사별 터미널, data/terminals.json). 확인된 값이 없으면 null → 🛫 행 숨김
+        terminals: null,
+        terminalsOf(item) {
+          const T = this.terminals;
+          if (!T || !item) return null;
+          const home = code => code === 'GMP' ? '김포' : null;
+          const icn = leg => (leg && leg.airlineCode && T.icn && T.icn[leg.airlineCode]) ? '인천 ' + T.icn[leg.airlineCode] : null;
+          const away = (T.airportName && T.airportName[item.dest]) || String(item.city || '').split(' ')[0];
+          let outFrom, inTo;
+          if (item.origin === 'GMP') { outFrom = inTo = home('GMP'); }
+          else { outFrom = icn(item.outbound); inTo = icn(item.inbound); }
+          if (!outFrom || !inTo || !away) return null;
+          return { same: outFrom === inTo, home: outFrom, outFrom, inTo, away };
+        },
+
         getLandmarkCaption(code) {
           return (this.landmarkMeta[code] && this.landmarkMeta[code].caption) || '인천·김포 직항 취항 노선';
         },
@@ -1919,11 +1905,6 @@
           return cap.includes(' · ') ? cap.split(' · ').slice(1).join(' · ') : cap;
         },
 
-        photoCredit(code) {
-          const p = this.photos[code];
-          if (!p) return '';
-          return `사진: ${p.place ? p.place + ' · ' : ''}${p.artist} / ${p.license} / 위키미디어 공용`;
-        },
 
         photoCaption(code) {
           if (this.photos[code]) return `${this.photoPlace(code)} · 사진 ${this.photos[code].artist} / ${this.photos[code].license} / 위키미디어 공용`;
@@ -1949,13 +1930,13 @@
         rawStamp(item) {
           // docs/PLAN.md 4장 순위. 이력이 필요한 스탬프(1·3·6·7)는 이력이 쌓인 뒤에만
           const st = item.stats || {};
-          if (this.hasHistory(item, 30) && st.min30 && item.price < st.min30) return { key: 'LOWEST', top: '🏆 LOWEST EVER', color: '#8A1C1C' };
-          if (item.price > 0 && item.price <= 230000) return { key: 'SUPER', top: '🔥 SUPER DEAL', color: '#B8332A' };
-          if (this.hasHistory(item, 14) && st.median30 && item.price <= st.median30 * 0.8) return { key: 'HOT', top: '💥 HOT PRICE', color: '#C2410C' };
-          if (item.nights >= 3 && item.leaveDays != null && item.leaveDays <= 1) return { key: 'LEAVE', top: '🗓️ LEAVE SAVER', color: '#215E42' };
-          if (this.isGoldenSchedule(item)) return { key: 'GOLDEN', top: '🌅 GOLDEN PICK', color: '#1E3A5F' };
-          if (item.isFSC && this.hasHistory(item, 14) && st.lccMedian30 && st.nLcc30 >= 3 && item.price <= st.lccMedian30) return { key: 'FSC', top: '✈️ FSC DEAL', color: '#0F4C5C' };
-          if (this.hasHistory(item, 7) && st.avg7 && item.price <= st.avg7 * 0.85) return { key: 'DROP', top: '📉 PRICE DROP', color: '#7A2E8C' };
+          if (this.hasHistory(item, 30) && st.min30 && item.price < st.min30) return { key: 'LOWEST', icon: '1f3c6', label: 'LOWEST EVER', color: '#8A1C1C' };
+          if (item.price > 0 && item.price <= 230000) return { key: 'SUPER', icon: '1f525', label: 'SUPER DEAL', color: '#B8332A' };
+          if (this.hasHistory(item, 14) && st.median30 && item.price <= st.median30 * 0.8) return { key: 'HOT', icon: '1f4a5', label: 'HOT PRICE', color: '#C2410C' };
+          if (item.nights >= 3 && item.leaveDays != null && item.leaveDays <= 1) return { key: 'LEAVE', icon: '1f5d3', label: 'LEAVE SAVER', color: '#215E42' };
+          if (this.isGoldenSchedule(item)) return { key: 'GOLDEN', icon: '1f305', label: 'GOLDEN PICK', color: '#1E3A5F' };
+          if (item.isFSC && this.hasHistory(item, 14) && st.lccMedian30 && st.nLcc30 >= 3 && item.price <= st.lccMedian30) return { key: 'FSC', icon: '2708', label: 'FSC DEAL', color: '#0F4C5C' };
+          if (this.hasHistory(item, 7) && st.avg7 && item.price <= st.avg7 * 0.85) return { key: 'DROP', icon: '1f4c9', label: 'PRICE DROP', color: '#7A2E8C' };
           return null;
         },
 
@@ -2053,20 +2034,7 @@
           return (f && f.city) || code;
         },
 
-        sellersText(item) {
-          const s = item && item.sellers;
-          if (!s) return '';
-          return s.items.map(x => `${x.name}${x.airline ? '(항공사)' : ''} ${this.formatPrice(x.price)}`).join(' · ')
-            + (s.checkedAt ? ` · ${s.checkedAt} 조회` : '');
-        },
 
-        priceBar(item) {
-          const st = item && item.stats;
-          if (!st || !this.hasHistory(item, 7) || st.min30 == null) return null;
-          const lo = Math.min(st.min30, item.price), hi = Math.max(st.max30, item.price);
-          if (hi <= lo) return null;
-          return { lo, hi, pct: Math.round(((item.price - lo) / (hi - lo)) * 100) };
-        },
 
         formatPrice(val) {
           const num = Number(val) || 0;
@@ -2082,29 +2050,11 @@
         formatDateKorean(dateStr) {
           const [y, m, d] = dateStr.split('-');
           return `${y}년 ${parseInt(m, 10)}월 ${parseInt(d, 10)}일 발행호`;
-        },
-
-        getSparklineFirstPoint(history) {
-          if (!history || history.length < 2) return { x: 2, y: 12 };
-          const min = Math.min(...history);
-          const max = Math.max(...history);
-          const range = max - min || 1;
-          const y = 20 - ((history[0] - min) / range) * 16;
-          return { x: 2, y: Number(y.toFixed(1)) };
-        },
-
-        getSparklinePoints(history) {
-          if (!history || history.length < 2) return '0,12 80,12';
-          const min = Math.min(...history);
-          const max = Math.max(...history);
-          const range = max - min || 1;
-          return history.map((val, idx) => {
-            const x = (idx / (history.length - 1)) * 76 + 2;
-            const y = 20 - ((val - min) / range) * 16;
-            return `${x.toFixed(1)},${y.toFixed(1)}`;
-          }).join(' ');
         }
-      };
+
+
+      
+};
     }
   </script>
 </body>
