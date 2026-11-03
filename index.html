@@ -1124,6 +1124,7 @@
 
         // 1면(기사·전광판)과 스탬프: 발행호가 바뀔 때 refreshFrontPage()에서 다시 계산
         frontPage: { top: null, sides: [], boardRows: [] },
+        newRoutes: [],      // 신규 김포 노선(P5-5): 감지된 주의 그날 실제 조회값만
         favs: [],           // 관심 도시 코드(P5-3, localStorage 'bpt-favs')
         photos: {},         // 도시 사진 출처 {code: {title, page, license, artist, place}} (data/photos.json, 없으면 빈 값)
         flap: null,         // FlapBoard 엔진(전광판 DOM은 Alpine 밖에서 직접 움직임)
@@ -1374,6 +1375,7 @@
           this.crowd = (extData.crowd && extData.crowd.cities) || {};
           this.crowdMeta = extData.crowd || {};
           this.fx = extData.fx || {};
+          this.newRoutes = Array.isArray(extData.newRoutes) ? extData.newRoutes : [];
           const fresh = {};
           (Array.isArray(extData.flights) ? extData.flights : []).forEach(row => {
             if (!row || !row.date || !row.code) return;
@@ -1449,6 +1451,7 @@
           B: { label: '연차 효율', boardLabel: '연차효율', color: '#215E42' },
           E: { label: '빠른 탈출', boardLabel: '빠른탈출', color: '#1E3A5F' },
           F: { label: '제철 여행지', boardLabel: '제철여행', color: '#8A5A00' },
+          N: { label: '신규 취항', boardLabel: '신규취항', color: '#B45309' },
           L: { label: '오늘의 최저가', boardLabel: '최저운임', color: '#B8332A' },
           G: { label: '황금 스케줄', boardLabel: '황금시간', color: '#6B4E16' }
         },
@@ -1660,6 +1663,26 @@
           });
         },
 
+        candidatesN(dateStr) {
+          // 신규 김포 직항(월요일 점검에서 처음 확인된 주). 그 발행일에 실제 조회한 김포 출발 최저 일정만(이월 없음)
+          return this.newRoutes.filter(r => r && r.date === dateStr && r.price > 0)
+            .sort((a, b) => a.price - b.price || String(a.dest).localeCompare(String(b.dest)))
+            .map(r => {
+              const p = this.formatPrice(r.price);
+              const d = iso => { const [, m, dd] = String(iso).split('-'); return `${m}.${dd}(${'일월화수목금토'[this.weekdayOf(iso)]})`; };
+              const [, am, ad] = String(r.addedOn || r.date).split('-');
+              return {
+                type: 'N', code: r.code, city: r.city,
+                headline: `김포에서 ${r.city} 가는 직항, 이번 주 처음 조회됐습니다 — 왕복 ${p}`,
+                dek: `${d(r.depDate)}~${d(r.retDate)} (${r.nights}박) · 김포 출발 직항(${r.dest})${r.airline ? ' · ' + r.airline : ''} · ${parseInt(am, 10)}월 ${parseInt(ad, 10)}일 김포 전체 노선 점검에서 처음 확인`,
+                figures: [{ k: '출발', v: '김포' }, { k: '일정', v: `${r.nights}박 ${r.nights + 1}일` }, { k: '왕복', v: p }],
+                note: r.airline ? '' : '가격은 오늘 날짜 검색 실조회값입니다. 편명·시각은 예약 사이트에서 확인하세요.',
+                url: r.googleUrl || '',
+                board: { city: r.city, origin: 'GMP', dest: r.dest, dep: r.depDate, ret: r.retDate, nights: r.nights, price: r.price }
+              };
+            });
+        },
+
         articleLowest(f) {
           const p = this.formatPrice(f.price);
           return {
@@ -1681,11 +1704,13 @@
           const order = this.FRONT_ORDER[this.weekdayOf(dateStr)];
           const byPrice = [...flights].sort((a, b) => a.price - b.price || a.code.localeCompare(b.code));
 
-          let top = null;
-          for (const t of order) { if (cands[t].length) { top = cands[t][0]; break; } }
+          const candN = this.candidatesN(dateStr);
+          let top = candN[0] || null;     // 신규 취항이 있는 주에는 톱 후보 맨 앞
+          if (!top) for (const t of order) { if (cands[t].length) { top = cands[t][0]; break; } }
           if (!top) top = this.articleLowest(byPrice[0]);   // 조건 맞는 기사가 없으면 오늘의 최저가
           const used = new Set([top.code]);
           const sides = [];
+          candN.slice(1).forEach(c => { if (sides.length < 3 && !used.has(c.code)) { sides.push(c); used.add(c.code); } });
           for (const t of order) {
             if (t === top.type) continue;
             const c = cands[t].find(x => !used.has(x.code));
@@ -1707,6 +1732,7 @@
           const seen = new Set();
           const pushRow = (type, b) => { if (b && !seen.has(b.city)) { rows.push({ type, ...b }); seen.add(b.city); } };   // 한 도시는 한 행만
           pushRow('L', this.articleLowest(byPrice[0]).board);
+          candN.forEach(c => { if (rows.length < 5) pushRow('N', c.board); });
           order.forEach(t => { if (rows.length < 5 && cands[t] && cands[t][0]) pushRow(t, cands[t][0].board); });
           const golden = byPrice.find(f => this.isGoldenSchedule(f));
           if (golden && rows.length < 5) pushRow('G', { city: golden.city, origin: golden.origin, dest: golden.dest, dep: golden.depDate, ret: golden.retDate, nights: golden.nights, price: golden.price });
@@ -1723,7 +1749,7 @@
         // 움직임은 FlapBoard 엔진. 화면에 절반 이상 들어오면 재생, 동작 줄이기면 바로 표시. 소리 없음.
         // ------------------------------------------------------------------
         BOARD_WIDTHS: [4, 7, 3, 11, 10],
-        BOARD_COLOR: { L: '#FBBF24', B: '#6EE7B7', E: '#93C5FD', F: '#FCD34D', G: '#FDBA74', A: '#FCA5A5', C: '#D8B4FE', D: '#BEF264' },
+        BOARD_COLOR: { N: '#F9A8D4', L: '#FBBF24', B: '#6EE7B7', E: '#93C5FD', F: '#FCD34D', G: '#FDBA74', A: '#FCA5A5', C: '#D8B4FE', D: '#BEF264' },
 
         boardTexts(r) {
           const meta = this.TYPE_META[r.type] || this.TYPE_META.L;

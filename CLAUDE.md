@@ -12,8 +12,8 @@
   3. 후보를 가격순으로 상세 검색(최대 6개)해 직항이 확인된 일정끼리 1위·2위(출발일 3일 이상 차이) 선정. 화면 가격 = 상세 검색 가격.
      상세 미확인 2위는 날짜 검색 가격 중 1위 이상만. 상세가 모두 오류이거나 모두 빈 결과(0건)면 날짜 검색 가격으로 발행(항공편 정보 없음, `detailError`에 사유). 경유만 나오면 발행하지 않음.
   4. 직항 0건·조건 불일치·조회 오류 도시는 발행하지 않고 `failed`에 사유 기록.
-  5. 월요일엔 김포 출발을 모든 공항으로 조회해 새 노선을 로그에 보고(`🆕`).
-- `flights_data.json` v2: `schemaVersion`, `latestDate`, `availableDates`(최근 14발행일), `status`(날짜별 발행 수), `flights`(1위 + `alt` 2위 + `leaveSaver` 연차 절약 일정 + `holidays` + `bestSeasons`), `failed`, `historicalSeries`(영구 이력 live만, `fsc` 포함), `climate`(월 기후 평년값), `crowd`(쏠림 지수, 파일 있을 때만).
+  5. 월요일엔 김포 출발을 모든 공항으로 조회(수동 실행 입력 `full_gmp=1`로도). `GMP_DESTINATIONS`에 없는 공항에서 김포 직항이 보이면 `data/gmp_auto.json`에 **자동 추가**(P5-5)해 다음 수집부터 매일 김포도 조회, 월요일 점검 4번 연속 미감지면 자동 제외(조회 오류는 세지 않음). 로그 `🆕`/`➖`. 로직은 `gmp_auto.py`.
+- `flights_data.json` v2: `schemaVersion`, `latestDate`, `availableDates`(최근 14발행일), `status`(날짜별 발행 수), `flights`(1위 + `alt` 2위 + `leaveSaver` 연차 절약 일정 + `holidays` + `bestSeasons`), `failed`, `newRoutes`(P5-5: 신규 김포 노선이 감지된 주 7일 동안 그날 실제 조회한 김포 출발 최저 일정 — date·dest·code·city·addedOn·price·depDate·retDate·nights, 그날 1위가 그 노선이면 airline·googleUrl. 1면 '신규 취항' 기사가 톱), `historicalSeries`(영구 이력 live만, `fsc` 포함), `climate`(월 기후 평년값), `crowd`(쏠림 지수, 파일 있을 때만).
 - `history_store.py` / `data/history/YYYY-MM.csv`: 영구 이력(1위만). 열: date,code,price,source,dep,ret,airline,fsc(2026-11 airline·fsc 추가). `build_reports.py` / `data/reports/`: 월간·분기·연간 리포트.
 - `probe_route.py` + `.github/workflows/probe_live_price.yml`: 특정 노선 진단(수동 실행, 입력 route, mode=route).
 - `.github/workflows/daily_flights.yml`: 매일 07:30 KST. 수동 실행 입력 `only_cities`, `dry_run`. 브랜치에서 실행하면 그 브랜치에 커밋.

@@ -17,6 +17,10 @@ on:
         description: '1이면 저장·커밋하지 않고 결과만 출력'
         required: false
         default: '0'
+      full_gmp:
+        description: '1이면 월요일이 아니어도 김포 출발 전체 공항 점검(신규 노선 자동 추가 시험)'
+        required: false
+        default: '0'
 
 permissions:
   contents: write
@@ -71,6 +75,7 @@ jobs:
           SHARD_INDEX: ${{ matrix.shard }}
           SHARD_COUNT: '8'
           ONLY_CITIES: ${{ github.event.inputs.only_cities }}
+          FULL_GMP_SCAN: ${{ github.event.inputs.full_gmp }}
         run: python collect_flights.py
 
       - name: Upload shard result

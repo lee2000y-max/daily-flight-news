@@ -30,6 +30,10 @@ from typing import Any, Dict, List, Optional, Tuple
 from routes import BEST_SEASONS, CITY_CURRENCY, CITY_MASTER, CURRENCY_NAME, CURRENCY_UNIT, ORIGINS, GMP_DESTINATIONS, CITIES_58_MASTER  # noqa: F401  (CITIES_58_MASTER: build_reports 호환)
 
 DATA_JSON_PATH = "flights_data.json"
+
+import gmp_auto  # noqa: E402  신규 김포 노선 자동 추가(P5-5)
+# 매일 김포 출발로도 조회할 공항 = routes.GMP_DESTINATIONS + 자동 추가(data/gmp_auto.json). collect_phase에서 채움
+GMP_QUERY = set(GMP_DESTINATIONS)
 SCHEMA_VERSION = 2
 KEEP_EDITIONS = 14            # flights_data.json 에 담을 최근 발행일 수(영구 이력은 data/history)
 WINDOW_START, WINDOW_END = 14, 60
@@ -238,11 +242,12 @@ def collect_city(meta: Dict[str, Any], today: datetime.date, full_gmp: bool = Fa
     cands, errors, calls, raw = [], 0, 0, 0
     last_err = ""
     gmp_found = []
+    gmp_checks = {}   # 김포 출발로 조회한 공항별 직항 확인 결과(월요일 전체 점검·자동 추가 판정용)
     for org in ORIGINS:
         for dst in meta["airports"]:
-            if org == "GMP" and not full_gmp and dst not in GMP_DESTINATIONS:
+            if org == "GMP" and not full_gmp and dst not in GMP_QUERY:
                 continue
-            before = raw
+            before, err_before = raw, errors
             for n in NIGHTS:
                 calls += 1
                 try:
@@ -260,6 +265,9 @@ def collect_city(meta: Dict[str, Any], today: datetime.date, full_gmp: bool = Fa
                 time.sleep(DATE_SEARCH_DELAY)
             if org == "GMP" and raw > before and dst not in GMP_DESTINATIONS:
                 gmp_found.append(dst)
+            if org == "GMP":
+                seen = True if raw > before else (False if errors == err_before else None)
+                gmp_checks[dst] = {"seen": seen, "code": meta["code"], "city": meta["city"]}
     if raw == 0 and errors < calls and not meta.get("_retried"):
         # 일시적인 빈 응답 대비: 잠시 후 1회 다시 조회
         time.sleep(5)
@@ -273,8 +281,12 @@ def collect_city(meta: Dict[str, Any], today: datetime.date, full_gmp: bool = Fa
             diag = f"진단: ICN→{meta['airports'][0]} 3박 경유 포함 조회 {len(any_rows)}건"
         except Exception as e:
             diag = f"진단 조회 오류 {type(e).__name__}"
+    gmp_best = {}
+    for c in cands:   # 가격순 정렬됨: 공항별 첫 김포 출발 후보가 그날 김포 최저(날짜 검색 실조회값)
+        if c["origin"] == "GMP" and c["dest"] not in gmp_best:
+            gmp_best[c["dest"]] = {"price": c["price"], "dep": str(c["dep"]), "ret": str(c["ret"]), "nights": c["nights"], "leave": c["leave"]}
     return {"candidates": cands, "errors": errors, "calls": calls, "raw": raw, "lastError": last_err,
-            "newGmp": gmp_found, "diag": diag}
+            "newGmp": gmp_found, "gmpChecks": gmp_checks, "gmpBest": gmp_best, "diag": diag}
 
 
 def pick_alt(cands: List[Dict[str, Any]], first: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -554,6 +566,11 @@ def collect_phase(cities: List[Dict[str, Any]], today: datetime.date) -> Dict[st
     """날짜 검색 + 상세 검색. 결과(발행·미발행)를 돌려준다(저장은 하지 않음)."""
     today_str = today.isoformat()
     full_gmp = today.weekday() == 0 or os.environ.get("FULL_GMP_SCAN", "").strip() == "1"
+    auto = gmp_auto.active(gmp_auto.load())
+    GMP_QUERY.clear()
+    GMP_QUERY.update(set(GMP_DESTINATIONS) | auto)
+    if auto:
+        print(f"➕ 자동 추가된 김포 노선도 조회: {', '.join(sorted(auto))}")
     if full_gmp:
         print("🔎 오늘은 김포 출발 전체 공항을 다시 확인합니다(월요일 정기 점검)")
     t0 = time.time()
@@ -567,7 +584,7 @@ def collect_phase(cities: List[Dict[str, Any]], today: datetime.date) -> Dict[st
     print(f"⏱️ 날짜 검색 {time.time() - t0:.0f}초")
     new_gmp = sorted({d for f in found.values() for d in f.get("newGmp", [])})
     if new_gmp:
-        print(f"🆕 김포 직항 목록에 없는 공항에서 김포 직항 발견: {', '.join(new_gmp)} → routes.py GMP_DESTINATIONS에 추가 검토")
+        print(f"🆕 김포 직항 목록에 없는 공항에서 김포 직항 발견: {', '.join(new_gmp)} → 자동 추가(data/gmp_auto.json), 확정하려면 routes.py GMP_DESTINATIONS로")
 
     t1 = time.time()
     results = []
@@ -576,10 +593,46 @@ def collect_phase(cities: List[Dict[str, Any]], today: datetime.date) -> Dict[st
         r, f = results[-1]
         print(f"   상세 {m['city']}: " + (f"{r['price']:,}원" if r else f"미발행({f['reason']})"), flush=True)
     print(f"⏱️ 상세 검색 {time.time() - t1:.0f}초")
+    gmp_checks, gmp_best = {}, {}
+    for f in found.values():
+        gmp_checks.update(f.get("gmpChecks", {}))
+        gmp_best.update(f.get("gmpBest", {}))
     return {"date": today_str,
             "published": [r for r, _ in results if r],
             "failed": [f for _, f in results if f],
-            "codes": [m["code"] for m in cities]}
+            "codes": [m["code"] for m in cities],
+            "fullGmp": full_gmp, "gmpChecks": gmp_checks, "gmpBest": gmp_best}
+
+
+def apply_gmp_auto(shards: List[Dict[str, Any]], published: List[Dict[str, Any]], today_str: str, dry: bool) -> List[Dict[str, Any]]:
+    """묶음 결과로 자동 추가 목록을 고치고(월요일 전체 점검일 때만), 감지된 주의 신규 노선 기록(newRoutes, 오늘 조회값)을 만든다."""
+    state = gmp_auto.load()
+    if any(s.get("fullGmp") for s in shards):
+        checks = {}
+        for s in shards:
+            checks.update(s.get("gmpChecks", {}))
+        ch = gmp_auto.update(state, checks, set(GMP_DESTINATIONS), today_str)
+        for d in ch["added"]:
+            print(f"🆕 김포 신규 직항 자동 추가: GMP→{d} ({state['routes'][d].get('city', '')}) — 다음 수집부터 매일 조회")
+        for d in ch["removed"]:
+            print(f"➖ 김포 노선 자동 제외: GMP→{d} (월요일 점검 {gmp_auto.MISS_LIMIT}번 연속 직항 없음)")
+        if not dry:
+            gmp_auto.save(state)
+    best = {}
+    for s in shards:
+        best.update(s.get("gmpBest", {}))
+    by_code = {r["code"]: r for r in published}
+    recs = []
+    for dst, e in sorted(state.get("routes", {}).items()):
+        if not gmp_auto.is_new(e, today_str):
+            continue
+        rec = gmp_auto.new_route_record(dst, e, best.get(dst), today_str, by_code.get(e.get("code")))
+        if rec:
+            recs.append(rec)
+            print(f"📰 신규 취항 기사 후보: GMP→{dst} {rec['city']} {rec['price']:,}원 {rec['depDate']}~{rec['retDate']}")
+        else:
+            print(f"   신규 노선 GMP→{dst}: 오늘 조건에 맞는 김포 출발 일정이 없어 기사 없음")
+    return recs
 
 
 def print_summary(published: List[Dict[str, Any]], failed: List[Dict[str, Any]], total: int) -> None:
@@ -639,6 +692,7 @@ def main() -> None:
             print_summary(res["published"], res["failed"], len(cities))
             return
         published, failed = res["published"], res["failed"]
+        gmp_shards = [res]
     else:  # merge
         shards = []
         for name in sorted(os.listdir("shard_out")) if os.path.isdir("shard_out") else []:
@@ -661,6 +715,7 @@ def main() -> None:
             if m["code"] not in seen:
                 failed.append({"date": today_str, "code": m["code"], "city": m["city"], "reason": "수집 작업 실패(해당 묶음 결과 없음)"})
         print(f"🧩 묶음 결과 합치기: 수집된 도시 {len(seen)}/{len(all_cities)}")
+        gmp_shards = shards
         got = {}
         for name in sorted(os.listdir("sellers_out")) if os.path.isdir("sellers_out") else []:
             try:
@@ -681,6 +736,7 @@ def main() -> None:
         print(f"🏷️ 판매처 정보 {sum(1 for r in published if r.get('sellers'))}/{len(published)}개 도시")
     cities = all_cities
     print_summary(published, failed, len(cities))
+    new_routes = apply_gmp_auto(gmp_shards, published, today_str, dry)
 
     if dry:
         print("DRY_RUN=1: 저장하지 않음")
@@ -713,6 +769,8 @@ def main() -> None:
         "status": {d: status[d] for d in dates if d in status},
         "flights": flights,
         "failed": failed_all,
+        "newRoutes": sorted([r for r in prev.get("newRoutes", []) if r.get("date") in keep and r.get("date") != today_str] + new_routes,
+                            key=lambda r: (r["date"], r["dest"]), reverse=True),
         "historicalSeries": series,
         "climate": load_climate(),
         "crowd": load_crowd(),
