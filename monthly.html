@@ -6,6 +6,7 @@
   <title>월간 보딩패스 타임즈 | 월간 운임 리포트</title>
   <link rel="alternate" type="application/rss+xml" title="보딩패스 타임즈" href="./feed.xml" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="./js/common.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,9 +54,7 @@
         <!-- 데이터 충실도: 참고용 안내 -->
         <div class="border-2 px-4 py-3 mb-6 text-sm"
           :class="isReference ? 'border-[#B8332A] bg-[#FBEDEA]' : 'border-[#2C2620] bg-[#FAF7F0]'">
-          <strong x-show="isReference" class="text-[#B8332A] mr-1">참고용</strong>
           <span x-text="coverageText"></span>
-          <span class="block text-xs text-[#5C5549] mt-1" x-show="isReference" x-text="referenceReason"></span>
         </div>
 
         <!-- 하이라이트 -->
@@ -104,7 +103,7 @@
                 </tr>
               </thead>
               <tbody>
-                <template x-for="r in rows" :key="r.code">
+                <template x-for="r in (showAll ? rows : rows.slice(0, 10))" :key="r.code">
                   <tr class="border-t border-[#E2D9C8]">
                     <td class="px-3 py-1.5 whitespace-nowrap"><strong x-text="r.city"></strong> <span class="font-mono text-xs text-[#7A7164]" x-text="r.code"></span></td>
                     <td class="px-3 py-1.5 font-mono text-right" x-text="r.n"></td>
@@ -118,7 +117,8 @@
               </tbody>
             </table>
           </div>
-          <p class="text-xs text-[#7A7164] mt-2">관측 = 그 달에 발행된 날 수(도시별 1위 왕복 최저가 1건/일). 변동 = 그 달 첫 관측 대비 마지막 관측.</p>
+          <button type="button" id="showAllRows" x-show="!showAll && rows.length > 10" @click="showAll = true"
+            class="mt-2 text-xs font-bold px-3 py-1.5 border border-[#8C8275] bg-[#FAF7F0] rounded-sm" x-text="'전체 보기 (' + rows.length + ')'"></button>
         </section>
       </div>
     </template>
@@ -133,6 +133,7 @@
   <script>
     function monthlyEdition() {
       return {
+        showAll: false,
         periods: [], period: '', rep: null, state: 'loading', sortKey: 'mean', sortDir: 1,
         columns: [
           { key: 'city', label: '도시' }, { key: 'n', label: '관측' }, { key: 'mean', label: '평균' },
@@ -175,7 +176,8 @@
         },
         get coverageText() {
           const c = (this.rep && this.rep.coverage) || {};
-          return `관측 기간 ${c.first_date || '-'} ~ ${c.last_date || '-'} · ${c.days_with_data || 0}일 · ${c.routes_with_data || 0}개 노선 · 관측 ${c.observations || 0}건`;
+          const range = window.BPT ? BPT.fmtRange(c.first_date, c.last_date) : `${c.first_date}~${c.last_date}`;
+          return `${range} · ${c.days_with_data || 0}일치${this.isReference ? '(참고용)' : ''}`;
         },
         get highlightBlocks() {
           const h = (this.rep && this.rep.highlights) || {};

@@ -7,6 +7,7 @@
   <meta name="description" content="보딩패스 타임즈 도시 상세: 오늘 실제 조회한 직항 왕복 최저가 일정, 가격 이력, 월별 기후." />
   <link rel="alternate" type="application/rss+xml" title="보딩패스 타임즈" href="./feed.xml" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="./js/common.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +30,10 @@
     .hero { position: relative; aspect-ratio: 16 / 9; max-height: 440px; width: 100%; overflow: hidden; border: 2px solid var(--rule); background: var(--line); }
     .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .chart svg { width: 100%; height: auto; display: block; }
+    .emo { display: inline-block; height: 1.1em; width: auto; vertical-align: -0.15em; }
+    .info-details > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .info-details > summary::-webkit-details-marker { display: none; }
+    .info-i { font-size: 14px; color: #8C8275; }
     [x-cloak] { display: none !important; }
   </style>
 </head>
@@ -78,8 +83,6 @@
                   <div class="text-xs text-[#5C5549]" x-text="t.meta"></div>
                   <div class="flex flex-wrap gap-2 mt-1 text-xs font-bold">
                     <a x-show="t.googleUrl" :href="t.googleUrl" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-[#1E3A5F] text-white rounded-sm">구글 플라이트 ↗</a>
-                    <a x-show="t.naverUrl" :href="t.naverUrl" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-[#2C2620] text-white rounded-sm">네이버 ↗</a>
-                    <a x-show="t.skyUrl" :href="t.skyUrl" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 border border-[#8C8275] rounded-sm">스카이스캐너 ↗</a>
                   </div>
                 </div>
               </template>
@@ -88,6 +91,9 @@
                 <div><strong>오는 편</strong> <span x-text="legText(f.inbound)"></span></div>
               </div>
               <p class="text-xs text-[#5C5549]" x-show="f.sellers" x-text="sellersText"></p>
+              <p class="text-xs text-[#5C5549]" id="otherSites">다른 사이트에서 보기:
+                <a :href="f.naverUrl" target="_blank" rel="noopener noreferrer" class="font-bold text-[#1E3A5F] underline">네이버</a> ·
+                <a :href="f.skyUrl" target="_blank" rel="noopener noreferrer" class="font-bold text-[#1E3A5F] underline">스카이스캐너</a></p>
               <p class="text-xs text-[#5C5549]" x-show="f.note" x-text="'현지 메모: ' + f.note"></p>
               <p class="text-[11px] text-[#7A7164]">가격은 발행일 아침 실제 조회값이며 예약 시점에 바뀔 수 있습니다. 연차 절약 일정은 날짜별 가격 조회값이라 항공편은 예약 사이트에서 확인하세요.</p>
             </div>
@@ -102,34 +108,31 @@
 
         <!-- 가격 이력 -->
         <section class="sec p-5" id="history">
-          <h2 class="text-xl mb-1">가격 이력</h2>
-          <p class="text-xs text-[#5C5549] mb-3">매일 아침 실제 조회한 1위 일정의 왕복 가격입니다. 날마다 일정(출발일·여행 길이)이 다를 수 있습니다.</p>
+          <details class="mb-3 info-details">
+            <summary><h2 class="text-xl inline">가격 이력</h2> <span class="info-i" aria-label="설명 보기">ⓘ</span></summary>
+            <p class="text-xs text-[#5C5549] mt-1">매일 아침 실제 조회한 1위 일정의 왕복 가격입니다. 날마다 일정(출발일·여행 길이)이 다를 수 있습니다.</p>
+          </details>
           <div x-show="hist.length >= MIN_HIST" class="chart" id="histChart" x-html="histSvg"></div>
-          <div x-show="hist.length >= MIN_HIST" class="grid grid-cols-3 gap-2 mt-3 text-center text-xs">
+          <div x-show="hist.length >= MIN_HIST" class="grid grid-cols-2 gap-2 mt-3 text-center text-xs">
             <div class="border border-[#D5CBB8] bg-white py-2"><div class="text-[#5C5549]">최저</div><div class="font-bold num text-sm" x-text="won(histStats.min)"></div></div>
-            <div class="border border-[#D5CBB8] bg-white py-2"><div class="text-[#5C5549]">중앙값</div><div class="font-bold num text-sm" x-text="won(histStats.median)"></div></div>
             <div class="border border-[#D5CBB8] bg-white py-2"><div class="text-[#5C5549]">최고</div><div class="font-bold num text-sm" x-text="won(histStats.max)"></div></div>
           </div>
           <p x-show="hist.length < MIN_HIST" class="text-sm text-[#2C2620] border border-dashed border-[#8C8275] p-3" id="histWait">
-            실조회 <strong x-text="hist.length"></strong>일째입니다. <span x-text="MIN_HIST"></span>일이 쌓이면 그래프를 그립니다.
+            실제 조회 <strong x-text="hist.length"></strong>일째입니다. <span x-text="MIN_HIST"></span>일이 쌓이면 그래프를 그립니다.
           </p>
         </section>
 
-        <!-- 도시별 RSS(P5-3) -->
-        <section class="sec p-5" id="rss">
-          <h2 class="text-xl mb-1">이 도시 RSS</h2>
-          <p class="text-xs text-[#5C5549] mb-2">피드 앱에 넣으면 이 도시가 실린 날만 새 글(그날 실제 조회한 1위 가격·일정)이 올라옵니다.</p>
-          <div class="flex flex-wrap items-center gap-2">
-            <code class="font-mono text-xs bg-white border border-[#D5CBB8] px-2 py-1.5 break-all" x-text="feedUrl"></code>
-            <button type="button" class="text-xs font-bold px-3 py-1.5 bg-[#2C2620] text-white rounded-sm" @click="copyFeed()" x-text="copyMsg || '주소 복사'"></button>
-          </div>
-        </section>
+        <!-- 도시별 RSS(P5-3): 버튼 하나 -->
+        <div id="rss"><a :href="feedUrl" class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 bg-[#B45309] text-white rounded-sm" target="_blank" rel="noopener">RSS 구독</a></div>
 
         <!-- 기후·시즌 -->
         <div class="grid grid-cols-1 gap-5">
           <section class="sec p-5" id="climate">
-            <h2 class="text-xl mb-1">월별 평년 기온·강수</h2>
-            <p class="text-xs text-[#5C5549] mb-3" x-text="climateSource"></p>
+            <details class="mb-3 info-details">
+              <summary><h2 class="text-xl inline-flex items-center gap-1">월별 <img class="emo" src="./images/emoji/1f321.svg" role="img" alt="평년 기온" aria-label="평년 기온"><img class="emo" src="./images/emoji/1f327.svg" role="img" alt="강수" aria-label="강수"></h2> <span class="info-i" aria-label="설명 보기">ⓘ</span></summary>
+              <p class="text-xs text-[#5C5549] mt-1" x-text="climateSource"></p>
+              <p class="text-xs text-[#5C5549]" x-text="climateLegend"></p>
+            </details>
             <div class="chart" x-show="climateSvg" x-html="climateSvg"></div>
             <p class="text-sm text-[#5C5549]" x-show="!climateSvg">기후 자료가 없습니다.</p>
             <div class="grid grid-cols-12 gap-0.5 mt-3 text-[10px] text-center" aria-label="추천 시즌">
@@ -157,13 +160,13 @@
     function cityPage() {
       const WK = '일월화수목금토';
       return {
-        MIN_HIST: 7,                 // 실조회 7일부터 그래프(P5-b)
+        MIN_HIST: 7,                 // 실제 조회 7일부터 그래프(P5-b)
         state: 'loading',
         code: '', cityName: '', latest: '',
         cityList: [], f: null, failReason: '',
         photo: {}, photoUrl: '', photoCaption: '',
         hist: [], histSvg: '', histStats: {},
-        climateSvg: '', climateSource: '', bestMonths: new Set(), seasonText: '',
+        climateSvg: '', climateSource: '', climateLegend: '', bestMonths: new Set(), seasonText: '',
 
         copyMsg: '',
         get feedUrl() { return new URL(`feed/${this.code}.xml`, location.href.split('?')[0]).href; },
@@ -174,7 +177,7 @@
         },
 
         won(n) { return '₩' + (Number(n) || 0).toLocaleString('ko-KR'); },
-        md(iso) { const [y, m, d] = String(iso || '').split('-').map(Number); if (!d) return ''; return `${m}.${String(d).padStart(2, '0')}(${WK[new Date(y, m - 1, d).getDay()]})`; },
+        md(iso) { return window.BPT ? BPT.fmtMD(iso) : ''; },
         origin(c) { return c === 'GMP' ? '김포' : '인천'; },
         legText(l) {
           if (!l) return '';
@@ -190,7 +193,7 @@
           const f = this.f; if (!f) return [];
           const one = (key, label, color, t, withAir) => t && t.price ? {
             key, label, color, price: t.price,
-            dates: `${this.md(t.depDate)} ~ ${this.md(t.retDate)} · ${t.nights}박 ${t.nights + 1}일`,
+            dates: `${BPT.fmtRange(t.depDate, t.retDate)} ${BPT.fmtNights(t.nights)}`,
             meta: [`${this.origin(t.origin)} 출발 → ${t.dest}`, t.leaveDays != null ? `연차 ${t.leaveDays}일` : '', (t.holidays || []).length ? t.holidays.join('·') + ' 포함' : '', withAir && f.airline ? f.airline : ''].filter(Boolean).join(' · '),
             googleUrl: t.googleUrl || '', naverUrl: t.naverUrl || '', skyUrl: t.skyUrl || ''
           } : null;
@@ -231,7 +234,7 @@
           this.photoUrl = this.photo.title ? `images/cities/${this.code}.jpg` : '';
           this.photoCaption = this.photo.title ? `${this.photo.place || this.cityName} · 사진 ${this.photo.artist} / ${this.photo.license} / 위키미디어 공용` : '';
 
-          // 가격 이력(실조회 1위만)
+          // 가격 이력(실제 조회 1위만)
           const hs = (d.historicalSeries || {})[this.code];
           if (hs && Array.isArray(hs.prices)) {
             const ds = hs.fullDates || hs.dates || [];
@@ -247,7 +250,7 @@
           const c = d.climate && d.climate.cities && d.climate.cities[this.code];
           const yrs = String((d.climate && d.climate.period) || '').match(/(\d{4})\D+(\d{4})/);
           this.climateSource = `NASA POWER${yrs ? ` ${yrs[1]}~${yrs[2]}년` : ''} 월평균(도시 중심 격자값)`;
-          if (c && c.tmean && c.tmean.length === 12) this.climateSvg = this.drawClimate(c);
+          if (c && c.tmean && c.tmean.length === 12) { this.climateSvg = this.drawClimate(c); this.climateLegend = `막대: 강수(최대 ${Math.max(...c.precipMm)}mm) · 선: 평균기온(℃)`; }
           const anyRec = this.f || (d.flights || []).filter(x => x.code === this.code).sort((a, b) => b.date.localeCompare(a.date))[0];
           const seasons = (anyRec && anyRec.bestSeasons) || [];
           this.bestMonths = new Set(seasons.flatMap(s => s.months || []));
@@ -269,9 +272,9 @@
           const grid = [this.histStats.min, this.histStats.median, this.histStats.max].map(v =>
             `<line x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}" stroke="#E2D9C8"/><text x="${pl - 6}" y="${y(v) + 4}" font-size="11" text-anchor="end" fill="#5C5549">${Math.round(v / 1000).toLocaleString('ko-KR')}천</text>`).join('');
           const step = Math.max(1, Math.ceil(n / 6));
-          const xl = pts.map((q, i) => (i % step === 0 || i === n - 1) ? `<text x="${x(i)}" y="${H - 8}" font-size="11" text-anchor="${i === n - 1 ? 'end' : i === 0 ? 'start' : 'middle'}" fill="#5C5549">${q.d.slice(5).replace('-', '.')}</text>` : '').join('');
+          const xl = pts.map((q, i) => (i % step === 0 || i === n - 1) ? `<text x="${x(i)}" y="${H - 8}" font-size="11" text-anchor="${i === n - 1 ? 'end' : i === 0 ? 'start' : 'middle'}" fill="#5C5549">${q.d.slice(5).replace('-', '/')}</text>` : '').join('');
           const last = pts[n - 1];
-          return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="실조회 가격 이력 ${n}일">${grid}${xl}`
+          return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="실제 조회 가격 이력 ${n}일">${grid}${xl}`
             + `<polyline points="${pl},${H - pb} ${line} ${x(n - 1)},${H - pb}" fill="#B8332A" fill-opacity=".07" stroke="none"/>`
             + `<polyline points="${line}" fill="none" stroke="#B8332A" stroke-width="2"/>`
             + pts.map((q, i) => `<circle cx="${x(i)}" cy="${y(q.p)}" r="${i === n - 1 ? 4.5 : 2.5}" fill="#B8332A"><title>${q.d} ${this.won(q.p)}</title></circle>`).join('')
@@ -287,7 +290,7 @@
           const tl = c.tmean.map((t, i) => `<text x="${pl + i * bw + bw / 2}" y="${yT(t) - 6}" font-size="10" text-anchor="middle" fill="#8A1C1C">${Math.round(t)}°</text>`).join('');
           const ml = c.tmean.map((t, i) => `<text x="${pl + i * bw + bw / 2}" y="${H - 6}" font-size="10" text-anchor="middle" fill="#5C5549">${i + 1}월</text>`).join('');
           return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="월별 평년 기온과 강수">${bars}<polyline points="${line}" fill="none" stroke="#B8332A" stroke-width="2"/>${tl}${ml}</svg>`
-            + `<p class="text-[11px] text-[#7A7164] mt-1">막대: 강수(최대 ${Math.max(...c.precipMm)}mm) · 선: 평균기온(℃)</p>`;
+            ;
         }
       };
     }

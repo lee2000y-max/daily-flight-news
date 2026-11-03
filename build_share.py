@@ -40,14 +40,10 @@ def font_path(kind):
     return None
 
 
-def md(iso):
-    y, m, d = map(int, iso.split("-"))
-    return f"{m:02d}.{d:02d}"
-
-
 def md_week(iso):
+    """사이트 공용 날짜 형식 MM/DD(요일)(js/common.js의 BPT.fmtMD와 같음)"""
     y, m, d = map(int, iso.split("-"))
-    return f"{m:02d}.{d:02d}({WEEK[date(y, m, d).weekday()]})"
+    return f"{m:02d}/{d:02d}({WEEK[date(y, m, d).weekday()]})"
 
 
 def origin_label(code):
@@ -63,7 +59,7 @@ def share_texts(f, edition):
     _, em, ed = edition.split("-")
     title = f"{f['city']} 왕복 {won(f['price'])} · {origin_label(f['origin'])} 출발 직항"
     airline = (f.get("airline") or "").strip()
-    desc = (f"{md_week(f['depDate'])}–{md_week(f['retDate'])} {f['nights']}박"
+    desc = (f"{md_week(f['depDate'])}~{md_week(f['retDate'])} {f['nights']}박 {f['nights'] + 1}일"
             + (f" · {airline}" if airline else "")
             + f" · {int(em)}월 {int(ed)}일 아침 실제 조회가. 예약 시점에 가격이 바뀔 수 있어요.")
     return title, desc
@@ -189,7 +185,7 @@ def main():
         os.makedirs(f"{OUT_DIR}/{code}", exist_ok=True)
         if f:
             title, desc = share_texts(f, edition)
-            sched = f"{md(f['depDate'])}-{md(f['retDate'])} · {f['nights']}박 · {origin_label(f['origin'])} 출발 직항"
+            sched = f"{md_week(f['depDate'])}~{md_week(f['retDate'])} {f['nights']}박 {f['nights'] + 1}일 · {origin_label(f['origin'])} 출발 직항"
         else:
             title = f"{city} · 오늘은 발행되지 않았습니다"
             desc = "보딩패스 타임즈는 그날 실제로 조회된 직항 가격만 싣습니다. 오늘 이 노선은 조회되지 않았거나 조건에 맞는 직항이 없었습니다."
