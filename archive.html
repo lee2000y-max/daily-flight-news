@@ -49,6 +49,32 @@
     <div x-show="state === 'loading'" class="text-center py-10 font-serif-kr font-bold">불러오는 중입니다…</div>
     <div x-show="state === 'error'" x-cloak class="text-center py-10 font-serif-kr font-bold">보관함을 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.</div>
     <p x-show="state === 'ok'" x-cloak class="text-xs text-[#5C5549]">최근 14개 호는 "그날 호 보기"로 당시 지면 전체를 볼 수 있습니다. 그 이전 호는 요약만 남습니다(영구 이력에는 도시별 1위만 저장). <strong class="text-[#B8332A]">참고용</strong> 표시는 이전 수집기 기록으로, 실조회 원칙 이전 자료입니다.</p>
+    <!-- 예약 시점 통계(P5-6): 실조회 90일 이상부터. 그 전에는 숫자 없이 안내만(예시 값 없음) -->
+    <section id="leadtime" class="bg-[#FAF7F0] border-2 border-[#2C2620] p-4" x-show="state === 'ok' && lt" x-cloak>
+      <h2 class="font-serif-kr font-black text-lg">예약 시점 통계 <span class="text-xs font-normal text-[#5C5549]">최저가 일정은 보통 출발 며칠 뒤 일정에서 나왔나</span></h2>
+      <template x-if="lt && lt.ready">
+        <div class="mt-2 space-y-3">
+          <p class="text-xs text-[#5C5549]" x-text="'매일 아침 각 도시 1위(가장 싼) 일정의 출발일이 조회일로부터 며칠 뒤였는지 지역별로 모았습니다. 실조회 ' + lt.liveDays + '일(' + lt.firstDay + '~' + lt.lastDay + ') 기록의 요약이며 앞날 가격 예측이 아닙니다.'"></p>
+          <template x-for="(rg, name) in lt.regions" :key="name">
+            <div>
+              <div class="text-sm font-bold" x-text="name + ' (' + rg.n + '건)'"></div>
+              <div class="grid grid-cols-7 gap-1 mt-1 items-end h-16" :aria-label="name + ' 출발까지 남은 날 분포'">
+                <template x-for="b in rg.buckets" :key="b.range">
+                  <div class="flex flex-col justify-end h-full" :title="b.range + '일 뒤 출발: ' + b.count + '건' + (b.median ? ', 중앙값 ' + won(b.median) : '')">
+                    <div class="bg-[#B8332A]" :style="'height:' + Math.max(2, Math.round(b.share * 100)) + '%'"></div>
+                  </div>
+                </template>
+              </div>
+              <div class="grid grid-cols-7 gap-1 text-[10px] text-center text-[#5C5549] mt-0.5">
+                <template x-for="b in rg.buckets" :key="b.range"><span x-text="b.range + '일'"></span></template>
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
+      <p class="text-sm text-[#2C2620] mt-1" x-show="lt && !lt.ready" x-text="lt ? '실조회 기록이 ' + lt.minDays + '일 쌓이면 공개합니다(지금 ' + lt.liveDays + '일째).' : ''"></p>
+    </section>
+
     <ol id="issueList" class="space-y-3" x-show="state === 'ok'" x-cloak>
       <template x-for="it in issues" :key="it.date">
         <li class="bg-[#FAF7F0] border border-[#D5CBB8] p-4" :class="it.source === 'reference' ? 'opacity-80' : ''">
@@ -83,7 +109,7 @@
     function archivePage() {
       const WK = '일월화수목금토';
       return {
-        state: 'loading', issues: [], live: [],
+        state: 'loading', issues: [], live: [], lt: null,
         won(n) { return '₩' + (Number(n) || 0).toLocaleString('ko-KR'); },
         dateLabel(iso) { const [y, m, d] = iso.split('-').map(Number); return `${y}년 ${m}월 ${d}일(${WK[new Date(y, m - 1, d).getDay()]})`; },
         sched(t) {
@@ -100,6 +126,10 @@
             const d = await (await fetch('./flights_data.json?t=' + Date.now(), { cache: 'no-store' })).json();
             this.live = d.availableDates || [];
           } catch (e) { this.live = []; }
+          try {
+            const r = await fetch('./data/leadtime.json?t=' + Date.now(), { cache: 'no-store' });
+            if (r.ok) this.lt = await r.json();
+          } catch (e) { this.lt = null; }
           this.state = 'ok';
         }
       };

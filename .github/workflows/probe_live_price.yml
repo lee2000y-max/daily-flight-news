@@ -174,7 +174,7 @@ jobs:
           rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude '__pycache__' --exclude 'photo_preview' ./ _site/
           touch _site/.nojekyll
           echo "묶음: $(du -sh _site | cut -f1), 공유 페이지 $(ls _site/s | wc -l)개, 도시 사진 $(ls _site/images/cities | wc -l)장"
-          test -f _site/index.html && test -f _site/flights_data.json && test -f _site/s/og.jpg && test -f _site/data/photos.json && test -f _site/data/archive.json && test -f _site/feed/YGJ.xml
+          test -f _site/index.html && test -f _site/flights_data.json && test -f _site/s/og.jpg && test -f _site/data/photos.json && test -f _site/data/archive.json && test -f _site/data/leadtime.json && test -f _site/feed/YGJ.xml
       - name: 배포 묶음 올리기 시험
         if: github.event.inputs.mode == 'pages_build'
         uses: actions/upload-pages-artifact@v3

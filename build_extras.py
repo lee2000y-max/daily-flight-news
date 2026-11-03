@@ -5,6 +5,8 @@
 
   feed/<도시>.xml      도시별 RSS(P5-3). 글 하나 = 그 도시가 실린 날 1건(1위 실조회 가격·일정). 최근 30건.
   data/archive.json    지난 호 보관함(P5-4). 날짜별 발행 도시 수·최저가·하위 5곳(1위 가격 기준).
+  data/leadtime.json   예약 시점 통계(P5-6). 지역별로 매일 1위 일정의 '출발까지 남은 날'(출발일 − 조회일) 분포.
+                       예측이 아니라 지난 실조회 기록 요약. 실조회 90일 미만이면 ready=false(화면에서 숨김).
 
 자료는 영구 이력 data/history/*.csv(1위만, 절대 규칙 4). source=live만 실조회로 보고,
 이전 수집기 기록(source=sheet, 2026-10)은 보관함에만 '참고용'으로 싣고 RSS에는 넣지 않는다.
@@ -19,6 +21,9 @@ SITE_URL = "https://lee2000y-max.github.io/daily-flight-news/"
 KST = datetime.timezone(datetime.timedelta(hours=9))
 FEED_DIR = "feed"
 ARCHIVE_PATH = "data/archive.json"
+LEADTIME_PATH = "data/leadtime.json"
+LEAD_MIN_DAYS = 90      # 실조회 90일 이상부터 공개(P5 기획안 6장)
+LEAD_BUCKETS = [(14, 20), (21, 27), (28, 34), (35, 41), (42, 48), (49, 55), (56, 60)]
 FEED_ITEMS = 30
 WEEK = "월화수목금토일"
 
@@ -120,6 +125,37 @@ def build_archive(hist, names, status):
     return len(issues)
 
 
+def build_leadtime(hist):
+    import statistics
+    major = {c["code"]: c["major"] for c in routes.CITY_MASTER}
+    live = [r for r in hist if r.get("source") == "live" and r.get("dep")]
+    days = sorted({r["date"] for r in live})
+    regions = {}
+    for r in live:
+        try:
+            lead = (datetime.date.fromisoformat(r["dep"]) - datetime.date.fromisoformat(r["date"])).days
+        except ValueError:
+            continue
+        reg = major.get(r["code"], "기타")
+        for lo, hi in LEAD_BUCKETS:
+            if lo <= lead <= hi:
+                regions.setdefault(reg, {}).setdefault(f"{lo}-{hi}", []).append(r["price"])
+                break
+    out_regions = {}
+    for reg, bk in regions.items():
+        total = sum(len(v) for v in bk.values())
+        out_regions[reg] = {"n": total, "buckets": [
+            {"range": f"{lo}-{hi}", "count": len(bk.get(f"{lo}-{hi}", [])),
+             "share": round(len(bk.get(f"{lo}-{hi}", [])) / total, 3) if total else 0,
+             "median": int(statistics.median(bk[f"{lo}-{hi}"])) if bk.get(f"{lo}-{hi}") else None}
+            for lo, hi in LEAD_BUCKETS]}
+    out = {"liveDays": len(days), "firstDay": days[0] if days else "", "lastDay": days[-1] if days else "",
+           "minDays": LEAD_MIN_DAYS, "ready": len(days) >= LEAD_MIN_DAYS, "regions": out_regions}
+    with open(LEADTIME_PATH, "w", encoding="utf-8") as fh:
+        json.dump(out, fh, ensure_ascii=False, indent=1)
+    return out
+
+
 def main():
     hist = load_history()
     names = {c["code"]: c["city"] for c in routes.CITY_MASTER}
@@ -130,7 +166,9 @@ def main():
         pass
     n_feeds = build_feeds(hist, names, status)
     n_issues = build_archive(hist, names, status)
-    print(f"도시별 RSS {n_feeds}개({FEED_DIR}/), 보관함 {n_issues}개 호({ARCHIVE_PATH}) · 이력 {len(hist)}행")
+    lt = build_leadtime(hist)
+    print(f"도시별 RSS {n_feeds}개({FEED_DIR}/), 보관함 {n_issues}개 호({ARCHIVE_PATH}), "
+          f"예약 시점 통계 실조회 {lt['liveDays']}일({'공개' if lt['ready'] else str(LEAD_MIN_DAYS) + '일 전 숨김'}) · 이력 {len(hist)}행")
 
 
 if __name__ == "__main__":

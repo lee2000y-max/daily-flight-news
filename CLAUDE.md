@@ -27,6 +27,7 @@
 - `city.html?code=YGJ`(P5-2): 도시 상세. 오늘 1위·2위·연차 절약(실조회), 항공편·판매처, 가격 이력(`historicalSeries` 실조회 1위만, **7일 이상부터 그래프**), 월별 기후·추천 시즌, 쏠림 지수(월별). 미발행 도시는 사유만(가격 없음). 카드 도시 이름·'가격 이력·날씨·쏠림 지수 →'에서 연결.
 - 관심 도시(P5-3): 카드 ☆ → localStorage `bpt-favs`(이 브라우저만). 1면 아래 '내 관심 도시' 띠(미발행이면 가격 없이 '이 호에는 미발행').
 - `build_extras.py`(P5-3·4, 배포 때 실행, 커밋 안 함): `feed/<도시>.xml` 도시별 RSS(영구 이력 live만, 최근 30건) + `data/archive.json` 보관함 요약(날짜별 발행 수·하위 5곳, 이전 수집기 기록은 `source: reference`).
+- 예약 시점 통계(P5-6): `build_extras.py`가 `data/leadtime.json`(지역별 1위 일정의 출발까지 남은 날 분포, 실조회 live만)을 만들고 `archive.html` 위에 표시. **실조회 90일 미만이면 숫자 없이 안내만**(`ready=false`).
 - `archive.html`(P5-4): 지난 호 보관함. 최근 14발행일은 `index.html?d=YYYY-MM-DD`로 그날 호 열기. 10월 기록은 '참고용'.
 - `monthly.html`: `data/reports/monthly/*.json` 월간지(이전 수집기 기록이나 부분 관측 달은 '참고용'). `feed.xml`: 수집 때 생성되는 RSS.
 - 환율(P3): 수집 합치기 단계에서 `open.er-api.com`(키 없음) 조회 → `flights_data.json`의 `fx`. 실패하면 빈 값(환율 박스 숨김, 이월 없음). 통화는 `routes.CITY_CURRENCY`.

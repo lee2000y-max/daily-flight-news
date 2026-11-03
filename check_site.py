@@ -367,6 +367,12 @@ with sync_playwright() as p:
         print(f"[보관함] {n_items}개 호(데이터 {len(arc)}), 그날 호 링크 {n_links}(기대 {exp_links}), 참고용 {n_ref}(기대 {exp_ref}), 넘침 {ov_r}px, 오류 {len(perr)}건")
         if n_items != len(arc) or n_links != exp_links or n_ref != exp_ref or ov_r > 0 or perr:
             problems.append("보관함 표시 이상")
+        if os.path.exists("data/leadtime.json"):
+            lt = json.load(open("data/leadtime.json", encoding="utf-8"))
+            bars = page.locator("#leadtime div[aria-label]:visible").count()
+            print(f"[예약 시점 통계] 실조회 {lt['liveDays']}일, 공개 {lt['ready']}, 화면 막대 묶음 {bars}")
+            if lt["ready"] != (bars > 0):
+                problems.append("예약 시점 통계: 공개 조건과 화면이 다름(90일 전에는 숨김)")
         page.screenshot(path="screenshots/archive.png", full_page=True)
         page.close()
     # 월간지
