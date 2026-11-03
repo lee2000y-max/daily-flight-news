@@ -4,7 +4,7 @@
 확정 사양은 `docs/PLAN.md`. 작업 전에 반드시 읽는다. 사용자와는 한국어로 대화한다.
 
 ## 구조
-- `index.html`: 단일 파일 사이트(Tailwind CDN + Alpine.js). `./flights_data.json`(형식 v2)을 읽어 렌더링. 불러오기 실패 시 가짜 데이터 없이 안내만 표시.
+- `index.html`: 단일 파일 사이트(Tailwind CDN + Alpine.js, **Alpine은 `alpinejs@3.14.9`로 다섯 페이지 모두 고정**). `./flights_data.json`(형식 v2)을 읽어 렌더링. 불러오기 실패 시 가짜 데이터 없이 안내만 표시.
 - `routes.py`: 도시 마스터(가격과 무관한 정보만). `airports`에 도시의 도착 공항들, `GMP_DESTINATIONS`에 김포 취항지.
 - `collect_flights.py`: 매일 수집.
   1. 날짜 검색(fli 0.9.0, 구글 달력 API): 출발 ICN(+김포 취항지는 GMP) × 공항 × 2~8박, 출발 D+14~60, 직항, KRW.
@@ -40,6 +40,7 @@
 - `check_site.py`: 로컬에서 사이트를 띄워 데스크톱·모바일 화면 검사(카드 수, 구글 버튼, 금지어, 콘솔 오류, P4 전광판·사진·링크 공유·공유 페이지·360~1366px 넘침) 후 스크린샷. 전광판 부드러움(CPU 4배 느림)은 참고 수치(서버 화면 처리가 실제 기기와 달라 실패로 치지 않음). `probe_live_price.yml`을 `mode=site`로 실행하면 `preview/screenshots` 브랜치에 올린다.
 
 ## 알아 둘 함정
+- 하위 페이지(about·city·archive·monthly)는 `x-data="xxxPage()"`에 `init()` 메서드가 있으면 Alpine이 알아서 한 번 부른다. `x-init="init()"`를 함께 쓰면 **두 번** 실행된다(2026-11-04 수정: 데이터 요청 2회 → 1회). 새 페이지에도 `x-init`을 붙이지 않는다.
 - fli는 0.9.0으로 고정. 0.10부터는 구글이 달력 API에 브라우저 서명을 요구해 날짜마다 페이지를 받으므로 수십 배 느림.
 - fli 0.9.0은 영문 이름이 같은 공항을 하나로 합침. 오키나와 OKA가 인도네시아 NAH로 바뀌던 문제를 워크플로 `Patch fli airport aliases` 단계에서 보정·검사한다. 노선을 추가하면 이 검사가 잡아 준다.
 - fli 항공사 목록이 오래됨(예: 9G를 "9G Rail"로 표기). `AIRLINE_KO`에 없는 코드는 코드로 표시한다.

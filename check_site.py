@@ -375,6 +375,24 @@ with sync_playwright() as p:
                 problems.append("예약 시점 통계: 공개 조건과 화면이 다름(90일 전에는 숨김)")
         page.screenshot(path="screenshots/archive.png", full_page=True)
         page.close()
+    # 하위 페이지 로딩·오류 문구(01 §10): 5초 뒤 '불러오는 중'·'불러오지 못했' 문구가 보이면 안 됨
+    for sub in ("archive.html", "about.html", "monthly.html", f"city.html?code={today_f[0]['code']}"):
+        for vw in (375, 1366):
+            page = b.new_page(viewport={"width": vw, "height": 900})
+            serr = []
+            page.on("pageerror", lambda e: serr.append(str(e)))
+            page.goto(f"http://127.0.0.1:{PORT}/{sub}", wait_until="networkidle")
+            page.wait_for_timeout(5000)
+            stuck = page.evaluate("""() => [...document.querySelectorAll('body *')]
+                .filter(e => e.children.length === 0 && e.offsetParent !== null && /불러오는 중|불러오지 못했/.test(e.textContent))
+                .map(e => e.textContent.trim().slice(0, 40))""")
+            ver = page.evaluate("window.Alpine ? Alpine.version : ''")
+            print(f"[하위 페이지 {sub} {vw}px] Alpine {ver}, 남은 로딩·오류 문구 {stuck or '없음'}, 오류 {len(serr)}건")
+            if stuck:
+                problems.append(f"{sub} {vw}px: 로딩·오류 문구가 남음 {stuck[:2]}")
+            if serr:
+                problems.append(f"{sub}: 페이지 오류 {serr[:2]}")
+            page.close()
     # 월간지
     page = b.new_page(viewport={"width": 1366, "height": 900})
     merr = []
