@@ -270,7 +270,9 @@
     }
 
     /* 1면 톱기사 사진 */
-    .fp-photo-frame { aspect-ratio: 16 / 9; }
+    /* 사진 자체 크기가 칸 높이를 늘리지 않게 이미지는 칸 안에 절대 위치로 채움 */
+    .fp-photo-frame { position: relative; aspect-ratio: 16 / 9; }
+    .fp-photo-frame img { position: absolute; inset: 0; }
     @media (min-width: 1024px) { .fp-photo-frame { aspect-ratio: auto; min-height: 180px; } }
 
     /* 1면 기사 유형 라벨 */

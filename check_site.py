@@ -146,6 +146,8 @@ with sync_playwright() as p:
             return { gap: Math.round(art.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom - parseFloat(getComputedStyle(art).paddingBottom)),
                      w: img.naturalWidth, h: Math.round(img.getBoundingClientRect().height), cap: cap ? cap.textContent.trim() : '' }; }""")
         print(f"   톱기사 사진: {ph}")
+        if ph and name == "desktop" and ph["h"] > 640:
+            problems.append(f"{name}: 톱기사 사진이 너무 큼 {ph['h']}px")
         if not ph or ph["w"] <= 0:
             problems.append(f"{name}: 톱기사 사진을 불러오지 못함")
         elif name == "desktop" and ph["gap"] > 40:
@@ -187,7 +189,8 @@ with sync_playwright() as p:
         if expected_failed and "오늘 발행하지 못한 노선" not in body:
             problems.append(f"{name}: 미발행 목록 미표시")
         page.evaluate("""async () => { for (let y = 0; y < document.body.scrollHeight; y += 600) { scrollTo(0, y); await new Promise(r => setTimeout(r, 60)); } }""")
-        page.wait_for_timeout(1500)
+        # 늦게 오는 사진(지연 불러오기)은 최대 10초 기다린다
+        page.wait_for_function("[...document.querySelectorAll('article.newspaper-card img')].every(i => i.complete)", timeout=10000)
         imgs = page.evaluate("[...document.querySelectorAll('article.newspaper-card img')].map(i => i.naturalWidth)")
         bad = sum(1 for w in imgs if not w)
         print(f"   카드 사진 {len(imgs)}장 중 불러오지 못함 {bad}장")

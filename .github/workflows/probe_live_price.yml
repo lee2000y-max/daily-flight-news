@@ -31,7 +31,7 @@ jobs:
           python -m playwright install --with-deps chromium > /dev/null
           sudo apt-get -qq install -y fonts-noto-cjk > /dev/null
           python build_share.py          # 공유 페이지·썸네일(검사용, 이 브랜치에 커밋하지 않음)
-          python check_site.py; rc=$?
+          rc=0; python check_site.py || rc=$?   # 실패해도 스크린샷은 올림(bash -e라 ; rc=$? 로는 바로 끝남)
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git checkout -q --orphan preview/screenshots
@@ -76,7 +76,7 @@ jobs:
         run: |
           pip install -q playwright "fast-flights==2.2" "primp==0.6.2"
           python -m playwright install --with-deps chromium > /dev/null
-          python probe_booking.py $ROUTE; rc=$?
+          rc=0; python probe_booking.py $ROUTE || rc=$?
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git checkout -q --orphan preview/screenshots
