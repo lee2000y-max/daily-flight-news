@@ -8,7 +8,7 @@ on:
         required: false
         default: 'OKA'
       mode:
-        description: 'route(노선 진단) · site(화면 검증·스크린샷) · climate(기후 평년값 갱신·커밋) · booking(판매처별 가격 실험, route에 "ICN-YNT 2026-12-10 2026-12-16 ...") · photos(위키미디어 사진 후보 → preview/photos 브랜치) · photos_more(route의 도시만 다시 찾기, 예: "CTS KOJ") · pages_build(배포 묶음 시험, 배포 안 함) · photos_fetch(고른 사진 저장·커밋, route에 "YGJ:2 SDJ:1 ...")'
+        description: 'route(노선 진단) · site(화면 검증·스크린샷) · climate(기후 평년값 갱신·커밋) · booking(판매처별 가격 실험, route에 "ICN-YNT 2026-12-10 2026-12-16 ...") · photos(위키미디어 사진 후보 → preview/photos 브랜치) · photos_more(route의 도시만 다시 찾기, 예: "CTS KOJ") · pages_build(배포 묶음 시험, 배포 안 함) · live(실제 사이트 주소 응답 확인) · photos_fetch(고른 사진 저장·커밋, route에 "YGJ:2 SDJ:1 ...")'
         required: false
         default: 'route'
 
@@ -161,3 +161,20 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+
+      - name: 실제 사이트 응답 확인(배포 뒤 주요 주소)
+        if: github.event.inputs.mode == 'live'
+        run: |
+          base=https://lee2000y-max.github.io/daily-flight-news
+          bad=0
+          for p in "" about.html city.html archive.html monthly.html flights_data.json data/photos.json images/cities/YGJ.jpg \
+                   s/og.jpg s/YGJ/ s/YGJ/thumb.jpg feed/YGJ.xml data/archive.json data/leadtime.json feed.xml; do
+            code=$(curl -s -o /tmp/body -w "%{http_code}" "$base/$p?nc=$RANDOM")
+            size=$(wc -c < /tmp/body)
+            echo "$code ${size}B /$p"
+            [ "$code" = "200" ] || bad=$((bad+1))
+          done
+          curl -s "$base/" | grep -c "FlapBoard" | sed 's/^/index.html FlapBoard 포함 줄 수: /'
+          curl -s "$base/s/YGJ/" | grep -o '<meta property="og:title"[^>]*>'
+          echo "실패 $bad건"
+          exit $bad
