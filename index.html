@@ -649,11 +649,12 @@
             <!-- 도시명 & 왕복 최저가 헤드라인 -->
             <div class="mb-3">
               <div class="flex items-baseline gap-1.5">
-                <h3 class="font-serif-kr text-2xl font-black text-[#1E1B18] tracking-tight" x-text="item.city"></h3>
+                <h3 class="font-serif-kr text-2xl font-black text-[#1E1B18] tracking-tight"><a :href="'./city.html?code=' + item.code" class="hover:underline" x-text="item.city" :title="item.city + ' 도시 상세'"></a></h3>
                 <span class="font-mono-flap text-xs font-bold text-[#5C5549]" x-text="'(' + item.code + ')'"></span>
               </div>
               <p class="text-[11px] text-[#5C5549] font-medium mt-0.5" x-text="getLandmarkCaption(item.code)"></p>
               <p x-show="photoCredit(item.code)" class="text-[10px] text-[#7A7164] mt-0.5" x-text="photoCredit(item.code)"></p>
+              <a :href="'./city.html?code=' + item.code" class="inline-block text-[11px] font-bold text-[#1E3A5F] underline mt-0.5">가격 이력·날씨·쏠림 지수 →</a>
             </div>
 
             <!-- 가격 및 직전호 등락 & 최근 가격 변동 그래프 (가장 좌측 과거 가격 숫자 표기) -->

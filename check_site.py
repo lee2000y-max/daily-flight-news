@@ -269,6 +269,45 @@ with sync_playwright() as p:
         problems.append(f"about: 오류 {aerr[:3]}")
     page.screenshot(path="screenshots/about.png", full_page=True)
     page.close()
+    # 도시 상세(P5-2): 발행 도시는 오늘 가격 = 데이터, 미발행 도시는 '오늘은 발행되지 않았습니다'(가격 없음)
+    today_f = sorted([r_ for r_ in data["flights"] if r_["date"] == latest], key=lambda r_: r_["price"])
+    failed_today = [r_ for r_ in data["failed"] if r_["date"] == latest]
+    cases = [("pub", today_f[0])] + ([("fail", failed_today[0])] if failed_today else [])
+    for kind, rec in cases:
+        for vw in (390, 1280):
+            page = b.new_page(viewport={"width": vw, "height": 900})
+            cerr = []
+            page.on("pageerror", lambda e: cerr.append(str(e)))
+            page.on("console", lambda m: cerr.append(m.text) if m.type == "error" else None)
+            page.goto(f"http://127.0.0.1:{PORT}/city.html?code={rec['code']}", wait_until="networkidle")
+            page.wait_for_timeout(1500)
+            h1 = page.locator("h1").inner_text().strip()
+            today_txt = page.locator("#today").inner_text()
+            opts = page.locator("#citySel option").count()
+            ov_c = page.evaluate("document.documentElement.scrollWidth - window.innerWidth")
+            hist_n = len((data.get("historicalSeries", {}).get(rec["code"]) or {}).get("prices", []))
+            chart = page.locator("#histChart svg").count()
+            wait_vis = page.locator("#histWait").is_visible()
+            img_w = page.evaluate("(() => { const i = document.getElementById('heroImg'); return i ? i.naturalWidth : -1; })()")
+            print(f"[city {rec['code']} {kind} {vw}px] 제목 {h1}, 도시 목록 {opts}개, 이력 {hist_n}일(그래프 {chart}, 대기 문구 {wait_vis}), 사진 {img_w}px, 넘침 {ov_c}px, 오류 {len(cerr)}건")
+            if h1 != rec["city"]:
+                problems.append(f"city {rec['code']}: 제목 '{h1}' != {rec['city']}")
+            if kind == "pub" and f"{rec['price']:,}" not in today_txt:
+                problems.append(f"city {rec['code']}: 오늘 가격 {rec['price']:,} 없음")
+            if kind == "fail" and ("오늘은 발행되지 않았습니다" not in today_txt or "₩" in today_txt):
+                problems.append(f"city {rec['code']}: 미발행 표시 이상")
+            if (hist_n >= 7) != (chart == 1) or (hist_n < 7) != wait_vis:
+                problems.append(f"city {rec['code']}: 가격 이력 표시 이상(이력 {hist_n}일)")
+            if photos.get(rec["code"]) and img_w <= 0:
+                problems.append(f"city {rec['code']}: 사진을 불러오지 못함")
+            if opts < 58:
+                problems.append(f"city: 도시 목록 {opts}개")
+            if ov_c > 0:
+                problems.append(f"city {rec['code']} {vw}px: 가로 넘침 {ov_c}px")
+            if cerr:
+                problems.append(f"city {rec['code']}: 오류 {cerr[:3]}")
+            page.screenshot(path=f"screenshots/city_{rec['code']}_{vw}.png", full_page=True)
+            page.close()
     # 월간지
     page = b.new_page(viewport={"width": 1366, "height": 900})
     merr = []

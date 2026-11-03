@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>도시 상세 | 보딩패스 타임즈</title>
+  <meta name="description" content="보딩패스 타임즈 도시 상세: 오늘 실제 조회한 직항 왕복 최저가 일정, 가격 이력, 월별 기후, 한국인 쏠림 지수." />
+  <link rel="alternate" type="application/rss+xml" title="보딩패스 타임즈" href="./feed.xml" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper-bg: #EFECE4; --card-bg: #FAF7F0; --ink: #1E1B18; --muted: #5C5549; --rule: #2C2620; --line: #D5CBB8; }
+    body {
+      background-color: var(--paper-bg); color: var(--ink); font-family: 'Noto Sans KR', sans-serif;
+      background-image: radial-gradient(rgba(44, 38, 32, 0.045) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    .font-serif-kr { font-family: 'Noto Serif KR', serif; }
+    .font-masthead { font-family: 'Playfair Display', 'Noto Serif KR', serif; }
+    .font-mono { font-family: 'JetBrains Mono', 'Noto Sans KR', monospace; }
+    .double-rule-bottom { border-bottom: 3px double var(--rule); }
+    .double-rule-top { border-top: 3px double var(--rule); }
+    .sec { background: var(--card-bg); border: 1px solid var(--line); min-width: 0; }
+    .sec h2 { font-family: 'Noto Serif KR', serif; font-weight: 900; }
+    .num { font-variant-numeric: tabular-nums; }
+    .hero { position: relative; aspect-ratio: 16 / 9; max-height: 440px; width: 100%; overflow: hidden; border: 2px solid var(--rule); background: var(--line); }
+    .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .chart svg { width: 100%; height: auto; display: block; }
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body class="min-h-screen pb-16 antialiased" x-data="cityPage()" x-init="init()">
+  <header class="max-w-5xl mx-auto px-4 pt-5 pb-3">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-[#5C5549] border-t-2 border-b border-[#2C2620] py-1.5 px-1 font-medium">
+      <a :href="'./index.html#' + code" href="./index.html" class="font-bold text-[#1E3A5F] underline">← 오늘 일간지로</a>
+      <label class="flex items-center gap-2">
+        <span class="font-bold text-[#1E1B18]">도시</span>
+        <select id="citySel" x-model="code" @change="go()" class="bg-[#FAF7F0] border border-[#8C8275] rounded px-2 py-0.5 text-xs font-bold max-w-[60vw]">
+          <template x-for="c in cityList" :key="c.code"><option :value="c.code" :selected="c.code === code" x-text="c.city + ' (' + c.code + ')'"></option></template>
+        </select>
+      </label>
+    </div>
+    <div class="py-5 text-center double-rule-bottom">
+      <div class="font-masthead text-xs sm:text-sm tracking-[0.22em] font-bold text-[#3E3932]">THE BOARDING PASS TIMES · CITY</div>
+      <h1 class="font-serif-kr text-3xl sm:text-5xl font-black tracking-tight mt-1" x-text="cityName || '도시 상세'"></h1>
+      <p class="text-sm text-[#3E3932] mt-2" x-show="latest" x-text="latest.replace(/-/g, '.') + ' 발행호 · 인천·김포 출발 직항'"></p>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 space-y-5">
+    <div x-show="state === 'loading'" class="text-center py-10 font-serif-kr font-bold">불러오는 중입니다…</div>
+    <div x-show="state === 'error'" x-cloak class="text-center py-10 font-serif-kr font-bold">자료를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.</div>
+    <div x-show="state === 'nocity'" x-cloak class="text-center py-10 font-serif-kr font-bold">이 도시는 보딩패스 타임즈가 다루는 도시가 아닙니다.</div>
+
+    <template x-if="state === 'ok'">
+      <div class="space-y-5">
+        <!-- 사진 -->
+        <figure>
+          <div class="hero"><img id="heroImg" :src="photoUrl" :alt="photo.place || cityName" @error="$event.target.style.display = 'none'"></div>
+          <figcaption class="text-[11px] text-[#5C5549] mt-1.5" x-text="photoCaption"></figcaption>
+        </figure>
+
+        <!-- 오늘 일정 -->
+        <section class="sec p-5" id="today">
+          <h2 class="text-xl mb-3">오늘 조회한 일정</h2>
+          <template x-if="f">
+            <div class="space-y-3">
+              <template x-for="t in trips" :key="t.key">
+                <div class="border border-[#D5CBB8] bg-white p-3 grid gap-1.5">
+                  <div class="flex flex-wrap items-baseline justify-between gap-2">
+                    <span class="text-[11px] font-black text-white px-2 py-0.5 rounded-sm" :style="'background:' + t.color" x-text="t.label"></span>
+                    <span class="font-serif-kr text-2xl font-black num" x-text="won(t.price)"></span>
+                  </div>
+                  <div class="text-sm num" x-text="t.dates"></div>
+                  <div class="text-xs text-[#5C5549]" x-text="t.meta"></div>
+                  <div class="flex flex-wrap gap-2 mt-1 text-xs font-bold">
+                    <a x-show="t.googleUrl" :href="t.googleUrl" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-[#1E3A5F] text-white rounded-sm">구글 플라이트 ↗</a>
+                    <a x-show="t.naverUrl" :href="t.naverUrl" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-[#2C2620] text-white rounded-sm">네이버 ↗</a>
+                    <a x-show="t.skyUrl" :href="t.skyUrl" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 border border-[#8C8275] rounded-sm">스카이스캐너 ↗</a>
+                  </div>
+                </div>
+              </template>
+              <div class="text-sm text-[#2C2620] space-y-0.5" x-show="f.outbound">
+                <div><strong>가는 편</strong> <span x-text="legText(f.outbound)"></span></div>
+                <div><strong>오는 편</strong> <span x-text="legText(f.inbound)"></span></div>
+              </div>
+              <p class="text-xs text-[#5C5549]" x-show="f.sellers" x-text="sellersText"></p>
+              <p class="text-xs text-[#5C5549]" x-show="f.note" x-text="'현지 메모: ' + f.note"></p>
+              <p class="text-[11px] text-[#7A7164]">가격은 발행일 아침 실제 조회값이며 예약 시점에 바뀔 수 있습니다. 연차 절약 일정은 날짜별 가격 조회값이라 항공편은 예약 사이트에서 확인하세요.</p>
+            </div>
+          </template>
+          <template x-if="!f">
+            <div class="text-sm text-[#2C2620]">
+              <p><strong>오늘은 발행되지 않았습니다.</strong> <span x-show="failReason" x-text="'사유: ' + failReason"></span></p>
+              <p class="text-xs text-[#5C5549] mt-1">보딩패스 타임즈는 그날 실제로 조회된 직항 가격만 싣습니다. 어제 가격을 이어 쓰지 않습니다.</p>
+            </div>
+          </template>
+        </section>
+
+        <!-- 가격 이력 -->
+        <section class="sec p-5" id="history">
+          <h2 class="text-xl mb-1">가격 이력</h2>
+          <p class="text-xs text-[#5C5549] mb-3">매일 아침 실제 조회한 1위 일정의 왕복 가격입니다. 날마다 일정(출발일·여행 길이)이 다를 수 있습니다.</p>
+          <div x-show="hist.length >= MIN_HIST" class="chart" id="histChart" x-html="histSvg"></div>
+          <div x-show="hist.length >= MIN_HIST" class="grid grid-cols-3 gap-2 mt-3 text-center text-xs">
+            <div class="border border-[#D5CBB8] bg-white py-2"><div class="text-[#5C5549]">최저</div><div class="font-bold num text-sm" x-text="won(histStats.min)"></div></div>
+            <div class="border border-[#D5CBB8] bg-white py-2"><div class="text-[#5C5549]">중앙값</div><div class="font-bold num text-sm" x-text="won(histStats.median)"></div></div>
+            <div class="border border-[#D5CBB8] bg-white py-2"><div class="text-[#5C5549]">최고</div><div class="font-bold num text-sm" x-text="won(histStats.max)"></div></div>
+          </div>
+          <p x-show="hist.length < MIN_HIST" class="text-sm text-[#2C2620] border border-dashed border-[#8C8275] p-3" id="histWait">
+            실조회 <strong x-text="hist.length"></strong>일째입니다. <span x-text="MIN_HIST"></span>일이 쌓이면 그래프를 그립니다.
+          </p>
+        </section>
+
+        <!-- 기후·시즌·쏠림 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <section class="sec p-5" id="climate">
+            <h2 class="text-xl mb-1">월별 평년 기온·강수</h2>
+            <p class="text-xs text-[#5C5549] mb-3" x-text="climateSource"></p>
+            <div class="chart" x-show="climateSvg" x-html="climateSvg"></div>
+            <p class="text-sm text-[#5C5549]" x-show="!climateSvg">기후 자료가 없습니다.</p>
+            <div class="grid grid-cols-12 gap-0.5 mt-3 text-[10px] text-center" aria-label="추천 시즌">
+              <template x-for="m in 12" :key="m">
+                <span class="py-1 rounded-sm" :style="'background:' + (bestMonths.has(m) ? '#E6C77A' : '#EFE8DA')" x-text="m"></span>
+              </template>
+            </div>
+            <p class="text-xs text-[#5C5549] mt-1.5" x-text="seasonText"></p>
+          </section>
+          <section class="sec p-5" id="crowd">
+            <h2 class="text-xl mb-1">한국인 쏠림 지수</h2>
+            <p class="text-xs text-[#5C5549] mb-3">5단계 중 낮을수록 한적합니다. 최근 통계 기준이며 실시간이 아닙니다.</p>
+            <template x-if="crowdLevel">
+              <div>
+                <div class="flex gap-1"><template x-for="l in 5" :key="l"><span class="flex-1 h-6" :style="'background:' + (l <= crowdLevel ? '#7A2E8C' : '#EFE8DA')"></span></template></div>
+                <p class="text-sm mt-2"><strong x-text="crowdLevel + '단계'"></strong> / 5 <span class="text-xs text-[#5C5549]" x-text="crowdPax"></span></p>
+                <div class="grid grid-cols-12 gap-0.5 mt-3 text-[10px] text-center" x-show="crowdMonths.length" aria-label="월별 쏠림 단계">
+                  <template x-for="cm in crowdMonths" :key="cm.m">
+                    <span class="py-1 rounded-sm" :style="'background:' + crowdColor(cm.level) + ';color:' + (cm.level >= 4 ? '#fff' : '#1E1B18')" :title="cm.m + '월 ' + (cm.level || '-') + '단계'" x-text="cm.m"></span>
+                  </template>
+                </div>
+                <p class="text-[11px] text-[#7A7164] mt-1.5" x-text="crowdBasis"></p>
+              </div>
+            </template>
+            <p class="text-sm text-[#5C5549]" x-show="!crowdLevel">쏠림 지수 자료가 없습니다.</p>
+          </section>
+        </div>
+      </div>
+    </template>
+  </main>
+
+  <footer class="max-w-5xl mx-auto px-4 mt-10">
+    <div class="double-rule-top pt-5 text-center text-xs text-[#5C5549] space-x-3">
+      <a href="./index.html" class="font-bold text-[#1E3A5F] underline">오늘 일간지</a>
+      <a href="./monthly.html" class="font-bold text-[#1E3A5F] underline">월간지</a>
+      <a href="./about.html" class="font-bold text-[#1E3A5F] underline">만드는 방법</a>
+    </div>
+  </footer>
+
+  <script>
+    function cityPage() {
+      const WK = '일월화수목금토';
+      return {
+        MIN_HIST: 7,                 // 실조회 7일부터 그래프(P5-b)
+        state: 'loading',
+        code: '', cityName: '', latest: '',
+        cityList: [], f: null, failReason: '',
+        photo: {}, photoUrl: '', photoCaption: '',
+        hist: [], histSvg: '', histStats: {},
+        climateSvg: '', climateSource: '', bestMonths: new Set(), seasonText: '',
+        crowdLevel: 0, crowdPax: '', crowdMonths: [], crowdBasis: '',
+
+        won(n) { return '₩' + (Number(n) || 0).toLocaleString('ko-KR'); },
+        md(iso) { const [y, m, d] = String(iso || '').split('-').map(Number); if (!d) return ''; return `${m}.${String(d).padStart(2, '0')}(${WK[new Date(y, m - 1, d).getDay()]})`; },
+        origin(c) { return c === 'GMP' ? '김포' : '인천'; },
+        legText(l) {
+          if (!l) return '';
+          const dur = l.durationMin ? ` · ${Math.floor(l.durationMin / 60)}시간${l.durationMin % 60 ? ' ' + (l.durationMin % 60) + '분' : ''}` : '';
+          return `${l.airline || l.airlineCode || ''} ${l.flightNo || ''} · ${l.dep}→${l.arr}${l.arrDayOffset ? '(+' + l.arrDayOffset + ')' : ''}${dur}`;
+        },
+        crowdColor(l) { return ['#EFE8DA', '#E9DDF0', '#CDB4DB', '#A57BB8', '#7A2E8C', '#4E1A5C'][l || 0]; },
+        get sellersText() {
+          const s = this.f && this.f.sellers;
+          if (!s) return '';
+          return '판매처별 가격' + (s.checkedAt ? ` (${s.checkedAt} 조회)` : '') + ': ' + s.items.map(x => `${x.name}${x.airline ? '(항공사)' : ''} ${this.won(x.price)}`).join(' · ');
+        },
+        get trips() {
+          const f = this.f; if (!f) return [];
+          const one = (key, label, color, t, withAir) => t && t.price ? {
+            key, label, color, price: t.price,
+            dates: `${this.md(t.depDate)} ~ ${this.md(t.retDate)} · ${t.nights}박 ${t.nights + 1}일`,
+            meta: [`${this.origin(t.origin)} 출발 → ${t.dest}`, t.leaveDays != null ? `연차 ${t.leaveDays}일` : '', (t.holidays || []).length ? t.holidays.join('·') + ' 포함' : '', withAir && f.airline ? f.airline : ''].filter(Boolean).join(' · '),
+            googleUrl: t.googleUrl || '', naverUrl: t.naverUrl || '', skyUrl: t.skyUrl || ''
+          } : null;
+          return [one('1', '오늘의 최저가', '#B8332A', f, true), one('2', '다른 일정 제안', '#1E3A5F', f.alt, false), one('3', '연차 절약 일정', '#215E42', f.leaveSaver, false)].filter(Boolean);
+        },
+
+        go() {
+          const u = new URL(location.href); u.searchParams.set('code', this.code);
+          location.href = u.toString();
+        },
+
+        async init() {
+          this.code = (new URLSearchParams(location.search).get('code') || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+          let d;
+          try {
+            const r = await fetch('./flights_data.json?t=' + Date.now(), { cache: 'no-store' });
+            d = await r.json();
+          } catch (e) { this.state = 'error'; return; }
+          this.latest = d.latestDate || '';
+          const today = (d.flights || []).filter(x => x.date === this.latest);
+          const failedToday = (d.failed || []).filter(x => x.date === this.latest);
+          const names = {};
+          (d.flights || []).concat(d.failed || []).forEach(x => { if (x.code && x.city) names[x.code] = x.city; });
+          this.cityList = Object.entries(names).map(([code, city]) => ({ code, city })).sort((a, b) => a.city.localeCompare(b.city, 'ko'));
+          if (!this.code) this.code = (today.slice().sort((a, b) => a.price - b.price)[0] || {}).code || (this.cityList[0] || {}).code || '';
+          if (!names[this.code]) { this.state = 'nocity'; return; }
+          this.cityName = names[this.code];
+          document.title = `${this.cityName} | 보딩패스 타임즈`;
+          this.f = today.find(x => x.code === this.code) || null;
+          const fr = failedToday.find(x => x.code === this.code);
+          this.failReason = fr ? fr.reason : '';
+
+          // 사진
+          try {
+            const pr = await fetch('./data/photos.json', { cache: 'no-cache' });
+            this.photo = ((await pr.json()).cities || {})[this.code] || {};
+          } catch (e) { this.photo = {}; }
+          this.photoUrl = this.photo.title ? `images/cities/${this.code}.jpg` : '';
+          this.photoCaption = this.photo.title ? `${this.photo.place || this.cityName} · 사진 ${this.photo.artist} / ${this.photo.license} / 위키미디어 공용` : '';
+
+          // 가격 이력(실조회 1위만)
+          const hs = (d.historicalSeries || {})[this.code];
+          if (hs && Array.isArray(hs.prices)) {
+            const ds = hs.fullDates || hs.dates || [];
+            this.hist = hs.prices.map((p, i) => ({ d: ds[i], p: Number(p) })).filter(x => x.d && x.p > 0 && x.d <= this.latest);
+          }
+          if (this.hist.length) {
+            const ps = this.hist.map(x => x.p).sort((a, b) => a - b), n = ps.length;
+            this.histStats = { min: ps[0], max: ps[n - 1], median: n % 2 ? ps[(n - 1) / 2] : Math.round((ps[n / 2 - 1] + ps[n / 2]) / 2) };
+            if (n >= this.MIN_HIST) this.histSvg = this.drawHist();
+          }
+
+          // 기후·시즌
+          const c = d.climate && d.climate.cities && d.climate.cities[this.code];
+          const yrs = String((d.climate && d.climate.period) || '').match(/(\d{4})\D+(\d{4})/);
+          this.climateSource = `NASA POWER${yrs ? ` ${yrs[1]}~${yrs[2]}년` : ''} 월평균(도시 중심 격자값)`;
+          if (c && c.tmean && c.tmean.length === 12) this.climateSvg = this.drawClimate(c);
+          const anyRec = this.f || (d.flights || []).filter(x => x.code === this.code).sort((a, b) => b.date.localeCompare(a.date))[0];
+          const seasons = (anyRec && anyRec.bestSeasons) || [];
+          this.bestMonths = new Set(seasons.flatMap(s => s.months || []));
+          this.seasonText = seasons.length ? '추천 시즌: ' + seasons.map(s => `${s.months.join('·')}월 ${s.label}`).join(' / ') : '';
+
+          // 쏠림 지수
+          const cr = d.crowd || {};
+          const cc = (cr.cities || {})[this.code];
+          if (cc && cc.level) {
+            this.crowdLevel = cc.level;
+            this.crowdPax = cc.pax ? `· 인천공항 출발 여객 ${Number(cc.pax).toLocaleString('ko-KR')}명` : '';
+            const mm = cr.months || {};
+            this.crowdMonths = Object.keys(mm).length ? Array.from({ length: 12 }, (_, i) => ({ m: i + 1, level: (mm[String(i + 1)] || {})[this.code] || 0 })) : [];
+            this.crowdBasis = `${cr.basis || ''}${cr.period ? ', ' + cr.period + '년' : ''} · 외국인 포함${this.crowdMonths.length ? ' · 아래 칸은 월별 단계' : ''}`;
+          }
+          this.state = 'ok';
+        },
+
+        chartW(max) { return Math.max(300, Math.min(max, (window.innerWidth || 400) - 74)); },
+
+        drawHist() {
+          // 화면 폭에 맞춘 좌표계: 휴대폰에서도 글자가 실제 11px 안팎으로 보이게
+          const W = this.chartW(640), H = Math.round(W * 0.42), pl = 52, pr = 12, pt = 12, pb = 28;
+          const pts = this.hist, n = pts.length;
+          let mn = this.histStats.min, mx = this.histStats.max;
+          const pad = Math.max((mx - mn) * 0.1, mx * 0.03); mn -= pad; mx += pad;
+          const x = i => pl + (n === 1 ? 0 : (i / (n - 1)) * (W - pl - pr)), y = v => pt + (1 - (v - mn) / (mx - mn)) * (H - pt - pb);
+          const line = pts.map((q, i) => `${x(i).toFixed(1)},${y(q.p).toFixed(1)}`).join(' ');
+          const grid = [this.histStats.min, this.histStats.median, this.histStats.max].map(v =>
+            `<line x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}" stroke="#E2D9C8"/><text x="${pl - 6}" y="${y(v) + 4}" font-size="11" text-anchor="end" fill="#5C5549">${Math.round(v / 1000).toLocaleString('ko-KR')}천</text>`).join('');
+          const step = Math.max(1, Math.ceil(n / 6));
+          const xl = pts.map((q, i) => (i % step === 0 || i === n - 1) ? `<text x="${x(i)}" y="${H - 8}" font-size="11" text-anchor="${i === n - 1 ? 'end' : i === 0 ? 'start' : 'middle'}" fill="#5C5549">${q.d.slice(5).replace('-', '.')}</text>` : '').join('');
+          const last = pts[n - 1];
+          return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="실조회 가격 이력 ${n}일">${grid}${xl}`
+            + `<polyline points="${pl},${H - pb} ${line} ${x(n - 1)},${H - pb}" fill="#B8332A" fill-opacity=".07" stroke="none"/>`
+            + `<polyline points="${line}" fill="none" stroke="#B8332A" stroke-width="2"/>`
+            + pts.map((q, i) => `<circle cx="${x(i)}" cy="${y(q.p)}" r="${i === n - 1 ? 4.5 : 2.5}" fill="#B8332A"><title>${q.d} ${this.won(q.p)}</title></circle>`).join('')
+            + `<text x="${x(n - 1) - 6}" y="${y(last.p) - 9}" font-size="12" font-weight="700" text-anchor="end" fill="#1E1B18">${this.won(last.p)}</text></svg>`;
+        },
+
+        drawClimate(c) {
+          const W = this.chartW(520), H = Math.round(W * 0.42), pl = 8, pr = 8, pt = 18, pb = 22, bw = (W - pl - pr) / 12;
+          const tmin = Math.min(0, ...c.tmean), tmax = Math.max(...c.tmean), pmax = Math.max(1, ...c.precipMm);
+          const yT = t => pt + (1 - (t - tmin) / ((tmax - tmin) || 1)) * (H - pt - pb), yP = p => (H - pb) - (p / pmax) * (H - pt - pb);
+          const bars = c.precipMm.map((p, i) => `<rect x="${pl + i * bw + 4}" y="${yP(p)}" width="${bw - 8}" height="${(H - pb) - yP(p)}" fill="#A9C2D9"><title>${i + 1}월 강수 ${p}mm</title></rect>`).join('');
+          const line = c.tmean.map((t, i) => `${pl + i * bw + bw / 2},${yT(t)}`).join(' ');
+          const tl = c.tmean.map((t, i) => `<text x="${pl + i * bw + bw / 2}" y="${yT(t) - 6}" font-size="10" text-anchor="middle" fill="#8A1C1C">${Math.round(t)}°</text>`).join('');
+          const ml = c.tmean.map((t, i) => `<text x="${pl + i * bw + bw / 2}" y="${H - 6}" font-size="10" text-anchor="middle" fill="#5C5549">${i + 1}월</text>`).join('');
+          return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="월별 평년 기온과 강수">${bars}<polyline points="${line}" fill="none" stroke="#B8332A" stroke-width="2"/>${tl}${ml}</svg>`
+            + `<p class="text-[11px] text-[#7A7164] mt-1">막대: 강수(최대 ${Math.max(...c.precipMm)}mm) · 선: 평균기온(℃)</p>`;
+        }
+      };
+    }
+  </script>
+</body>
+</html>
