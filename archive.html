@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>지난 호 보관함 | 보딩패스 타임즈</title>
+  <meta name="description" content="보딩패스 타임즈 지난 호 보관함: 날짜별 발행 도시 수와 그날의 직항 왕복 최저가." />
+  <link rel="alternate" type="application/rss+xml" title="보딩패스 타임즈" href="./feed.xml" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper-bg: #EFECE4; --card-bg: #FAF7F0; --ink: #1E1B18; --muted: #5C5549; --rule: #2C2620; --line: #D5CBB8; }
+    body {
+      background-color: var(--paper-bg); color: var(--ink); font-family: 'Noto Sans KR', sans-serif;
+      background-image: radial-gradient(rgba(44, 38, 32, 0.045) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    .font-serif-kr { font-family: 'Noto Serif KR', serif; }
+    .font-masthead { font-family: 'Playfair Display', 'Noto Serif KR', serif; }
+    .font-mono { font-family: 'JetBrains Mono', 'Noto Sans KR', monospace; }
+    .double-rule-bottom { border-bottom: 3px double var(--rule); }
+    .double-rule-top { border-top: 3px double var(--rule); }
+    .sec { background: var(--card-bg); border: 1px solid var(--line); }
+    .sec h2 { font-family: 'Noto Serif KR', serif; font-weight: 900; }
+    .sec p, .sec li { line-height: 1.75; }
+    table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.t th, table.t td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+    table.t th { font-size: 12px; color: var(--muted); font-weight: 700; white-space: nowrap; }
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body class="min-h-screen pb-16 antialiased" x-data="archivePage()" x-init="init()">
+  <header class="max-w-4xl mx-auto px-4 pt-5 pb-3">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-[#5C5549] border-t-2 border-b border-[#2C2620] py-1.5 px-1 font-medium">
+      <a href="./index.html" class="font-bold text-[#1E3A5F] underline">← 오늘 일간지로</a>
+      <span x-show="issues.length" x-text="'총 ' + issues.length + '개 호'"></span>
+    </div>
+    <div class="py-5 text-center double-rule-bottom">
+      <div class="font-masthead text-xs sm:text-sm tracking-[0.22em] font-bold text-[#3E3932]">THE BOARDING PASS TIMES · ARCHIVE</div>
+      <h1 class="font-serif-kr text-3xl sm:text-5xl font-black tracking-tight mt-1">지난 호 보관함</h1>
+      <p class="text-sm text-[#3E3932] mt-2">날짜별 1면 요약 · 그날 실제 조회한 1위 가격 기준</p>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 space-y-3">
+    <div x-show="state === 'loading'" class="text-center py-10 font-serif-kr font-bold">불러오는 중입니다…</div>
+    <div x-show="state === 'error'" x-cloak class="text-center py-10 font-serif-kr font-bold">보관함을 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.</div>
+    <p x-show="state === 'ok'" x-cloak class="text-xs text-[#5C5549]">최근 14개 호는 "그날 호 보기"로 당시 지면 전체를 볼 수 있습니다. 그 이전 호는 요약만 남습니다(영구 이력에는 도시별 1위만 저장). <strong class="text-[#B8332A]">참고용</strong> 표시는 이전 수집기 기록으로, 실조회 원칙 이전 자료입니다.</p>
+    <ol id="issueList" class="space-y-3" x-show="state === 'ok'" x-cloak>
+      <template x-for="it in issues" :key="it.date">
+        <li class="bg-[#FAF7F0] border border-[#D5CBB8] p-4" :class="it.source === 'reference' ? 'opacity-80' : ''">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 class="font-serif-kr font-black text-lg">
+              <span x-text="dateLabel(it.date)"></span>
+              <span x-show="it.source === 'reference'" class="ml-1 text-[11px] font-bold text-white bg-[#B8332A] px-1.5 py-0.5 rounded-sm align-middle">참고용</span>
+            </h2>
+            <span class="text-xs text-[#5C5549]" x-text="'발행 ' + it.published + (it.total ? '/' + it.total : '') + '개 도시'"></span>
+          </div>
+          <p class="text-sm mt-1" x-show="it.top.length">
+            최저가 <a class="font-bold underline" :href="'./city.html?code=' + it.top[0].code" x-text="it.top[0].city"></a>
+            <strong class="text-[#B8332A] font-serif-kr" x-text="won(it.top[0].price)"></strong>
+            <span class="text-xs text-[#5C5549]" x-text="sched(it.top[0])"></span>
+          </p>
+          <p class="text-xs text-[#3E3932] mt-1" x-show="it.top.length > 1" x-text="'그다음: ' + it.top.slice(1).map(t => t.city + ' ' + won(t.price)).join(' · ')"></p>
+          <a x-show="live.includes(it.date)" :href="'./index.html?d=' + it.date" class="inline-block mt-2 text-xs font-bold text-[#1E3A5F] underline">그날 호 보기 →</a>
+        </li>
+      </template>
+    </ol>
+  </main>
+
+  <footer class="max-w-4xl mx-auto px-4 mt-10">
+    <div class="double-rule-top pt-5 text-center text-xs text-[#5C5549] space-x-3">
+      <a href="./index.html" class="font-bold text-[#1E3A5F] underline">오늘 일간지</a>
+      <a href="./monthly.html" class="font-bold text-[#1E3A5F] underline">월간지</a>
+      <a href="./about.html" class="font-bold text-[#1E3A5F] underline">만드는 방법</a>
+    </div>
+  </footer>
+
+  <script>
+    function archivePage() {
+      const WK = '일월화수목금토';
+      return {
+        state: 'loading', issues: [], live: [],
+        won(n) { return '₩' + (Number(n) || 0).toLocaleString('ko-KR'); },
+        dateLabel(iso) { const [y, m, d] = iso.split('-').map(Number); return `${y}년 ${m}월 ${d}일(${WK[new Date(y, m - 1, d).getDay()]})`; },
+        sched(t) {
+          const f = iso => { const [, m, d] = String(iso || '').split('-'); return m ? `${m}.${d}` : ''; };
+          return t.dep ? `${f(t.dep)}-${f(t.ret)}` : '';
+        },
+        async init() {
+          try {
+            const r = await fetch('./data/archive.json?t=' + Date.now(), { cache: 'no-store' });
+            if (!r.ok) throw new Error(r.status);
+            this.issues = (await r.json()).issues || [];
+          } catch (e) { this.state = 'error'; return; }
+          try {
+            const d = await (await fetch('./flights_data.json?t=' + Date.now(), { cache: 'no-store' })).json();
+            this.live = d.availableDates || [];
+          } catch (e) { this.live = []; }
+          this.state = 'ok';
+        }
+      };
+    }
+  </script>
+</body>
+</html>

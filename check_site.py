@@ -308,6 +308,67 @@ with sync_playwright() as p:
                 problems.append(f"city {rec['code']}: 오류 {cerr[:3]}")
             page.screenshot(path=f"screenshots/city_{rec['code']}_{vw}.png", full_page=True)
             page.close()
+    # 관심 도시(P5-3): ☆ 누르면 띠에 나타나고, 새로고침해도 남고, 다시 누르면 빠짐
+    page = b.new_page(viewport={"width": 390, "height": 844})
+    page.goto(f"http://127.0.0.1:{PORT}/index.html", wait_until="networkidle")
+    page.wait_for_timeout(1500)
+    first = page.locator("article.newspaper-card").first
+    fav_city = first.locator("h3").inner_text().strip()
+    first.locator("button.fav-star").click()
+    page.wait_for_timeout(200)
+    strip1 = page.locator("#favStrip").is_visible() and fav_city in page.locator("#favStrip").inner_text()
+    page.reload(wait_until="networkidle")
+    page.wait_for_timeout(1500)
+    strip2 = page.locator("#favStrip").is_visible() and fav_city in page.locator("#favStrip").inner_text()
+    page.locator("article.newspaper-card").first.locator("button.fav-star").click()
+    page.wait_for_timeout(200)
+    strip3 = page.locator("#favStrip").is_visible()
+    print(f"[관심 도시] {fav_city}: 넣기 {strip1}, 새로고침 뒤 {strip2}, 빼기 뒤 띠 보임 {strip3}")
+    if not (strip1 and strip2 and not strip3):
+        problems.append("관심 도시 넣기·저장·빼기 이상")
+    rss_links = page.locator("article.newspaper-card a[href*='feed/']").count()
+    if rss_links != expected:
+        problems.append(f"카드 RSS 링크 {rss_links} != {expected}")
+    # 보관함에서 들어오는 ?d= (최근 14발행일 안)
+    avail = data.get("availableDates", [])
+    if len(avail) > 1:
+        page.goto(f"http://127.0.0.1:{PORT}/index.html?d={avail[1]}", wait_until="networkidle")
+        page.wait_for_timeout(1500)
+        sel_d = page.eval_on_selector("select[x-model='selectedDate']", "e => e.value")
+        print(f"[?d=] {avail[1]} → 선택된 호 {sel_d}")
+        if sel_d != avail[1]:
+            problems.append(f"?d={avail[1]} 로 그날 호가 열리지 않음({sel_d})")
+    page.close()
+    # 도시별 RSS(P5-3)·보관함(P5-4): 배포 때 만드는 파일(build_extras.py)
+    if os.path.isdir("feed"):
+        import xml.etree.ElementTree as ET
+        bad_feed = []
+        for c in [r_["code"] for r_ in data["flights"] if r_["date"] == latest] + [r_["code"] for r_ in data["failed"] if r_["date"] == latest]:
+            try:
+                ET.parse(f"feed/{c}.xml")
+            except Exception:
+                bad_feed.append(c)
+        print(f"[도시별 RSS] {len(os.listdir('feed'))}개, 읽기 실패 {bad_feed or '없음'}")
+        if bad_feed:
+            problems.append(f"도시별 RSS 이상 {bad_feed[:5]}")
+    if os.path.exists("data/archive.json"):
+        arc = json.load(open("data/archive.json", encoding="utf-8"))["issues"]
+        page = b.new_page(viewport={"width": 390, "height": 844})
+        perr = []
+        page.on("pageerror", lambda e: perr.append(str(e)))
+        page.goto(f"http://127.0.0.1:{PORT}/archive.html", wait_until="networkidle")
+        page.wait_for_timeout(1500)
+        n_items = page.locator("#issueList > li").count()
+        n_links = page.locator("#issueList a:visible:has-text('그날 호 보기')").count()
+        exp_links = sum(1 for i in arc if i["date"] in avail)
+        n_ref = page.locator("#issueList h2 span:visible:has-text('참고용')").count()
+        exp_ref = sum(1 for i in arc if i["source"] == "reference")
+        ov_r = page.evaluate("document.documentElement.scrollWidth - window.innerWidth")
+        print(f"[보관함] {n_items}개 호(데이터 {len(arc)}), 그날 호 링크 {n_links}(기대 {exp_links}), 참고용 {n_ref}(기대 {exp_ref}), 넘침 {ov_r}px, 오류 {len(perr)}건")
+        if n_items != len(arc) or n_links != exp_links or n_ref != exp_ref or ov_r > 0 or perr:
+            problems.append("보관함 표시 이상")
+        page.screenshot(path="screenshots/archive.png", full_page=True)
+        page.close()
     # 월간지
     page = b.new_page(viewport={"width": 1366, "height": 900})
     merr = []

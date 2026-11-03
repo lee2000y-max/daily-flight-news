@@ -5,3 +5,5 @@ photo_preview/
 data/photo_candidates.json
 s/
 _site/
+feed/
+data/archive.json

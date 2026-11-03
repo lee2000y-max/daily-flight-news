@@ -42,6 +42,11 @@ jobs:
           sudo apt-get -qq update > /dev/null && sudo apt-get -qq install -y fonts-noto-cjk > /dev/null
           pip install -q pillow
           python build_share.py
+      - name: 도시별 RSS·보관함 목록(feed/, data/archive.json)
+        continue-on-error: true
+        env:
+          PYTHONUTF8: '1'
+        run: python build_extras.py
       - name: 배포 묶음 만들기
         run: |
           mkdir -p _site
@@ -49,6 +54,7 @@ jobs:
           touch _site/.nojekyll
           echo "묶음: $(du -sh _site | cut -f1), 공유 페이지 $(ls _site/s 2>/dev/null | wc -l)개"
           test -f _site/index.html && test -f _site/flights_data.json
+          echo "도시별 RSS $(ls _site/feed 2>/dev/null | wc -l)개"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

@@ -115,6 +115,16 @@
           </p>
         </section>
 
+        <!-- 도시별 RSS(P5-3) -->
+        <section class="sec p-5" id="rss">
+          <h2 class="text-xl mb-1">이 도시 RSS</h2>
+          <p class="text-xs text-[#5C5549] mb-2">피드 앱에 넣으면 이 도시가 실린 날만 새 글(그날 실제 조회한 1위 가격·일정)이 올라옵니다.</p>
+          <div class="flex flex-wrap items-center gap-2">
+            <code class="font-mono text-xs bg-white border border-[#D5CBB8] px-2 py-1.5 break-all" x-text="feedUrl"></code>
+            <button type="button" class="text-xs font-bold px-3 py-1.5 bg-[#2C2620] text-white rounded-sm" @click="copyFeed()" x-text="copyMsg || '주소 복사'"></button>
+          </div>
+        </section>
+
         <!-- 기후·시즌·쏠림 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <section class="sec p-5" id="climate">
@@ -155,6 +165,7 @@
     <div class="double-rule-top pt-5 text-center text-xs text-[#5C5549] space-x-3">
       <a href="./index.html" class="font-bold text-[#1E3A5F] underline">오늘 일간지</a>
       <a href="./monthly.html" class="font-bold text-[#1E3A5F] underline">월간지</a>
+      <a href="./archive.html" class="font-bold text-[#1E3A5F] underline">지난 호</a>
       <a href="./about.html" class="font-bold text-[#1E3A5F] underline">만드는 방법</a>
     </div>
   </footer>
@@ -171,6 +182,14 @@
         hist: [], histSvg: '', histStats: {},
         climateSvg: '', climateSource: '', bestMonths: new Set(), seasonText: '',
         crowdLevel: 0, crowdPax: '', crowdMonths: [], crowdBasis: '',
+
+        copyMsg: '',
+        get feedUrl() { return new URL(`feed/${this.code}.xml`, location.href.split('?')[0]).href; },
+        async copyFeed() {
+          try { await navigator.clipboard.writeText(this.feedUrl); this.copyMsg = '복사했어요'; }
+          catch (e) { this.copyMsg = '주소를 길게 눌러 복사하세요'; }
+          setTimeout(() => { this.copyMsg = ''; }, 2000);
+        },
 
         won(n) { return '₩' + (Number(n) || 0).toLocaleString('ko-KR'); },
         md(iso) { const [y, m, d] = String(iso || '').split('-').map(Number); if (!d) return ''; return `${m}.${String(d).padStart(2, '0')}(${WK[new Date(y, m - 1, d).getDay()]})`; },

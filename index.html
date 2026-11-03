@@ -314,6 +314,7 @@
         <span>|</span>
         <a href="./monthly.html" class="font-bold text-[#1E3A5F] underline">월간지</a>
         <a href="./feed.xml" class="font-bold text-[#1E3A5F] underline">RSS</a>
+        <a href="./archive.html" class="font-bold text-[#1E3A5F] underline">지난 호</a>
         <a href="./about.html" class="font-bold text-[#1E3A5F] underline">만드는 방법</a>
         <span class="hidden md:inline">|</span>
         <span x-show="currentStatus.total" x-cloak>오늘 발행 <strong class="text-[#1E1B18]" x-text="currentStatus.published + '/' + currentStatus.total"></strong>개 도시 · <span x-text="(currentStatus.generatedAt || '').slice(11) + ' 발행'"></span></span>
@@ -465,6 +466,33 @@
         </div>
         <p class="text-[11px] text-[#7A7164] mt-2"><a href="./about.html#frontpage" class="underline">1면 기사를 고르는 방법</a> · 1면 기사와 전광판은 오늘 실제 조회 가격으로 자동 작성됩니다. 연차 효율 일정은 날짜 검색 실조회 가격이며 편명·시각은 예약 사이트에서 확인하세요.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- 내 관심 도시(P5-3): 카드의 ☆로 고른 도시. 내 브라우저에만 저장. 미발행 도시는 가격 없이 -->
+  <section class="max-w-7xl mx-auto px-4 mb-6" x-show="loadState === 'ok' && favs.length" x-cloak aria-labelledby="favTitle" id="favStrip">
+    <div class="bg-[#FAF7F0] border-2 border-[#2C2620] px-4 py-3">
+      <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+        <h2 id="favTitle" class="font-serif-kr font-black text-base">★ 내 관심 도시</h2>
+        <span class="text-[11px] text-[#7A7164]">이 브라우저에만 저장됩니다 · 카드의 ☆를 눌러 넣고 빼세요</span>
+      </div>
+      <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+        <template x-for="fr in favRows" :key="fr.code">
+          <li class="border border-[#D5CBB8] bg-white px-2.5 py-2 min-w-0">
+            <div class="flex items-center justify-between gap-1">
+              <a :href="'./city.html?code=' + fr.code" class="font-bold text-sm truncate hover:underline" x-text="fr.city"></a>
+              <button type="button" class="text-[#C99A06] text-base leading-none" @click="toggleFav(fr.code)" :aria-label="fr.city + ' 관심 도시에서 빼기'">★</button>
+            </div>
+            <template x-if="fr.f">
+              <button type="button" class="text-left w-full" @click="jumpToCard(fr.code)">
+                <span class="block font-serif-kr font-black text-base text-[#B8332A]" x-text="formatPrice(fr.f.price)"></span>
+                <span class="block text-[11px] text-[#5C5549]" x-text="shortDate(fr.f.depDate) + '-' + shortDate(fr.f.retDate) + ' · ' + fr.f.nights + '박'"></span>
+              </button>
+            </template>
+            <template x-if="!fr.f"><span class="block text-[11px] text-[#7A7164] mt-1">이 호에는 미발행</span></template>
+          </li>
+        </template>
+      </ul>
     </div>
   </section>
 
@@ -643,7 +671,14 @@
                   style="background-color: var(--badge-sub);"
                   x-text="getTaxonomy(item.code).sub"></span>
               </div>
-              <span class="font-mono-flap text-[11px] font-bold text-[#5C5549]" x-text="item.origin + ' ✈ ' + item.dest"></span>
+              <span class="flex items-center gap-1.5">
+                <span class="font-mono-flap text-[11px] font-bold text-[#5C5549]" x-text="item.origin + ' ✈ ' + item.dest"></span>
+                <button type="button" class="fav-star text-lg leading-none px-0.5" @click="toggleFav(item.code)"
+                  :aria-pressed="isFav(item.code) ? 'true' : 'false'"
+                  :aria-label="item.city + (isFav(item.code) ? ' 관심 도시에서 빼기' : ' 관심 도시에 넣기')"
+                  :style="{ color: isFav(item.code) ? '#C99A06' : '#A89E8E' }"
+                  x-text="isFav(item.code) ? '★' : '☆'"></button>
+              </span>
             </div>
 
             <!-- 도시명 & 왕복 최저가 헤드라인 -->
@@ -654,7 +689,10 @@
               </div>
               <p class="text-[11px] text-[#5C5549] font-medium mt-0.5" x-text="getLandmarkCaption(item.code)"></p>
               <p x-show="photoCredit(item.code)" class="text-[10px] text-[#7A7164] mt-0.5" x-text="photoCredit(item.code)"></p>
-              <a :href="'./city.html?code=' + item.code" class="inline-block text-[11px] font-bold text-[#1E3A5F] underline mt-0.5">가격 이력·날씨·쏠림 지수 →</a>
+              <span class="inline-flex flex-wrap gap-x-3 mt-0.5 text-[11px] font-bold">
+                <a :href="'./city.html?code=' + item.code" class="text-[#1E3A5F] underline">가격 이력·날씨·쏠림 지수 →</a>
+                <a :href="'./feed/' + item.code + '.xml'" class="text-[#B45309] underline" :title="item.city + ' RSS'">RSS</a>
+              </span>
             </div>
 
             <!-- 가격 및 직전호 등락 & 최근 가격 변동 그래프 (가장 좌측 과거 가격 숫자 표기) -->
@@ -1086,6 +1124,7 @@
 
         // 1면(기사·전광판)과 스탬프: 발행호가 바뀔 때 refreshFrontPage()에서 다시 계산
         frontPage: { top: null, sides: [], boardRows: [] },
+        favs: [],           // 관심 도시 코드(P5-3, localStorage 'bpt-favs')
         photos: {},         // 도시 사진 출처 {code: {title, page, license, artist, place}} (data/photos.json, 없으면 빈 값)
         flap: null,         // FlapBoard 엔진(전광판 DOM은 Alpine 밖에서 직접 움직임)
         stampByCode: {},
@@ -1360,6 +1399,11 @@
           this.statusByDate = extData.status || {};
           this.availableDates = dates;
           this.selectedDate = fresh[extData.latestDate] ? extData.latestDate : dates[0];
+          // 보관함(archive.html)에서 ?d=YYYY-MM-DD로 들어오면 그 호(최근 14발행일 안에 있을 때만)
+          try {
+            const qd = new URLSearchParams(location.search).get('d');
+            if (qd && /^\d{4}-\d{2}-\d{2}$/.test(qd) && dates.includes(qd)) this.selectedDate = qd;
+          } catch (e) {}
           return true;
         },
 
@@ -1374,6 +1418,7 @@
           } catch (e) {
             this.loadState = 'error';
           }
+          this.loadFavs();
           try {
             const pr = await fetch('./data/photos.json', { cache: 'no-cache' });
             if (pr.ok) { const pj = await pr.json(); this.photos = (pj && pj.cities) || {}; }
@@ -1721,6 +1766,21 @@
           this.flap.setRows(rows.map(r => this.boardTexts(r)));
         },
 
+        // 관심 도시(P5-3): 이 브라우저에만 저장. 저장이 막힌 환경에서도 화면은 동작
+        loadFavs() {
+          try { const v = JSON.parse(localStorage.getItem('bpt-favs') || '[]'); this.favs = Array.isArray(v) ? v.filter(c => /^[A-Z]{3}$/.test(c)) : []; }
+          catch (e) { this.favs = []; }
+        },
+        isFav(code) { return this.favs.includes(code); },
+        toggleFav(code) {
+          this.favs = this.isFav(code) ? this.favs.filter(c => c !== code) : [...this.favs, code];
+          try { localStorage.setItem('bpt-favs', JSON.stringify(this.favs)); } catch (e) {}
+        },
+        get favRows() {
+          const by = Object.fromEntries(this.currentEditionFlights.map(f => [f.code, f]));
+          return this.favs.map(code => ({ code, city: (by[code] && by[code].city) || this.cityName(code), f: by[code] || null }));
+        },
+
         // 공유 링크(s/<도시>/ → ./#<도시>)로 들어오면 그 카드로 이동
         jumpFromHash() {
           const m = (location.hash || '').match(/^#([A-Z]{3})$/);
@@ -1998,7 +2058,8 @@
         },
 
         cityName(code) {
-          const f = Object.values(this.failedByDate).flat().find(x => x && x.code === code);
+          const f = Object.values(this.allEditionsData).flat().find(x => x && x.code === code)
+            || Object.values(this.failedByDate).flat().find(x => x && x.code === code);
           return (f && f.city) || code;
         },
 
