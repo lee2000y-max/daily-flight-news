@@ -8,6 +8,14 @@
    "place": "비에이 패치워크 언덕",
    "title": "File:Patchwork hills - biei - panoramio.jpg"
   },
+  "ALA": {
+   "artist": "Bgag",
+   "description": "Charyn Canyon, Kazakhstan",
+   "license": "CC0",
+   "page": "https://commons.wikimedia.org/wiki/File:Charyn_Canyon,_Kazakhstan_03.jpg",
+   "place": "차린 협곡(알마티 근교)",
+   "title": "File:Charyn Canyon, Kazakhstan 03.jpg"
+  },
   "AOJ": {
    "artist": "lumoplank",
    "description": "The Oirase Stream flowing over moss-covered boulders through Oirase Gorge during autumn foliage season.",
@@ -40,6 +48,14 @@
    "place": "오마르 알리 사이푸딘 모스크",
    "title": "File:Yayasan Sultan Haji Hassanal Bolkiah Complex, Brunei (DSCF1413).jpg"
   },
+  "CAN": {
+   "artist": "钉钉",
+   "description": "Canton Tower at night",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Canton_Tower_at_night_1.jpg",
+   "place": "광저우 캔톤 타워 야경",
+   "title": "File:Canton Tower at night 1.jpg"
+  },
   "CEB": {
    "artist": "Øyvind Holmstad",
    "description": "Blue Waters Mactan beach",
@@ -64,6 +80,14 @@
    "place": "피나투보 화산 분화구 호수",
    "title": "File:Crater Lake at the Mount Pinatubo Caldera in the Philippines.jpg"
   },
+  "CTS": {
+   "artist": "Nkns",
+   "description": "大通公園",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Hokkaido_Sapporo_Odori_Park.jpg",
+   "place": "삿포로 오도리 공원",
+   "title": "File:Hokkaido Sapporo Odori Park.jpg"
+  },
   "CXR": {
    "artist": "bvi4092",
    "description": "A faint rainbow emerging in Nha Trang Bay, Vietnam",
@@ -87,6 +111,22 @@
    "page": "https://commons.wikimedia.org/wiki/File:Dalian_China_Lighthouse-in-Dalian-Bay-01.jpg",
    "place": "다롄 등대와 시가지",
    "title": "File:Dalian China Lighthouse-in-Dalian-Bay-01.jpg"
+  },
+  "DLI": {
+   "artist": "Dragfyre",
+   "description": "Truc Lam Temple, Da Lat, Vietnam",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Drum_at_Truc_Lam_Temple.JPG",
+   "place": "달랏 쭉럼 사원",
+   "title": "File:Drum at Truc Lam Temple.JPG"
+  },
+  "DPS": {
+   "artist": "Jakub Hałun",
+   "description": "Tanah Lot, Bali, Indonesia",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Tanah_Lot,_Bali,_Indonesia,_20220827_0957_1103.jpg",
+   "place": "발리 따나롯 사원",
+   "title": "File:Tanah Lot, Bali, Indonesia, 20220827 0957 1103.jpg"
   },
   "DYG": {
    "artist": "Kuruman from Tokyo, Japan",
@@ -168,6 +208,14 @@
    "place": "하롱베이",
    "title": "File:View of sea from Titov Island, Ha Long Bay, Vietnam, 20240128 1337 3732.jpg"
   },
+  "HRB": {
+   "artist": "Tracy Hunter",
+   "description": "Ice and Snow World, in Harbin, China, during day. The hundreds of sculptures will transform when they are all lit up and night.",
+   "license": "CC BY 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Harbin_Ice_and_Snow_Festival_2013.jpg",
+   "place": "하얼빈 빙설제",
+   "title": "File:Harbin Ice and Snow Festival 2013.jpg"
+  },
   "HSG": {
    "artist": "Viy4092",
    "description": "Takeo Onsen Romon,Takeo,Saga,Japan",
@@ -215,6 +263,14 @@
    "page": "https://commons.wikimedia.org/wiki/File:131109_Kenrokuen_Kanazawa_Ishikawa_pref_Japan05s3.jpg",
    "place": "가나자와 겐로쿠엔",
    "title": "File:131109 Kenrokuen Kanazawa Ishikawa pref Japan05s3.jpg"
+  },
+  "KOJ": {
+   "artist": "STA3816",
+   "description": "Sakurajima from Iso Garden, Kagoshima, Japan",
+   "license": "CC BY 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Sakurajima_from_Sengan-en.jpg",
+   "place": "센간엔에서 본 사쿠라지마",
+   "title": "File:Sakurajima from Sengan-en.jpg"
   },
   "MFM": {
    "artist": "Diego Delso",
@@ -272,6 +328,14 @@
    "place": "오키나와 만좌모",
    "title": "File:Onna Okinawa Japan Cape-Manzamo-01.jpg"
   },
+  "PKX": {
+   "artist": "Fong Chen",
+   "description": "The Hall of Prayer for Good Harvest at the Temple of Heaven in Beijing. April，2010",
+   "license": "Public domain",
+   "page": "https://commons.wikimedia.org/wiki/File:Hall_of_Prayer_for_Good_Harvest.JPG",
+   "place": "베이징 천단 기년전",
+   "title": "File:Hall of Prayer for Good Harvest.JPG"
+  },
   "PQC": {
    "artist": "Klientos",
    "description": "Канатная дорога Хонтхом, участок над посёлком Антхой (остров Фукуок).",
@@ -311,6 +375,14 @@
    "page": "https://commons.wikimedia.org/wiki/File:Marina_Bay_Sands_and_illuminated_polyhedral_building_Louis_Vuitton_over_the_water_at_blue_hour_with_pink_clouds_in_Singapore.jpg",
    "place": "마리나베이 샌즈",
    "title": "File:Marina Bay Sands and illuminated polyhedral building Louis Vuitton over the water at blue hour with pink clouds in Singapore.jpg"
+  },
+  "SPN": {
+   "artist": "tata_aka_T from Tokyo, JAPAN",
+   "description": "Micro Beach, Saipan",
+   "license": "CC BY 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Micro_Beach_(530316786).jpg",
+   "place": "사이판 마이크로 비치",
+   "title": "File:Micro Beach (530316786).jpg"
   },
   "TAG": {
    "artist": "Jeroen36",
@@ -359,6 +431,22 @@
    "page": "https://commons.wikimedia.org/wiki/File:Krajobraz_w_Parku_Narodowym_Gorchi-Tereld%C5%BC_63.JPG",
    "place": "고르히-테렐지 국립공원",
    "title": "File:Krajobraz w Parku Narodowym Gorchi-Tereldż 63.JPG"
+  },
+  "VTE": {
+   "artist": "Basile Morin",
+   "description": "Wat Si Saket Buddhist temple in its paved courtyard, under a stormy sky. Oldest temple of Vientiane (capital of Laos), it was built between 1819 and 1824.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Wat_Si_Saket_in_its_paved_courtyard_Vientiane_Laos.jpg",
+   "place": "비엔티안 왓 시사켓",
+   "title": "File:Wat Si Saket in its paved courtyard Vientiane Laos.jpg"
+  },
+  "XIY": {
+   "artist": "shankar s. from Dubai, united arab emirates",
+   "description": "I kept gazing awe-struck at the Terracotta warriors excavations. Rows of terracotta warriors are meticulously arranged in rows and rows of pits. The figures, dating from approximately the late third c",
+   "license": "CC BY 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Rows_of_terracota_warriors_are_arranged_in_rows_of_pits_(35648437816).jpg",
+   "place": "시안 병마용갱",
+   "title": "File:Rows of terracota warriors are arranged in rows of pits (35648437816).jpg"
   },
   "YGJ": {
    "artist": "Hashi photo",
