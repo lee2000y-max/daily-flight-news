@@ -9,6 +9,10 @@
       조건: 가로 사진(가로 ≥ 세로 × 1.25), 가로 1600px 이상, 라이선스 PD·CC0·CC BY·CC BY-SA.
       결과: data/photo_candidates.json, 미리보기 썸네일 photo_preview/<code>_<n>.jpg (가로 480px)
 
+  python build_photos.py candidates CTS KOJ ...
+      지정한 도시만 다시 찾기(REQUERY 검색어). 기존 후보(1~3번)는 그대로 두고 새 후보를 4번부터 덧붙인다.
+      기존 data/photo_candidates.json·photo_preview/가 있어야 한다(워크플로가 preview/photos 브랜치에서 가져옴).
+
   python build_photos.py fetch "YGJ:2 SDJ:1 ..."
       고른 후보를 images/cities/<code>.jpg(가로 1600) · <code>_640.jpg(가로 640)로 저장하고
       출처(작가·라이선스·원본 주소)를 data/photos.json에 기록한다. 입력에 없는 도시는 기존 기록 유지.
@@ -87,6 +91,22 @@ PHOTO_QUERIES = {
     "DPS": ["Tegallalang rice terraces", "Uluwatu Temple", "Pura Ulun Danu Bratan"],
 }
 
+# 다시 찾기용 검색어(1차 후보가 마음에 들지 않은 도시, 2026-11-03 사용자 요청)
+REQUERY = {
+    "CTS": ["Otaru Canal night", "Sapporo Snow Festival Odori", "Sapporo Clock Tower", "Odori Park Sapporo winter"],
+    "KOJ": ["Sakurajima from Kagoshima city", "Sakurajima Kagoshima Bay volcano", "Sengan-en Sakurajima", "Sakurajima eruption smoke"],
+    "DLI": ["Da Lat Cathedral", "Da Lat city view lake", "Langbiang mountain", "Truc Lam Temple Da Lat", "Da Lat flower garden"],
+    "PKX": ["Temple of Heaven Beijing", "Forbidden City panorama", "Mutianyu Great Wall autumn", "Beijing CBD skyline"],
+    "XIY": ["Terracotta Army pit 1", "Xi'an Bell Tower night", "Xi'an City Wall south gate", "Terracotta warriors rows"],
+    "CAN": ["Canton Tower night", "Zhujiang New Town skyline", "Shamian Island Guangzhou", "Guangzhou skyline Pearl River"],
+    "HRB": ["Harbin Ice and Snow World night", "Saint Sophia Cathedral Harbin exterior", "Central Street Harbin", "Harbin ice sculpture"],
+    "ALA": ["Big Almaty Lake turquoise", "Kok Tobe Almaty view", "Almaty city mountains", "Charyn Canyon"],
+    "VTE": ["Pha That Luang golden stupa", "Patuxai Vientiane", "Wat Si Saket", "Vientiane Mekong sunset"],
+    "SPN": ["Managaha Island Saipan", "Micro Beach Saipan", "Bird Island Saipan", "Saipan lagoon beach"],
+    "DPS": ["Tanah Lot temple", "Uluwatu Temple cliff", "Tegallalang rice terrace Bali", "Pura Lempuyang gates"],
+}
+N_MORE = 4
+
 ALLOWED = re.compile(r"^(public domain|pd|cc0|cc[- ]by( |-)?(sa)?[- ]?\d(\.\d)?.*|cc[- ]by(-sa)?)$", re.I)
 
 
@@ -162,11 +182,19 @@ def search(query: str, width: int, extra: str = "", limit: int = 20) -> list:
     return out
 
 
-def candidates() -> None:
+def candidates(only=None) -> None:
+    """only가 없으면 58개 도시 전체(후보 3장), 있으면 그 도시만 REQUERY 검색어로 다시 찾아 4번부터 덧붙임."""
     os.makedirs(PREVIEW_DIR, exist_ok=True)
     result, short = {}, []
-    for code, queries in PHOTO_QUERIES.items():
-        picked, seen = [], set()
+    if only:
+        result = json.load(open(CAND_PATH, encoding="utf-8"))["cities"]
+        targets = {c: REQUERY.get(c) or PHOTO_QUERIES[c] for c in only}
+    else:
+        targets = PHOTO_QUERIES
+    for code, queries in targets.items():
+        prev = result.get(code, []) if only else []
+        want = N_MORE if only else N_CAND
+        picked, seen = [], {c["title"] for c in prev}
         # 1차: 공용 '우수 사진(Quality images)' 안에서, 2차: 전체에서. 검색어마다 1장씩 돌아가며 채운다.
         pools = []
         for q in queries:
@@ -176,24 +204,24 @@ def candidates() -> None:
                 print(f"   ! {code} '{q}': {e}")
                 pools.append([])
             time.sleep(0.3)
-        while len(picked) < N_CAND and any(pools):
+        while len(picked) < want and any(pools):
             for pool in pools:
                 while pool and pool[0]["title"] in seen:
                     pool.pop(0)
-                if pool and len(picked) < N_CAND:
+                if pool and len(picked) < want:
                     c = pool.pop(0)
                     seen.add(c["title"])
                     picked.append(c)
-        for n, c in enumerate(picked, 1):
+        for n, c in enumerate(picked, len(prev) + 1):
             try:
                 with open(f"{PREVIEW_DIR}/{code}_{n}.jpg", "wb") as fh:
                     fh.write(download(c["thumb"]))
             except RuntimeError as e:
                 print(f"   ! {code} {n}번 썸네일: {e}")
-        result[code] = picked
-        flag = "" if len(picked) == N_CAND else "  ← 후보 부족"
+        result[code] = prev + picked
+        flag = "" if len(picked) == want else "  ← 후보 부족"
         print(f"{code}: {len(picked)}장 " + " | ".join(f"{c['title'][5:60]} ({c['license']})" for c in picked) + flag, flush=True)
-        if len(picked) < N_CAND:
+        if len(picked) < want:
             short.append(code)
     json.dump({"generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "cities": result},
               open(CAND_PATH, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
@@ -225,7 +253,7 @@ def fetch(selection: str) -> None:
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "candidates"
     if cmd == "candidates":
-        candidates()
+        candidates([c.upper() for c in sys.argv[2:]] or None)
     elif cmd == "fetch":
         fetch(" ".join(sys.argv[2:]))
     else:

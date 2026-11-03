@@ -8,7 +8,7 @@ on:
         required: false
         default: 'OKA'
       mode:
-        description: 'route(노선 진단) · site(화면 검증·스크린샷) · climate(기후 평년값 갱신·커밋) · booking(판매처별 가격 실험, route에 "ICN-YNT 2026-12-10 2026-12-16 ...") · photos(위키미디어 사진 후보 → preview/photos 브랜치) · photos_fetch(고른 사진 저장·커밋, route에 "YGJ:2 SDJ:1 ...")'
+        description: 'route(노선 진단) · site(화면 검증·스크린샷) · climate(기후 평년값 갱신·커밋) · booking(판매처별 가격 실험, route에 "ICN-YNT 2026-12-10 2026-12-16 ...") · photos(위키미디어 사진 후보 → preview/photos 브랜치) · photos_more(route의 도시만 다시 찾기, 예: "CTS KOJ") · photos_fetch(고른 사진 저장·커밋, route에 "YGJ:2 SDJ:1 ...")'
         required: false
         default: 'route'
 
@@ -118,6 +118,25 @@ jobs:
           git rm -rq --cached . > /dev/null
           git add -f photo_preview data/photo_candidates.json
           git commit -qm "위키미디어 사진 후보 (${GITHUB_REF_NAME})"
+          git push -qf origin HEAD:preview/photos
+
+      - name: 위키미디어 사진 다시 찾기(지정 도시, 기존 후보에 4번부터 덧붙여 preview/photos에 올림)
+        if: github.event.inputs.mode == 'photos_more'
+        env:
+          PYTHONUTF8: '1'
+          PYTHONUNBUFFERED: '1'
+          ROUTE: ${{ github.event.inputs.route }}
+        run: |
+          git fetch -q origin preview/photos
+          git checkout -q origin/preview/photos -- photo_preview data/photo_candidates.json
+          git reset -q
+          python build_photos.py candidates $ROUTE
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -q --orphan preview/photos-new
+          git rm -rq --cached . > /dev/null
+          git add -f photo_preview data/photo_candidates.json
+          git commit -qm "위키미디어 사진 후보 추가: $ROUTE"
           git push -qf origin HEAD:preview/photos
 
       - name: 고른 사진 저장(images/cities, data/photos.json 커밋)

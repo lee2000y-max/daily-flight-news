@@ -1,0 +1,65 @@
+name: Deploy site (GitHub Pages)
+
+# 사이트 배포(P4, 2026-11-03 사용자 결정: 배포 방식을 워크플로 배포로).
+# 공유 페이지 s/<도시>/ 와 썸네일은 여기서 만들고 저장소에는 커밋하지 않는다(매일 수 MB가 이력에 쌓이는 것 방지).
+# 저장소 설정 Settings → Pages → Build and deployment → Source 를 "GitHub Actions"로 바꿔야 동작한다.
+# - main에 푸시되거나, 매일 수집·쏠림 지수·진단(기후·사진 커밋) 워크플로가 main에서 끝나면(그 커밋은 GITHUB_TOKEN 푸시라 push 이벤트가 안 생김) 배포
+# - 브랜치에서 수동 실행하면 묶기(build)만 하고 배포하지 않는다(시험용)
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["Daily Flight News Collector", "Weekly crowd index (쏠림 지수)", "Probe live price (진단용, 수동 실행)"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: 공유 페이지·썸네일(s/)
+        continue-on-error: true          # 실패해도 사이트는 배포(공유 링크 미리보기만 빠짐)
+        env:
+          PYTHONUTF8: '1'
+          PYTHONUNBUFFERED: '1'
+        run: |
+          sudo apt-get -qq update > /dev/null && sudo apt-get -qq install -y fonts-noto-cjk > /dev/null
+          pip install -q pillow
+          python build_share.py
+      - name: 배포 묶음 만들기
+        run: |
+          mkdir -p _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude '__pycache__' --exclude 'photo_preview' ./ _site/
+          touch _site/.nojekyll
+          echo "묶음: $(du -sh _site | cut -f1), 공유 페이지 $(ls _site/s 2>/dev/null | wc -l)개"
+          test -f _site/index.html && test -f _site/flights_data.json
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

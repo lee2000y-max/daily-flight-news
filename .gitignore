@@ -3,3 +3,5 @@ __pycache__/
 *.tmp
 photo_preview/
 data/photo_candidates.json
+s/
+_site/
