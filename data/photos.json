@@ -8,6 +8,14 @@
    "place": "비에이 패치워크 언덕",
    "title": "File:Patchwork hills - biei - panoramio.jpg"
   },
+  "AKL": {
+   "artist": "Ingolfson at English Wikipedia (Original text: Uploader.)",
+   "description": "The Auckland Harbour Bridge, Auckland, New Zealand, as seen from the southwest, from Watchman Island in the Waitemata Harbour.",
+   "license": "Public domain",
+   "page": "https://commons.wikimedia.org/wiki/File:Auckland_Harbour_Bridge_Watchman.jpg",
+   "place": "오클랜드 하버 브리지",
+   "title": "File:Auckland Harbour Bridge Watchman.jpg"
+  },
   "ALA": {
    "artist": "Bgag",
    "description": "Charyn Canyon, Kazakhstan",
@@ -16,6 +24,14 @@
    "place": "차린 협곡(알마티 근교)",
    "title": "File:Charyn Canyon, Kazakhstan 03.jpg"
   },
+  "AMS": {
+   "artist": "Basile Morin",
+   "description": "Colorful canal houses, east side, where the houses are located directly on the water, with the bell tower of the Oude Kerk (Old Church) in the background, at golden hour under a stormy sky, in Damrak ",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Colorful_canal_houses_at_golden_hour_in_Damrak_avenue_Amsterdam_the_Netherlands.jpg",
+   "place": "암스테르담 운하",
+   "title": "File:Colorful canal houses at golden hour in Damrak avenue Amsterdam the Netherlands.jpg"
+  },
   "AOJ": {
    "artist": "lumoplank",
    "description": "The Oirase Stream flowing over moss-covered boulders through Oirase Gorge during autumn foliage season.",
@@ -23,6 +39,22 @@
    "page": "https://commons.wikimedia.org/wiki/File:Oirase_Gorge_-_OiraseGorge7015.jpg",
    "place": "오이라세 계류",
    "title": "File:Oirase Gorge - OiraseGorge7015.jpg"
+  },
+  "ATL": {
+   "artist": "Marc Merlin",
+   "description": "Atlanta skyline from Jackson Street Bridge 2020. (Note that location is the vantage point of the photographer.)",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Atlanta_skyline_from_Jackson_Street_Bridge_2020.jpg",
+   "place": "애틀랜타 스카이라인",
+   "title": "File:Atlanta skyline from Jackson Street Bridge 2020.jpg"
+  },
+  "BCN": {
+   "artist": "Jopparn",
+   "description": "The Basílica i Temple Expiatori de la Sagrada Família (English: Basilica and Expiatory Church of the Holy Family; Spanish: Basílica y Templo Expiatorio de la Sagrada Familia), commonly known as the Sa",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Sagrada_Fam%C3%ADlia_2010.JPG",
+   "place": "바르셀로나 사그라다 파밀리아",
+   "title": "File:Sagrada Família 2010.JPG"
   },
   "BKI": {
    "artist": "CEphoto, Uwe Aranas",
@@ -40,6 +72,38 @@
    "place": "왓 아룬(새벽 사원)",
    "title": "File:Templo Wat Arun, Bangkok, Tailandia, 2013-08-22, DD 30.jpg"
   },
+  "BNE": {
+   "artist": "Kgbo",
+   "description": "Story Bridge, Brisbane City views, 2021",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Story_Bridge,_Brisbane_City_views,_2021,_02.jpg",
+   "place": "브리즈번 스토리 브리지",
+   "title": "File:Story Bridge, Brisbane City views, 2021, 02.jpg"
+  },
+  "BOS": {
+   "artist": "King of Hearts",
+   "description": "Two-segment panorama of Back Bay skyline from Longfellow Bridge, Boston.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Boston_skyline_from_Longfellow_Bridge_September_2017_panorama_2.jpg",
+   "place": "보스턴 백베이 스카이라인",
+   "title": "File:Boston skyline from Longfellow Bridge September 2017 panorama 2.jpg"
+  },
+  "BTH": {
+   "artist": "Fredrik Moeladi",
+   "description": "Nongsa Point Marina Resort Batam",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Nongsa_Point_Marina_Resort_Batam_-_panoramio.jpg",
+   "place": "바탐 농사 포인트",
+   "title": "File:Nongsa Point Marina Resort Batam - panoramio.jpg"
+  },
+  "BUD": {
+   "artist": "Perituss",
+   "description": "Part of the Fisherman's Bastion in Budapest as of May 2014.",
+   "license": "CC0",
+   "page": "https://commons.wikimedia.org/wiki/File:Fisherman%27s_Bastion_2014.jpg",
+   "place": "부다페스트 어부의 요새",
+   "title": "File:Fisherman's Bastion 2014.jpg"
+  },
   "BWN": {
    "artist": "Yu Chu Chin",
    "description": "Yayasan Sultan Haji Hassanal Bolkiah Complex, Brunei on 18 January 2026.",
@@ -56,6 +120,14 @@
    "place": "광저우 캔톤 타워 야경",
    "title": "File:Canton Tower at night 1.jpg"
   },
+  "CDG": {
+   "artist": "Jorge Royan",
+   "description": "The Eiffel Tower in spring, Paris, France.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Paris_-_The_Eiffel_Tower_in_spring_-_2307.jpg",
+   "place": "파리 에펠탑",
+   "title": "File:Paris - The Eiffel Tower in spring - 2307.jpg"
+  },
   "CEB": {
    "artist": "Øyvind Holmstad",
    "description": "Blue Waters Mactan beach",
@@ -64,6 +136,30 @@
    "place": "막탄섬 해변",
    "title": "File:BB Blue Waters Mactan beach 4.jpg"
   },
+  "CGK": {
+   "artist": "Gunawan Kartapranata",
+   "description": "Jakarta, taken from Istiqlal mosque Jakarta panoramic view around Medan Merdeka (Merdeka square), the center of Jakarta and the nation. Monas (National Monument) on the foreground with rising Jakarta ",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Jakarta_Panorama.jpg",
+   "place": "자카르타 시가지",
+   "title": "File:Jakarta Panorama.jpg"
+  },
+  "CKG": {
+   "artist": "xiquinhosilva",
+   "description": "View of Hongya Cave, Chongqing, with Raffles City Chongqing in the background. Taken on 20 May 2018.",
+   "license": "CC BY 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Hongya_Cave_20180520.jpg",
+   "place": "충칭 훙야둥",
+   "title": "File:Hongya Cave 20180520.jpg"
+  },
+  "CMB": {
+   "artist": "Pierre André Leclercq",
+   "description": "Elephant tusks from the Gangaramaya_Temple.-Colombo, Sri Lanka.- South Asia.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Colombo_Temple_bouddhiste_de_Gangaramaya_(15).JPG",
+   "place": "콜롬보 강가라마야 사원",
+   "title": "File:Colombo Temple bouddhiste de Gangaramaya (15).JPG"
+  },
   "CNX": {
    "artist": "เทวประภาส มากคล้าย",
    "description": "Wat Phrathat Doi Suthep, Chiang Mai, Thailand.Location: Wat Phrathat Doi Suthep Chiang Mai.",
@@ -71,6 +167,14 @@
    "page": "https://commons.wikimedia.org/wiki/File:Phra_That_Doi_Suthep_01.jpg",
    "place": "도이수텝 사원",
    "title": "File:Phra That Doi Suthep 01.jpg"
+  },
+  "CPH": {
+   "artist": "Jebulon",
+   "description": "The former Stock-Exchange, Copenhagen, Denmark.",
+   "license": "CC0",
+   "page": "https://commons.wikimedia.org/wiki/File:B%C3%B8rsen_Copenhagen_Denmark.jpg",
+   "place": "코펜하겐 옛 증권거래소",
+   "title": "File:Børsen Copenhagen Denmark.jpg"
   },
   "CRK": {
    "artist": "Lance Vanlewen",
@@ -104,6 +208,22 @@
    "place": "바나힐 골든브릿지",
    "title": "File:Golden Bridge at Ba Na Hills 20250718.jpg"
   },
+  "DEL": {
+   "artist": "Jakub Hałun",
+   "description": "Main monument of Humayun's Tomb, Delhi",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:20191205_Grobowiec_Humajuna_w_Delhi_1055_6794.jpg",
+   "place": "델리 후마윤 묘",
+   "title": "File:20191205 Grobowiec Humajuna w Delhi 1055 6794.jpg"
+  },
+  "DFW": {
+   "artist": "Michael Barera",
+   "description": "A view of the Dallas skyline from the GeO-Deck of Reunion Tower in Dallas, Texas (United States).",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:View_of_Dallas_from_Reunion_Tower_August_2015_05.jpg",
+   "place": "댈러스 스카이라인",
+   "title": "File:View of Dallas from Reunion Tower August 2015 05.jpg"
+  },
   "DLC": {
    "artist": "CEphoto, Uwe Aranas",
    "description": "Dalian, Liaoning, China: Lighthouse in Dalian Bay",
@@ -128,6 +248,14 @@
    "place": "발리 따나롯 사원",
    "title": "File:Tanah Lot, Bali, Indonesia, 20220827 0957 1103.jpg"
   },
+  "DTW": {
+   "artist": "Crisco 1492",
+   "description": "Renaissance Center, Detroit, Michigan from South 2014-12-07. Stitch of 42 images.",
+   "license": "Public domain",
+   "page": "https://commons.wikimedia.org/wiki/File:Renaissance_Center,_Detroit,_Michigan_from_S_2014-12-07.jpg",
+   "place": "디트로이트 르네상스 센터",
+   "title": "File:Renaissance Center, Detroit, Michigan from S 2014-12-07.jpg"
+  },
   "DYG": {
    "artist": "Kuruman from Tokyo, Japan",
    "description": "Zhangjiajie National Forest Park",
@@ -135,6 +263,30 @@
    "page": "https://commons.wikimedia.org/wiki/File:Zhangjiajie_National_Forest_Park.jpg",
    "place": "장가계 국가삼림공원",
    "title": "File:Zhangjiajie National Forest Park.jpg"
+  },
+  "FCO": {
+   "artist": "Diliff",
+   "description": "A 4x4 segment panorama of the Coliseum at dusk. Taken by myself with a Canon 5D and 50mm f/1.8 lens at f/5.6.",
+   "license": "CC BY-SA 2.5",
+   "page": "https://commons.wikimedia.org/wiki/File:Colosseum_in_Rome,_Italy_-_April_2007.jpg",
+   "place": "로마 콜로세움",
+   "title": "File:Colosseum in Rome, Italy - April 2007.jpg"
+  },
+  "FRA": {
+   "artist": "Christian Wolf (www.c-w-design.de)",
+   "description": "Skyline of Frankfurt am Main, Germany.",
+   "license": "CC BY-SA 3.0 de",
+   "page": "https://commons.wikimedia.org/wiki/File:Skyline_Frankfurt_am_Main_2015.jpg",
+   "place": "프랑크푸르트 스카이라인",
+   "title": "File:Skyline Frankfurt am Main 2015.jpg"
+  },
+  "FRU": {
+   "artist": "Emil.akhmatbekov",
+   "description": "Ala Too square in Bishkek, capital of Kyrgyz Republic",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Ala_Too_Square_Bishkek_2021.jpg",
+   "place": "비슈케크 알라투 광장",
+   "title": "File:Ala Too Square Bishkek 2021.jpg"
   },
   "FSZ": {
    "artist": "MaedaAkihiko",
@@ -168,6 +320,14 @@
    "place": "하노이 기찻길 마을",
    "title": "File:Train street, Hanoi 4.jpg"
   },
+  "HEL": {
+   "artist": "Ввласенко",
+   "description": "Ferry terminal South Harbour. Helsinki, Finland",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Ferry_terminal_South_Harbour._Helsinki,_Finland.jpg",
+   "place": "헬싱키 남항",
+   "title": "File:Ferry terminal South Harbour. Helsinki, Finland.jpg"
+  },
   "HGH": {
    "artist": "lienyuan lee",
    "description": "Leifeng Pagoda 雷峰塔",
@@ -184,6 +344,14 @@
    "place": "이쓰쿠시마 신사 해상 도리이",
    "title": "File:Itsukushima-jinja torii at sunset, Miyajima, Japan, 20240816 1812 4144.jpg"
   },
+  "HKD": {
+   "artist": "Shioyama",
+   "description": "Hakodate Dock Red Brick Warehouses",
+   "license": "CC0",
+   "page": "https://commons.wikimedia.org/wiki/File:Hakodate_dock_red_brick_warehouses_1.jpg",
+   "place": "하코다테 붉은 벽돌 창고",
+   "title": "File:Hakodate dock red brick warehouses 1.jpg"
+  },
   "HKG": {
    "artist": "Jtmorgan",
    "description": "Reproduction Chinese junk in Hong Kong harbor.",
@@ -199,6 +367,14 @@
    "page": "https://commons.wikimedia.org/wiki/File:Playa_Maya,_Ko_Phi_Phi,_Tailandia,_2013-08-19,_DD_13.JPG",
    "place": "피피섬 마야베이",
    "title": "File:Playa Maya, Ko Phi Phi, Tailandia, 2013-08-19, DD 13.JPG"
+  },
+  "HNL": {
+   "artist": "Frank Schulenburg",
+   "description": "Waikiki Beach on March 2, 2024. View towards Diamond Head",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Waikiki_Beach_(2024)-L1004709.jpg",
+   "place": "와이키키 해변과 다이아몬드 헤드",
+   "title": "File:Waikiki Beach (2024)-L1004709.jpg"
   },
   "HPH": {
    "artist": "Jakub Hałun",
@@ -224,6 +400,46 @@
    "place": "다케오 온천 누문",
    "title": "File:Takeo Onsen Romon 20230510.jpg"
   },
+  "IAD": {
+   "artist": "Martin Falbisoner",
+   "description": "US Capitol, west side",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:US_Capitol_west_side.JPG",
+   "place": "워싱턴 미국 국회의사당",
+   "title": "File:US Capitol west side.JPG"
+  },
+  "IBR": {
+   "artist": "Lukas from Munich, Germany",
+   "description": "Kairakuen garden in Mito, Ibaraki pref., Japan.",
+   "license": "CC BY 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Kairakuen_Mito_02.jpg",
+   "place": "미토 가이라쿠엔",
+   "title": "File:Kairakuen Mito 02.jpg"
+  },
+  "ISG": {
+   "artist": "663highland",
+   "description": "Kabira Bay of Ishigaki Island in Ishigaki City, Okinawa Prefecture, Japan. It is one of the Japan's Places of Scenic Beauty.",
+   "license": "CC BY 2.5",
+   "page": "https://commons.wikimedia.org/wiki/File:Kabira_Bay_Ishigaki_Island40bs3s4592.jpg",
+   "place": "이시가키 가비라만",
+   "title": "File:Kabira Bay Ishigaki Island40bs3s4592.jpg"
+  },
+  "IST": {
+   "artist": "Arild Vågen",
+   "description": "Hagia Sophia",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Hagia_Sophia_Mars_2013.jpg",
+   "place": "이스탄불 아야소피아",
+   "title": "File:Hagia Sophia Mars 2013.jpg"
+  },
+  "JFK": {
+   "artist": "銀河市長",
+   "description": "The central object is the Statue of Liberty that located in the Liberty Island.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Statue_of_liberty_front.jpg",
+   "place": "자유의 여신상",
+   "title": "File:Statue of liberty front.jpg"
+  },
   "KHH": {
    "artist": "CEphoto, Uwe Aranas",
    "description": "Kaohsiung, Taiwan: TDragon and Tiger Pagodas at the Lotus Pond.",
@@ -231,6 +447,14 @@
    "page": "https://commons.wikimedia.org/wiki/File:Kaohsiung_Taiwan_Dragon-and-Tiger-Pagodas-01.jpg",
    "place": "롄츠탄 용호탑",
    "title": "File:Kaohsiung Taiwan Dragon-and-Tiger-Pagodas-01.jpg"
+  },
+  "KIJ": {
+   "artist": "DAI-nk",
+   "description": "新潟市中央区。右岸側万代方面から見た萬代橋。",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Bandaibashi-Bridge_20130929.JPG",
+   "place": "니가타 반다이교",
+   "title": "File:Bandaibashi-Bridge 20130929.JPG"
   },
   "KIX": {
    "artist": "Schellack",
@@ -247,6 +471,22 @@
    "page": "https://commons.wikimedia.org/wiki/File:Kokura_Castle_2024-09-04.jpg",
    "place": "고쿠라성",
    "title": "File:Kokura Castle 2024-09-04.jpg"
+  },
+  "KLO": {
+   "artist": "Jhun Sacapano",
+   "description": "Empty Boracay White Beach during Tourist Break",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Boracay_White_Beach.png",
+   "place": "보라카이 화이트 비치",
+   "title": "File:Boracay White Beach.png"
+  },
+  "KMI": {
+   "artist": "Naokijp",
+   "description": "宮崎県宮崎市青島にある青島神社。拝殿",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Aoshima_jinja,_Worship_Hall_01.jpg",
+   "place": "아오시마 신사",
+   "title": "File:Aoshima jinja, Worship Hall 01.jpg"
   },
   "KMJ": {
    "artist": "663highland",
@@ -272,6 +512,70 @@
    "place": "센간엔에서 본 사쿠라지마",
    "title": "File:Sakurajima from Sengan-en.jpg"
   },
+  "KTI": {
+   "artist": "Marcin Konsek",
+   "description": "Silver Pagoda. Royal Palace. Phnom Penh, Cambodia.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:2016_Phnom_Penh,_Pa%C5%82ac_Kr%C3%B3lewski,_Srebrna_Pagoda_(02).jpg",
+   "place": "프놈펜 왕궁 실버 파고다",
+   "title": "File:2016 Phnom Penh, Pałac Królewski, Srebrna Pagoda (02).jpg"
+  },
+  "KTM": {
+   "artist": "Markus Koljonen (Dilaudid)",
+   "description": "Three alleged saddhus (Hindu holy men) sitting on the Vishnu Temple of Kathmandu's Durbar Square, Nepal, performing the vitarka mudrā. Notice that they may not be saddhus in the strict sense of the wo",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Three_saddhus_at_Kathmandu_Durbar_Square.jpg",
+   "place": "카트만두 더르바르 광장",
+   "title": "File:Three saddhus at Kathmandu Durbar Square.jpg"
+  },
+  "KUL": {
+   "artist": "Marcin Konsek",
+   "description": "Petronas Towers. Kuala Lumpur, Malaysia.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:2016_Kuala_Lumpur,_Petronas_Towers_(27).jpg",
+   "place": "페트로나스 트윈 타워",
+   "title": "File:2016 Kuala Lumpur, Petronas Towers (27).jpg"
+  },
+  "LAS": {
+   "artist": "Thomas Wolf, www.foto-tw.de",
+   "description": "Welcome to Fabulous Las Vegas sign in Las Vegas, Nevada",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Welcome_to_Fabulous_Las_Vegas.jpg",
+   "place": "라스베이거스 환영 간판",
+   "title": "File:Welcome to Fabulous Las Vegas.jpg"
+  },
+  "LAX": {
+   "artist": "Thomas Wolf, www.foto-tw.de",
+   "description": "Hollywood Sign in Los Angeles, California. This view can be seen in the Columbo tv-series episode \"Ashes to Ashes\" (1998).",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Hollywood_Sign.jpg",
+   "place": "할리우드 사인",
+   "title": "File:Hollywood Sign.jpg"
+  },
+  "LHR": {
+   "artist": "Dietmar Rabich",
+   "description": "Tower Bridge, Tower of London, London, England, United Kingdom",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:London,_Tower_Bridge_--_2016_--_4676.jpg",
+   "place": "런던 타워 브리지",
+   "title": "File:London, Tower Bridge -- 2016 -- 4676.jpg"
+  },
+  "LIS": {
+   "artist": "Matti Blume",
+   "description": "Costa Pacifica moored in Lisbon",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Alfama,_Lisbon_(DSC03367).jpg",
+   "place": "리스본 항구",
+   "title": "File:Alfama, Lisbon (DSC03367).jpg"
+  },
+  "MAD": {
+   "artist": "Carlos Delgado",
+   "description": "Royal Palace of Madrid, Spain.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Palacio_Real_de_Madrid_-_13.jpg",
+   "place": "마드리드 왕궁",
+   "title": "File:Palacio Real de Madrid - 13.jpg"
+  },
   "MFM": {
    "artist": "Diego Delso",
    "description": "Remains of the Cathedral of St. Paul, Macau",
@@ -280,6 +584,30 @@
    "place": "성 바울 성당 유적",
    "title": "File:Restos de la Catedral de San Pablo, Macao, 2013-08-08, DD 41.jpg"
   },
+  "MSP": {
+   "artist": "AlexiusHoratius",
+   "description": "Skyline of Minneapolis, Minnesota, USA. Taken looking Northwest.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Minneapolis_skyline_51.JPG",
+   "place": "미니애폴리스 스카이라인",
+   "title": "File:Minneapolis skyline 51.JPG"
+  },
+  "MUC": {
+   "artist": "Martin Falbisoner",
+   "description": "Frauenkirche and Neues Rathaus, Munich March 2013",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Frauenkirche_and_Neues_Rathaus_Munich_March_2013.JPG",
+   "place": "뮌헨 마리엔 광장",
+   "title": "File:Frauenkirche and Neues Rathaus Munich March 2013.JPG"
+  },
+  "MXP": {
+   "artist": "High Contrast",
+   "description": "The glass dome of the Galleria Vittorio Emanuele II in Milan, Italy, seen from the Milan Cathedral.",
+   "license": "CC BY 3.0 de",
+   "page": "https://commons.wikimedia.org/wiki/File:Glass_fome_of_the_Galleria_Vittorio_Emanuele_II_in_Milan.JPG",
+   "place": "밀라노 비토리오 에마누엘레 2세 갈레리아",
+   "title": "File:Glass fome of the Galleria Vittorio Emanuele II in Milan.JPG"
+  },
   "MYJ": {
    "artist": "z tanuki",
    "description": "Dogo Onsen Honkan (Main bulding) , 道後温泉 本館",
@@ -287,6 +615,14 @@
    "page": "https://commons.wikimedia.org/wiki/File:Dogo_Onsen_Honkan_(Main_building),_%E9%81%93%E5%BE%8C%E6%B8%A9%E6%B3%89_%E6%9C%AC%E9%A4%A8_-_panoramio_(5).jpg",
    "place": "도고온천 본관",
    "title": "File:Dogo Onsen Honkan (Main building), 道後温泉 本館 - panoramio (5).jpg"
+  },
+  "NGB": {
+   "artist": "钉钉",
+   "description": "Sanjiangkou, Ningbo",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Sanjiangkou,_Ningbo_1.jpg",
+   "place": "닝보 싼장커우",
+   "title": "File:Sanjiangkou, Ningbo 1.jpg"
   },
   "NGO": {
    "artist": "Base64",
@@ -304,6 +640,22 @@
    "place": "나가사키 메가네바시",
    "title": "File:Megane Bridge in Nagasaki, Japan, 20240815 1441 3704.jpg"
   },
+  "NKG": {
+   "artist": "Dick Rochester",
+   "description": "Nanjing, China.",
+   "license": "CC BY-SA 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Confucius_Temple_and_Qinhuai_River,_Nanjing_Night.jpg",
+   "place": "난징 친화이강 부자묘",
+   "title": "File:Confucius Temple and Qinhuai River, Nanjing Night.jpg"
+  },
+  "NQZ": {
+   "artist": "Matti Blume",
+   "description": "Construction of the Astana light metro near Abu Dhabi Plaza, Astana",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Light_metro,_Astana_(P1190708).jpg",
+   "place": "아스타나 시가지",
+   "title": "File:Light metro, Astana (P1190708).jpg"
+  },
   "NRT": {
    "artist": "David Kernan",
    "description": "A high-angle night photograph of Tokyo, Japan. The Tokyo Tower is prominently illuminated in its traditional orange \"Landmark Light.\" To the left, several modern skyscrapers are visible, including the",
@@ -311,6 +663,14 @@
    "page": "https://commons.wikimedia.org/wiki/File:Tokyo_Tower,_Minato_City.jpg",
    "place": "도쿄타워와 도심 야경",
    "title": "File:Tokyo Tower, Minato City.jpg"
+  },
+  "OBO": {
+   "artist": "Route275",
+   "description": "Lake Shikaribetsu(in winter), Shikaoi, Hokkaido, Japan.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Lake_Shikaribetsu_in_Winter.jpg",
+   "place": "시카리베쓰호의 겨울",
+   "title": "File:Lake Shikaribetsu in Winter.jpg"
   },
   "OIT": {
    "artist": "663highland",
@@ -328,6 +688,22 @@
    "place": "오키나와 만좌모",
    "title": "File:Onna Okinawa Japan Cape-Manzamo-01.jpg"
   },
+  "OKJ": {
+   "artist": "663highland",
+   "description": "Okayama Castle in Okayama, Okayama prefecture, Japan",
+   "license": "CC BY 2.5",
+   "page": "https://commons.wikimedia.org/wiki/File:Okayama_castle01s3200.jpg",
+   "place": "오카야마성",
+   "title": "File:Okayama castle01s3200.jpg"
+  },
+  "ORD": {
+   "artist": "Diego Delso",
+   "description": "Chicago Skyline, Chicago, Illinois, USA",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Skyline_de_Chicago_desde_el_centro,_Illinois,_Estados_Unidos,_2012-10-20,_DD_06.jpg",
+   "place": "시카고 스카이라인",
+   "title": "File:Skyline de Chicago desde el centro, Illinois, Estados Unidos, 2012-10-20, DD 06.jpg"
+  },
   "PKX": {
    "artist": "Fong Chen",
    "description": "The Hall of Prayer for Good Harvest at the Temple of Heaven in Beijing. April，2010",
@@ -344,6 +720,14 @@
    "place": "혼텀섬 해상 케이블카",
    "title": "File:Hòn Thơm cable car above the An Thới township.jpg"
   },
+  "PRG": {
+   "artist": "Diliff",
+   "description": "Prague Castle and Charles Bridge from across the Vltava river in the Czech Republic.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Prague_Castle_and_Charles_Bridge,_Czech_Republic_-_Diliff.jpg",
+   "place": "프라하성과 카를교",
+   "title": "File:Prague Castle and Charles Bridge, Czech Republic - Diliff.jpg"
+  },
   "PVG": {
    "artist": "Ermell",
    "description": "View of Pudong with the Oriental Pearl Tower seen from the Shanghai People's Heroes Memorial Tower.",
@@ -351,6 +735,30 @@
    "page": "https://commons.wikimedia.org/wiki/File:Shanghai_Oriental_Pearl_Tower-20150516-RM-123453.jpg",
    "place": "동방명주와 푸둥 스카이라인",
    "title": "File:Shanghai Oriental Pearl Tower-20150516-RM-123453.jpg"
+  },
+  "RMQ": {
+   "artist": "Nico Kaiser",
+   "description": "National Taichung Theater. Taichung, Taiwan. 2019.",
+   "license": "CC BY 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:National_Taichung_Theater_2019.jpg",
+   "place": "타이중 국가가극원",
+   "title": "File:National Taichung Theater 2019.jpg"
+  },
+  "ROR": {
+   "artist": "Luka Peternel",
+   "description": "View of Rock Islands in Palau from the lagoon.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Rock-Islands-Palau-1-2016-sea-view-Luka-Peternel.jpg",
+   "place": "팔라우 록 아일랜드",
+   "title": "File:Rock-Islands-Palau-1-2016-sea-view-Luka-Peternel.jpg"
+  },
+  "SAI": {
+   "artist": "Diego Delso",
+   "description": "Bayon, Khmer temple constructed in the late 12th or early 13th century and located in the ancient city of Angkor, today Cambodia.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Bayon,_Angkor_Thom,_Camboya,_2013-08-17,_DD_37.JPG",
+   "place": "앙코르 바이욘 사원",
+   "title": "File:Bayon, Angkor Thom, Camboya, 2013-08-17, DD 37.JPG"
   },
   "SDJ": {
    "artist": "Chensiyuan",
@@ -360,6 +768,22 @@
    "place": "마쓰시마만",
    "title": "File:Matsushima miyagi z.JPG"
   },
+  "SEA": {
+   "artist": "King of Hearts",
+   "description": "View from Space Needle, Seattle.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Seattle_from_Space_Needle_June_2018_003.jpg",
+   "place": "시애틀 스페이스 니들 전망",
+   "title": "File:Seattle from Space Needle June 2018 003.jpg"
+  },
+  "SFO": {
+   "artist": "Frank Schulenburg",
+   "description": "Golden Gate Bridge as seen from Marshall’s Beach, Presidio of San Francisco, in March 2018",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Golden_Gate_Bridge_as_seen_from_Marshall%E2%80%99s_Beach,_March_2018.jpg",
+   "place": "금문교",
+   "title": "File:Golden Gate Bridge as seen from Marshall’s Beach, March 2018.jpg"
+  },
   "SGN": {
    "artist": "Maksim Sokolov (maxergon.com)",
    "description": "Basilica of Our Lady of the Immaculate Conception is a Roman Catholic minor basilica and parish church in Guelph, Ontario, Canada. A Gothic Revival style building constructed between 1876 and 1888 by ",
@@ -367,6 +791,14 @@
    "page": "https://commons.wikimedia.org/wiki/File:Basilica_of_Our_Lady_Immaculate.jpg",
    "place": "사이공 노트르담 대성당",
    "title": "File:Basilica of Our Lady Immaculate.jpg"
+  },
+  "SHI": {
+   "artist": "Paipateroma",
+   "description": "伊良部大橋（沖縄県宮古島伊良部大橋見学ステーションより）",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Miyako_irabu_ohashi_2014_1.jpg",
+   "place": "이라부 대교",
+   "title": "File:Miyako irabu ohashi 2014 1.jpg"
   },
   "SIN": {
    "artist": "Basile Morin",
@@ -383,6 +815,30 @@
    "page": "https://commons.wikimedia.org/wiki/File:Micro_Beach_(530316786).jpg",
    "place": "사이판 마이크로 비치",
    "title": "File:Micro Beach (530316786).jpg"
+  },
+  "SYD": {
+   "artist": "Diliff",
+   "description": "A exposure blended photo of the Sydney Opera House, as viewed from the Sydney Harbour Bridge. Taken by myself with a Canon 5D and 100mm f/2.8 macro lens.",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Sydney_Opera_House_-_Dec_2008.jpg",
+   "place": "시드니 오페라하우스와 하버브리지",
+   "title": "File:Sydney Opera House - Dec 2008.jpg"
+  },
+  "SYX": {
+   "artist": "Steven Sun",
+   "description": "Sanya Sun Bay Roadside Beach",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:%E4%B8%89%E4%BA%9A%E5%A4%AA%E9%98%B3%E6%B9%BE%E5%85%AC%E8%B7%AF%E6%97%81%E6%B5%B7%E6%BB%A9_20260115.jpg",
+   "place": "싼야 해변",
+   "title": "File:三亚太阳湾公路旁海滩 20260115.jpg"
+  },
+  "SZX": {
+   "artist": "Charlie fong",
+   "description": "The Futian CBD's skyline looking east from the west. The Ping'an Finance Center which is the tallest building at the background, the SEZ Dev Grp Golf Course at the foreground which is next to the Xian",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Commercial_area_of_futian_to_east2020.jpg",
+   "place": "선전 푸톈 스카이라인",
+   "title": "File:Commercial area of futian to east2020.jpg"
   },
   "TAG": {
    "artist": "Jeroen36",
@@ -416,6 +872,14 @@
    "place": "하즈라티 이맘 단지",
    "title": "File:Hazrat Imam 01.jpg"
   },
+  "TFU": {
+   "artist": "CEphoto, Uwe Aranas",
+   "description": "Chengdu, Sichuan, China: Giant Panda in the Chengdu panda breeding and research center",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Chengdu_Sichuan_China_Panda-breeding-and-research-center-02.jpg",
+   "place": "청두 판다 기지",
+   "title": "File:Chengdu Sichuan China Panda-breeding-and-research-center-02.jpg"
+  },
   "TPE": {
    "artist": "Another Believer",
    "description": "Jiufen Old Street, Taiwan",
@@ -432,6 +896,22 @@
    "place": "고르히-테렐지 국립공원",
    "title": "File:Krajobraz w Parku Narodowym Gorchi-Tereldż 63.JPG"
   },
+  "UKB": {
+   "artist": "Ka23 13",
+   "description": "Port of Kobe, Japan",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Kobe_20180430_185126.jpg",
+   "place": "고베항",
+   "title": "File:Kobe 20180430 185126.jpg"
+  },
+  "VIE": {
+   "artist": "P e z i",
+   "description": "Vienna State Opera, facade",
+   "license": "CC BY-SA 3.0 at",
+   "page": "https://commons.wikimedia.org/wiki/File:Staatsoper_Wien_DSC_5273w.jpg",
+   "place": "빈 국립 오페라극장",
+   "title": "File:Staatsoper Wien DSC 5273w.jpg"
+  },
   "VTE": {
    "artist": "Basile Morin",
    "description": "Wat Si Saket Buddhist temple in its paved courtyard, under a stormy sky. Oldest temple of Vientiane (capital of Laos), it was built between 1819 and 1824.",
@@ -439,6 +919,30 @@
    "page": "https://commons.wikimedia.org/wiki/File:Wat_Si_Saket_in_its_paved_courtyard_Vientiane_Laos.jpg",
    "place": "비엔티안 왓 시사켓",
    "title": "File:Wat Si Saket in its paved courtyard Vientiane Laos.jpg"
+  },
+  "WAW": {
+   "artist": "Igor123121",
+   "description": "Old Town Market Square, 2026, Warsaw, Poland",
+   "license": "CC BY 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Old_Town_Market_Square.,_2026,_Warsaw,_Poland.jpg",
+   "place": "바르샤바 구시가지 광장",
+   "title": "File:Old Town Market Square., 2026, Warsaw, Poland.jpg"
+  },
+  "WEH": {
+   "artist": "Popolon",
+   "description": "Liugong Island port in Weihai, Shandong province, China",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Weihai.port_de_Liugong_dao.jpg",
+   "place": "웨이하이 류궁다오 항구",
+   "title": "File:Weihai.port de Liugong dao.jpg"
+  },
+  "WRO": {
+   "artist": "Marek Śliwecki",
+   "description": "Wroclaw, Old Town Hall at night",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Wroc%C5%82aw_Ratusz_noc%C4%85.jpg",
+   "place": "브로츠와프 구시청사 야경",
+   "title": "File:Wrocław Ratusz nocą.jpg"
   },
   "XIY": {
    "artist": "shankar s. from Dubai, united arab emirates",
@@ -448,6 +952,14 @@
    "place": "시안 병마용갱",
    "title": "File:Rows of terracota warriors are arranged in rows of pits (35648437816).jpg"
   },
+  "XMN": {
+   "artist": "Slyronit",
+   "description": "Nanputuo Temple, Xiamen",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Nanputuo_Temple,_Xiamen.jpg",
+   "place": "샤먼 난푸퉈사",
+   "title": "File:Nanputuo Temple, Xiamen.jpg"
+  },
   "YGJ": {
    "artist": "Hashi photo",
    "description": "Tottori Sakyu ( Tottori Sand Dune ) in Tottori Prefecture, Japan",
@@ -456,6 +968,14 @@
    "place": "돗토리 사구",
    "title": "File:Tottori-Sakyu Tottori Japan.JPG"
   },
+  "YNJ": {
+   "artist": "EditQ",
+   "description": "Baili City, Yanji",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Baili_City,_Yanji_5.jpg",
+   "place": "옌지 시가지",
+   "title": "File:Baili City, Yanji 5.jpg"
+  },
   "YNT": {
    "artist": "HaoLinFotos",
    "description": "Coast, skyline",
@@ -463,7 +983,47 @@
    "page": "https://commons.wikimedia.org/wiki/File:Yantai2017.jpg",
    "place": "옌타이 해안 시가지",
    "title": "File:Yantai2017.jpg"
+  },
+  "YUL": {
+   "artist": "Wilfredor",
+   "description": "Terrace of the Mount Royal Chalet, Montreal in winter.",
+   "license": "CC0",
+   "page": "https://commons.wikimedia.org/wiki/File:Kondiaronk_Belvedere,_Montreal_city,_Canada.jpg",
+   "place": "몬트리올 몽루아얄 전망대",
+   "title": "File:Kondiaronk Belvedere, Montreal city, Canada.jpg"
+  },
+  "YVR": {
+   "artist": "Xicotencatl",
+   "description": "Vancouver Skyline from Ron Basford Park, Granville Island.",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Vancouver_Skyline_04.jpg",
+   "place": "밴쿠버 스카이라인",
+   "title": "File:Vancouver Skyline 04.jpg"
+  },
+  "YYC": {
+   "artist": "DXR",
+   "description": "A southeast view of the Calgary Stampede Grounds (especially BMO Centre and the Saddledome) and the Skyline of the city",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Calgary_Stampede_Grounds_and_Skyline,_southeast_view_20240819_1.jpg",
+   "place": "캘거리 스탬피드 공원",
+   "title": "File:Calgary Stampede Grounds and Skyline, southeast view 20240819 1.jpg"
+  },
+  "YYZ": {
+   "artist": "Wladyslaw (talk)",
+   "description": "Skyline of Toronto",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Toronto_-_ON_-_Skyline_bei_Nacht.jpg",
+   "place": "토론토 스카이라인",
+   "title": "File:Toronto - ON - Skyline bei Nacht.jpg"
+  },
+  "ZRH": {
+   "artist": "Jakub Hałun",
+   "description": "Lake Zurich at Rapperswil",
+   "license": "CC BY 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Lake_Zurich_at_Rapperswil,_20250330_0825_7818.jpg",
+   "place": "취리히 호수",
+   "title": "File:Lake Zurich at Rapperswil, 20250330 0825 7818.jpg"
   }
  },
- "updatedAt": "2026-11-03"
+ "updatedAt": "2026-11-05"
 }
