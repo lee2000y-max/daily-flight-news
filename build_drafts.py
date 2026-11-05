@@ -54,7 +54,12 @@ def naver(kind, query, n=4):
         with urllib.request.urlopen(req, timeout=20) as r:
             items = json.load(r).get("items", [])
     except Exception as e:
-        print(f"   ! 네이버 {kind} '{query}': {type(e).__name__}")
+        body = ""
+        try:
+            body = json.loads(e.read().decode()).get("errorMessage", "")[:80]   # 키 값은 응답에 없음
+        except Exception:
+            pass
+        print(f"   ! 네이버 {kind} '{query}': {type(e).__name__} {getattr(e, 'code', '')} {body}")
         return []
     return [{"kind": kind, "title": strip(i.get("title")), "desc": strip(i.get("description"))[:220], "link": i.get("link", "")} for i in items]
 
