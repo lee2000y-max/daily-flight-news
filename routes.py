@@ -177,3 +177,6 @@ CURRENCY_NAME = {"JPY": "일본 엔", "CNY": "중국 위안", "VND": "베트남 
                  "TWD": "대만 달러", "HKD": "홍콩 달러", "MOP": "마카오 파타카", "IDR": "인도네시아 루피아",
                  "MYR": "말레이시아 링깃", "SGD": "싱가포르 달러", "LAK": "라오스 킵", "BND": "브루나이 달러",
                  "USD": "미국 달러", "KZT": "카자흐스탄 텡게", "UZS": "우즈베키스탄 숨", "MNT": "몽골 투그릭"}
+
+# 도시 → 국기용 ISO 3166-1 alpha-2(대만·홍콩·마카오는 각자의 지역 깃발, 괌 gu·사이판 mp). 화면 국기 images/flags/<iso2>.svg
+CITY_ISO2 = {"KIX": "jp", "FUK": "jp", "NRT": "jp", "CTS": "jp", "NGO": "jp", "OKA": "jp", "HSG": "jp", "TAK": "jp", "FSZ": "jp", "KOJ": "jp", "OIT": "jp", "YGJ": "jp", "KKJ": "jp", "SDJ": "jp", "MYJ": "jp", "HIJ": "jp", "KMJ": "jp", "NGS": "jp", "KMQ": "jp", "AOJ": "jp", "AKJ": "jp", "PVG": "cn", "PKX": "cn", "CAN": "cn", "TAO": "cn", "YNT": "cn", "DLC": "cn", "HGH": "cn", "XIY": "cn", "DYG": "cn", "HRB": "cn", "DAD": "vn", "CXR": "vn", "PQC": "vn", "HAN": "vn", "SGN": "vn", "HPH": "vn", "DLI": "vn", "BKK": "th", "CNX": "th", "HKT": "th", "CEB": "ph", "TAG": "ph", "CRK": "ph", "DPS": "id", "BKI": "my", "SIN": "sg", "VTE": "la", "BWN": "bn", "GUM": "gu", "SPN": "mp", "ALA": "kz", "TAS": "uz", "UBN": "mn", "TPE": "tw", "KHH": "tw", "HKG": "hk", "MFM": "mo"}

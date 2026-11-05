@@ -155,12 +155,12 @@ with sync_playwright() as p:
         if ph and not ph["cap"]:
             problems.append(f"{name}: 톱기사 사진 설명 없음")
         # 링크 공유 버튼(이미지 공유 버튼은 없앰)
-        if page.locator("article.newspaper-card button:has-text('이 특가 공유')").count() != cards:
+        if page.locator("article.newspaper-card button.share-btn").count() != cards:
             problems.append(f"{name}: 링크 공유 버튼 수 이상")
         if page.locator("button:has-text('공유 이미지')").count():
             problems.append(f"{name}: 이전 '공유 이미지' 버튼이 남아 있음")
         if name == "desktop":
-            page.locator("article.newspaper-card button:has-text('이 특가 공유')").first.click()
+            page.locator("article.newspaper-card button.share-btn").first.click()
             page.wait_for_timeout(300)
             toast = page.locator("[role=status]").inner_text()
             clip = page.evaluate("navigator.clipboard.readText().catch(() => '')")
@@ -191,16 +191,30 @@ with sync_playwright() as p:
         page.evaluate("""async () => { for (let y = 0; y < document.body.scrollHeight; y += 600) { scrollTo(0, y); await new Promise(r => setTimeout(r, 60)); } }""")
         # 늦게 오는 사진(지연 불러오기)은 최대 10초 기다린다
         page.wait_for_function("[...document.querySelectorAll('article.newspaper-card img')].every(i => i.complete)", timeout=10000)
-        imgs = page.evaluate("[...document.querySelectorAll('article.newspaper-card img')].map(i => i.naturalWidth)")
-        bad = sum(1 for w in imgs if not w)
-        print(f"   카드 사진 {len(imgs)}장 중 불러오지 못함 {bad}장")
+        imgs = page.evaluate("[...document.querySelectorAll('article.newspaper-card img')].filter(i => i.offsetParent !== null).map(i => [i.getAttribute('src'), i.naturalWidth])")
+        bad = [src for src, w in imgs if not w]
+        print(f"   카드 그림(사진·국기·아이콘·로고) {len(imgs)}개 중 불러오지 못함 {len(bad)}개 {bad[:3]}")
         if bad:
-            problems.append(f"{name}: 카드 사진 {bad}장 불러오지 못함")
-        if photos:
-            no_credit = page.evaluate("""(codes) => codes.filter(c => { const el = document.getElementById('card-' + c);
-                return el && !/위키미디어 공용/.test(el.innerText); })""", list(photos))
-            if no_credit:
-                problems.append(f"{name}: 출처 표기 없는 카드 {no_credit[:5]}")
+            problems.append(f"{name}: 카드 그림 {len(bad)}개 불러오지 못함 {bad[:3]}")
+        # 카드 리뉴얼(S3): 출처·판매처·현지 통화·다른 일정·편명 없음, 국기, 예약 버튼 3개, 문자 이모지 없음
+        cd = page.evaluate(r"""() => {
+            const cards = [...document.querySelectorAll('article.newspaper-card')];
+            const txt = cards.map(c => c.innerText).join('\n');
+            const emo = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+            return {
+              credit: cards.filter(c => /위키미디어|CC BY|CC0|Public domain/.test(c.innerText)).length,
+              banned: ['판매처', '현지 통화', '다른 일정 제안', '최근 가격 변동', '편집국 노트', '쏠림', 'RSS'].filter(w => txt.includes(w)),
+              flags: cards.filter(c => c.querySelector('h3 img.flag[src*="images/flags/"]')).length,
+              books: cards.filter(c => c.querySelectorAll('.book-btns a').length >= 2).length,
+              emojiChars: cards.filter(c => emo.test(c.innerText)).map(c => c.id).slice(0, 3),
+              terminals: cards.filter(c => c.querySelector('img[aria-label="터미널"]')).length,
+              ariaIcons: cards.every(c => [...c.querySelectorAll('.card-info img.emo')].every(i => i.getAttribute('aria-label'))),
+              flightNo: cards.filter(c => /\b[A-Z0-9]{2}\d{2,4}\b/.test((c.querySelector('.card-info') || {}).innerText || '')).length,
+            };
+        }""")
+        print(f"   카드 점검: 출처 {cd['credit']}, 금지 문구 {cd['banned']}, 국기 {cd['flags']}/{cards}, 예약 버튼 {cd['books']}/{cards}, 문자 이모지 {cd['emojiChars']}, 터미널 행 {cd['terminals']}, 아이콘 라벨 {cd['ariaIcons']}, 편명 노출 {cd['flightNo']}")
+        if cd["credit"] or cd["banned"] or cd["flags"] != cards or cd["books"] != cards or cd["emojiChars"] or not cd["ariaIcons"] or cd["flightNo"]:
+            problems.append(f"{name}: 카드 리뉴얼 점검 이상 {cd}")
         page.screenshot(path=f"screenshots/{name}_full.png", full_page=True)
         ctx.close()
     # 가로 넘침(360·768·1024px)
@@ -313,7 +327,7 @@ with sync_playwright() as p:
     page.goto(f"http://127.0.0.1:{PORT}/index.html", wait_until="networkidle")
     page.wait_for_timeout(1500)
     first = page.locator("article.newspaper-card").first
-    fav_city = first.locator("h3").inner_text().strip()
+    fav_city = first.locator("h3 a").inner_text().strip()
     first.locator("button.fav-star").click()
     page.wait_for_timeout(200)
     strip1 = page.locator("#favStrip").is_visible() and fav_city in page.locator("#favStrip").inner_text()
@@ -326,9 +340,6 @@ with sync_playwright() as p:
     print(f"[관심 도시] {fav_city}: 넣기 {strip1}, 새로고침 뒤 {strip2}, 빼기 뒤 띠 보임 {strip3}")
     if not (strip1 and strip2 and not strip3):
         problems.append("관심 도시 넣기·저장·빼기 이상")
-    rss_links = page.locator("article.newspaper-card a[href*='feed/']").count()
-    if rss_links != expected:
-        problems.append(f"카드 RSS 링크 {rss_links} != {expected}")
     # 보관함에서 들어오는 ?d= (최근 14발행일 안)
     avail = data.get("availableDates", [])
     if len(avail) > 1:

@@ -23,6 +23,9 @@
   - `publish`는 `!cancelled()` 조건. 실행을 취소하면 저장도 하지 않는다(`always()`로 바꾸지 말 것).
 - 화면 판정(index.html): 1면 A·C와 스탬프 1·3·6·7은 실조회 이력이 필요 일수(30·7·14) 쌓인 뒤에만 켜짐(`hasHistory`).
 - `build_climate.py` → `data/climate_normals.json`(NASA POWER 월 평균기온·강수, 키 없음). 진단 워크플로 `mode=climate`로 갱신·커밋.
+- 도시 카드(S3, 2026-11-04 리뉴얼): 배지 + 관심·공유 툴바(SVG), 국기(`images/flags/<iso2>.svg`, flag-icons MIT, 도시→국가 `routes.CITY_ISO2`·`js/common.js`), 가격·직전호 대비, 📅 일정(`MM/DD(요일)~MM/DD(요일) N박 N일`)+출도착 시각, ✈️ 항공사명(편명은 카드에 안 씀), 🛫 터미널, 📌 현지 메모 + 도장, 예약 버튼 3개(브랜드 색·로고 `images/brands/`). 출처·판매처·현지 통화·다른 일정·그래프는 카드에서 뺌.
+- 터미널: `data/terminals.json` = 인천공항 공식 '취항정보'의 항공사별 T1/T2(2026-11-04 확인) + 도착 공항 짧은 이름. 화면에서 그날 실제 항공사 코드로 `인천 T1 ⇄ 간사이`처럼 만든다. 표에 없는 항공사·항공편 정보 없는 날은 🛫 행 숨김. **도착 공항 터미널 번호는 공식 확인 자료가 없어 쓰지 않는다.** 항공사 터미널 이전이 있으면 표를 다시 확인해 고친다.
+- 이모지: 화면의 이모지는 문자 대신 `images/emoji/<코드포인트>.svg`(Noto Emoji, Apache-2.0)로. `<option>`·메타·전광판은 예외. 공용 함수 `js/common.js`(`BPT.fmtMD`·`fmtRange`·`fmtNights`·`flagSrc`).
 - `about.html`(P5-1): 만드는 방법·원칙·1면 유형·스탬프·자료 출처·**사진 출처 전체 목록**(`data/photos.json`, 라이선스 링크). 이번 호 미발행 도시는 `flights_data.json`에서. 상단 발행 줄·1면 전광판 안내·판권에서 링크.
 - `city.html?code=YGJ`(P5-2): 도시 상세. 오늘 1위·2위·연차 절약(실조회), 항공편·판매처, 가격 이력(`historicalSeries` 실조회 1위만, **7일 이상부터 그래프**), 월별 기후·추천 시즌. 미발행 도시는 사유만(가격 없음). 카드 도시 이름·'가격 이력·날씨 →'에서 연결.
 - 관심 도시(P5-3): 카드 ☆ → localStorage `bpt-favs`(이 브라우저만). 1면 아래 '내 관심 도시' 띠(미발행이면 가격 없이 '이 호에는 미발행').
