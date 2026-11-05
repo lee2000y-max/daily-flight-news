@@ -182,6 +182,11 @@ REQUERY = {
     "VTE": ["Pha That Luang golden stupa", "Patuxai Vientiane", "Wat Si Saket", "Vientiane Mekong sunset"],
     "SPN": ["Managaha Island Saipan", "Micro Beach Saipan", "Bird Island Saipan", "Saipan lagoon beach"],
     "DPS": ["Tanah Lot temple", "Uluwatu Temple cliff", "Tegallalang rice terrace Bali", "Pura Lempuyang gates"],
+    # 2026-11-05 신규 도시 다시 찾기
+    "TKS": ["Naruto Strait whirlpool", "Onaruto Bridge", "Kazurabashi Iya", "Tokushima Mount Bizan view", "Oboke Gorge"],
+    "KMG": ["Stone Forest Shilin", "Dianchi Lake Kunming", "Kunming Western Hills Dragon Gate", "Yuantong Temple Kunming", "Kunming skyline"],
+    "MNL": ["Manila Bay sunset Roxas Boulevard", "Intramuros Fort Santiago", "San Agustin Church Manila", "Makati skyline", "Rizal Park Manila"],
+    "MEL": ["Flinders Street railway station", "Melbourne skyline Southbank", "Hosier Lane Melbourne", "Royal Exhibition Building", "Brighton bathing boxes"],
 }
 N_MORE = 4
 
