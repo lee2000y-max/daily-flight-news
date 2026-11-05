@@ -94,7 +94,7 @@ with sync_playwright() as p:
                 by_city[r_["city"].split(" ")[0][:7]] = r_
         for row in board["rows"]:
             city_t, dest_t, sched_t = row["cols"][1].strip(), row["cols"][2].strip(), row["cols"][3].strip()
-            if not re.fullmatch(r"\d\d\.\d\d-\d\d\.\d\d", sched_t):
+            if not re.fullmatch(r"\d\d/\d\d-\d\d/\d\d", sched_t):
                 problems.append(f"{name}: 일정 형식 '{sched_t}'")
             f_ = by_city.get(city_t)
             if f_ and dest_t != f_["dest"] and not ((row["aria"] or "").find(f"도착 {dest_t}") >= 0 and f_.get("leaveSaver")):
@@ -112,7 +112,7 @@ with sync_playwright() as p:
         fsize = page.eval_on_selector(".fp-row .fp-tile", "e => parseFloat(getComputedStyle(e).fontSize)") if rows else 0
         y_pill = page.locator("text=항공편집국 발행").first.bounding_box()["y"]
         y_fp = fp.bounding_box()["y"] if fp.count() else -1
-        y_tabs = page.locator("button:has-text('전체 호외')").first.bounding_box()["y"]
+        y_tabs = page.locator("#sectionTabs").first.bounding_box()["y"]
         board_aria = page.eval_on_selector_all(".fp-row", "els => els.map(e => e.getAttribute('aria-label'))")
         tiles_text = page.eval_on_selector_all(".fp-row", "els => els.map(e => Array.from(e.querySelectorAll('.fp-tile > .b:not(.f) i')).map(t => t.textContent).join('').replace(/\\s+/g, ' ').trim())")
         stamps = page.locator("article.newspaper-card .passport-stamp:visible").count()
@@ -152,8 +152,45 @@ with sync_playwright() as p:
             problems.append(f"{name}: 톱기사 사진을 불러오지 못함")
         elif name == "desktop" and ph["gap"] > 40:
             problems.append(f"{name}: 톱기사 아래 빈 공간 {ph['gap']}px > 40px")
-        if ph and not ph["cap"]:
-            problems.append(f"{name}: 톱기사 사진 설명 없음")
+        if ph and ph["cap"]:
+            problems.append(f"{name}: 메인에 사진 출처·설명이 남음(01 §1-2)")
+        # 텍스트 축소(S5, 01 §11): 메인 금지 문구·문자 이모지·환율 박스·메타 줄·1면 버튼·판권
+        tx = page.evaluate(r"""() => {
+            const body = document.body.innerText;
+            const banned = ['중앙값', '쏠림', '실조회', '편집국 노트', '연차 효율', 'CC BY', 'Wikimedia', '위키미디어', 'NASA', 'Exchange Rate', '공공데이터', '발행처:', '매일 아침 정기 발행']
+              .filter(w => body.includes(w));
+            const emo = /[\u{1F000}-\u{1FAFF}]|[\u{2600}-\u{27BF}]\uFE0F/u;
+            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+            const emoHits = []; let n;
+            while ((n = walker.nextNode())) {
+              const el = n.parentElement; if (!el || el.closest('option, .fp-board, script, style, template')) continue;
+              if (el.offsetParent === null) continue;
+              if (emo.test(n.nodeValue)) emoHits.push(n.nodeValue.trim().slice(0, 20));
+            }
+            const fp = document.querySelector("section[aria-labelledby='fpTitle']");
+            const meta = document.querySelector('header > div');
+            const foot = document.querySelector('footer');
+            return { banned, emoHits: emoHits.slice(0, 5), fx: !!document.querySelector("section[aria-labelledby='fxTitle']"),
+                     fpGoogle: fp ? fp.querySelectorAll('a[href*="google.com/travel"]').length : -1,
+                     fpHeadBtn: fp ? fp.querySelectorAll('h3 button.fp-headline, h4 button.fp-headline').length : 0,
+                     metaLinks: meta ? meta.querySelectorAll('a').length : -1,
+                     footLinks: foot ? [...foot.querySelectorAll('a')].map(a => a.textContent.trim()) : [],
+                     footCaution: foot ? foot.innerText.includes('[주의] 운임은 조회 시점 가격이며 좌석 상황에 따라 변동 가능함. 카드 하단 구글 플라이트·네이버·스카이스캐너 링크에서 최종 운임 확인 필수. 수하물 포함 여부는 항공사 운임 규정 확인.') : false };
+        }""")
+        print(f"   텍스트 축소: 금지 문구 {tx['banned']}, 문자 이모지 {tx['emoHits']}, 환율 박스 {tx['fx']}, 1면 구글 버튼 {tx['fpGoogle']}, 1면 제목 버튼 {tx['fpHeadBtn']}, 메타 줄 링크 {tx['metaLinks']}, 판권 링크 {tx['footLinks']}, 주의 문구 {tx['footCaution']}")
+        if tx["banned"] or tx["emoHits"] or tx["fx"] or tx["fpGoogle"] or tx["fpHeadBtn"] < 2 or tx["metaLinks"] or not tx["footCaution"] \
+                or tx["footLinks"] != ["월간지", "RSS", "지난 호", "만드는 방법"]:
+            problems.append(f"{name}: 텍스트 축소 점검 이상 {tx}")
+        # 1면 제목을 누르면 카드로 이동
+        top_code = page.evaluate("document.querySelector(\"section[aria-labelledby='fpTitle'] h3 button\") ? 1 : 0")
+        if top_code:
+            page.locator("section[aria-labelledby='fpTitle'] h3 button").click()
+            page.wait_for_timeout(1200)
+            moved = page.evaluate("[...document.querySelectorAll('article.newspaper-card')].some(c => c.classList.contains('ring-2'))")
+            print(f"   1면 제목 → 카드 이동 {moved}")
+            if not moved:
+                problems.append(f"{name}: 1면 제목을 눌러도 카드로 이동하지 않음")
+            page.evaluate("window.scrollTo(0, 0)")
         # 링크 공유 버튼(이미지 공유 버튼은 없앰)
         if page.locator("article.newspaper-card button.share-btn").count() != cards:
             problems.append(f"{name}: 링크 공유 버튼 수 이상")
@@ -167,8 +204,6 @@ with sync_playwright() as p:
             print(f"   공유 버튼: 안내 '{toast}' / 복사 '{clip[:110]}'")
             if "링크를 복사" not in toast or "/s/" not in clip or "?d=" not in clip:
                 problems.append("desktop: 링크 공유(복사) 이상")
-            fx_rows = page.locator("section[aria-labelledby='fxTitle'] li").count()
-            print(f"   환율 박스 {fx_rows}종")
         g = page.locator("article.newspaper-card a:has-text('구글 플라이트')")
         g_count = g.count()
         g_href = g.first.get_attribute("href") if g_count else ""
@@ -176,7 +211,7 @@ with sync_playwright() as p:
         print(f"   첫 구글 링크: {g_href[:120]}")
         status_line = [l for l in body.splitlines() if "오늘 발행" in l]
         print("   발행 상태:", status_line[:1])
-        print("   미발행 목록 표시:", "오늘 발행하지 못한 노선" in body)
+        print("   미발행 목록 표시:", "오늘 싣지 못한 도시" in body)
         for word in ("기준가", "수하물 규정", "무료 위탁수하물", "DIRECT PASS"):
             if word in body:
                 problems.append(f"{name}: 금지 문구 '{word}' 노출")
@@ -186,7 +221,7 @@ with sync_playwright() as p:
             problems.append(f"{name}: 구글 플라이트 버튼 링크 이상")
         if errors:
             problems.append(f"{name}: 콘솔 오류 {errors[:3]}")
-        if expected_failed and "오늘 발행하지 못한 노선" not in body:
+        if expected_failed and "오늘 싣지 못한 도시" not in body:
             problems.append(f"{name}: 미발행 목록 미표시")
         page.evaluate("""async () => { for (let y = 0; y < document.body.scrollHeight; y += 600) { scrollTo(0, y); await new Promise(r => setTimeout(r, 60)); } }""")
         # 늦게 오는 사진(지연 불러오기)은 최대 10초 기다린다
@@ -412,7 +447,12 @@ with sync_playwright() as p:
     for ym in idx.get("monthly", [])[:2]:
         page.goto(f"http://127.0.0.1:{PORT}/monthly.html?m={ym}", wait_until="networkidle")
         page.wait_for_timeout(1200)
+        rows10 = page.locator("tbody tr").count()
+        if page.locator("#showAllRows").is_visible():
+            page.locator("#showAllRows").click(); page.wait_for_timeout(300)
         rows = page.locator("tbody tr").count()
+        if rows10 > 10:
+            problems.append(f"monthly {ym}: 처음 보이는 표가 10행을 넘음({rows10})")
         body = page.inner_text("body")
         rep = json.load(open(f"data/reports/monthly/{ym}.json", encoding="utf-8"))
         cov = rep.get("coverage", {})

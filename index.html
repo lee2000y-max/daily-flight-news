@@ -317,6 +317,22 @@
       pointer-events: none;
     }
 
+    /* 1면 제목(누르면 카드로) · 숫자 칸 [일정][지표][가격] */
+    .fp-headline { all: unset; cursor: pointer; text-align: left; }
+    .fp-headline:hover { text-decoration: underline; text-underline-offset: 4px; }
+    .fp-headline:focus-visible { outline: 2px solid var(--stamp-navy); outline-offset: 2px; }
+    .fp-figs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .fp-fig { border: 1px solid var(--border-vintage); background: var(--box-bg); border-radius: 2px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .fp-fig dt { flex: none; line-height: 0; }
+    .fp-fig dt .emo { height: 20px; }
+    .fp-fig dd { margin: 0; font-family: 'Noto Serif KR', serif; font-weight: 900; font-size: 16px; color: var(--ink-dark); min-width: 0; }
+    .fp-fig.is-sched { grid-column: 1 / -1; }          /* 휴대폰: 일정이 첫 줄 전체 */
+    .fp-fig.is-price dd { font-size: 19px; }
+    @media (min-width: 640px) {
+      .fp-figs { grid-template-columns: 1.5fr 1fr 1fr; }
+      .fp-fig.is-sched { grid-column: auto; }
+    }
+
     /* 1면 톱기사 사진 */
     /* 사진 자체 크기가 칸 높이를 늘리지 않게 이미지는 칸 안에 절대 위치로 채움 */
     .fp-photo-frame { position: relative; aspect-ratio: 16 / 9; }
@@ -355,20 +371,9 @@
     <div class="flex flex-wrap items-center justify-between text-xs text-[#5C5549] border-t-2 border-b border-[#2C2620] py-1.5 px-1 font-medium tracking-tight">
       <div class="flex items-center gap-3">
         <span class="font-bold text-[#1E1B18]" x-text="'VOL. ' + (selectedDate || '').slice(0, 7)"></span>
-        <span>|</span>
-        <span>발행처: <strong class="text-[#1E1B18]">보딩패스 타임즈 항공편집국</strong> (ICN GATEWAY DESK)</span>
-        <span class="hidden md:inline">|</span>
-        <span class="hidden md:inline">매일 아침 정기 발행</span>
-        <span>|</span>
-        <a href="./monthly.html" class="font-bold text-[#1E3A5F] underline">월간지</a>
-        <a href="./feed.xml" class="font-bold text-[#1E3A5F] underline">RSS</a>
-        <a href="./archive.html" class="font-bold text-[#1E3A5F] underline">지난 호</a>
-        <a href="./about.html" class="font-bold text-[#1E3A5F] underline">만드는 방법</a>
-        <span class="hidden md:inline">|</span>
-        <span x-show="currentStatus.total" x-cloak>오늘 발행 <strong class="text-[#1E1B18]" x-text="currentStatus.published + '/' + currentStatus.total"></strong>개 도시 · <span x-text="(currentStatus.generatedAt || '').slice(11) + ' 발행'"></span></span>
       </div>
       <div class="flex items-center gap-2 mt-1 sm:mt-0">
-        <label for="editionDateSelect" class="font-bold text-[#1E1B18]">🗓️ 발행호(기준일) 선택:</label>
+        <label for="editionDateSelect" class="font-bold text-[#1E1B18] inline-flex items-center gap-1"><img class="emo" src="./images/emoji/1f5d3.svg" alt="" aria-hidden="true"> 발행호(기준일) 선택:</label>
         <select 
           id="editionDateSelect"
           x-model="selectedDate"
@@ -413,7 +418,7 @@
             데일리 최저가 항공권 소식
           </h1>
           <div class="inline-flex items-center gap-1.5 bg-[#FAF7F0] border border-[#8C8275] px-3.5 py-1 rounded-full text-xs text-[#3E3932] shadow-sm">
-            <span>✒️</span>
+            <img class="emo" src="./images/emoji/2712.svg" alt="" aria-hidden="true">
             <span><strong>보딩패스 타임즈 항공편집국 발행</strong> · 매일 아침 인천·김포 출발 직항 노선 최저가·황금 스케줄 종합 신문</span>
           </div>
         </div>
@@ -447,36 +452,28 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12">
-        <!-- 톱 기사 -->
+        <!-- 톱 기사: 제목을 누르면 카드로 -->
         <template x-if="frontPage.top">
           <article class="lg:col-span-7 p-5 sm:p-6 lg:border-r border-[#D5CBB8] flex flex-col">
-            <span class="fp-label" :style="'background-color:' + frontPage.top.color" x-text="frontPage.top.label"></span>
-            <h3 class="font-serif-kr text-2xl sm:text-4xl font-black text-[#1E1B18] leading-tight tracking-tight mt-2.5" x-text="frontPage.top.headline"></h3>
-            <p class="text-sm text-[#3E3932] mt-2.5 leading-relaxed" x-text="frontPage.top.dek"></p>
-            <dl class="grid grid-cols-3 gap-2 mt-4">
+            <span class="fp-label self-start" :style="'background-color:' + frontPage.top.color" x-text="frontPage.top.label"></span>
+            <h3 class="font-serif-kr text-2xl sm:text-4xl font-black text-[#1E1B18] leading-tight tracking-tight mt-2.5">
+              <button type="button" class="fp-headline" @click="jumpToCard(frontPage.top.code)" x-text="frontPage.top.headline"></button>
+            </h3>
+            <dl class="fp-figs mt-4">
               <template x-for="fig in frontPage.top.figures" :key="fig.k">
-                <div class="border border-[#D5CBB8] bg-[#F2ECE1] rounded-sm px-2.5 py-2">
-                  <dt class="text-[11px] text-[#5C5549] font-semibold" x-text="fig.k"></dt>
-                  <dd class="font-serif-kr text-base sm:text-xl font-black text-[#1E1B18] mt-0.5" x-text="fig.v"></dd>
+                <div class="fp-fig" :class="'is-' + fig.k" x-show="fig.v">
+                  <dt><img x-show="fig.icon" class="emo" :src="fig.icon ? emoSrc(fig.icon) : ''" role="img" :alt="fig.aria" :aria-label="fig.aria"></dt>
+                  <dd x-text="fig.v"></dd>
                 </div>
               </template>
             </dl>
-            <!-- 톱기사 사진(P4): 그날 톱 도시 사진. 데스크톱은 남은 높이를 채우고(최소 180px), 휴대폰은 16:9 -->
             <figure class="fp-photo mt-4 flex flex-col lg:flex-1">
               <button type="button" @click="jumpToCard(frontPage.top.code)" class="fp-photo-frame block w-full overflow-hidden border border-[#2C2620] bg-[#D5CBB8] lg:flex-1"
                 :aria-label="frontPage.top.city + ' 카드로 이동'">
                 <img :src="cityPhoto(frontPage.top.code, 'large')" :alt="photoPlace(frontPage.top.code) + ' 사진'"
                   @error="handleImageFallback($event, frontPage.top.code)" class="w-full h-full object-cover" />
               </button>
-              <figcaption class="text-[11px] text-[#5C5549] mt-1.5 leading-snug" x-text="photoCaption(frontPage.top.code)"></figcaption>
             </figure>
-            <div class="flex flex-wrap items-center gap-2 mt-4">
-              <button type="button" @click="jumpToCard(frontPage.top.code)"
-                class="px-3 py-1.5 bg-[#2C2620] text-[#FAF7F0] text-xs font-bold rounded-sm hover:bg-[#1E1B18]">카드 보기 ↓</button>
-              <a x-show="frontPage.top.url" :href="frontPage.top.url || '#'" target="_blank" rel="noopener noreferrer"
-                class="px-3 py-1.5 bg-[#1E3A5F] text-[#FAF7F0] text-xs font-bold rounded-sm hover:bg-[#16304F]">구글 플라이트에서 확인 ↗</a>
-            </div>
-            <p class="text-[11px] text-[#7A7164] mt-2.5" x-show="frontPage.top.note" x-text="frontPage.top.note"></p>
           </article>
         </template>
 
@@ -485,18 +482,14 @@
           <template x-for="side in frontPage.sides" :key="side.type + side.code">
             <article class="p-4 sm:p-5">
               <span class="fp-label" :style="'background-color:' + side.color" x-text="side.label"></span>
-              <h4 class="font-serif-kr text-lg sm:text-xl font-black text-[#1E1B18] leading-snug mt-1.5" x-text="side.headline"></h4>
-              <p class="text-xs text-[#3E3932] mt-1" x-text="side.dek"></p>
-              <p class="text-xs text-[#5C5549] mt-1.5 font-medium">
-                <template x-for="(fig, fi) in side.figures" :key="fig.k">
-                  <span><span x-show="fi > 0"> · </span><span x-text="fig.k + ' '"></span><strong class="text-[#1E1B18]" x-text="fig.v"></strong></span>
+              <h4 class="font-serif-kr text-lg sm:text-xl font-black text-[#1E1B18] leading-snug mt-1.5">
+                <button type="button" class="fp-headline" @click="jumpToCard(side.code)" x-text="side.headline"></button>
+              </h4>
+              <p class="text-xs text-[#5C5549] mt-1.5 font-medium flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                <template x-for="(fig, fi) in side.figures.filter(x => x.v)" :key="fig.k">
+                  <span class="inline-flex items-center gap-1"><span x-show="fi > 0" class="text-[#B8AD99]">·</span><img x-show="fig.icon" class="emo" :src="fig.icon ? emoSrc(fig.icon) : ''" role="img" :alt="fig.aria" :aria-label="fig.aria"><strong class="text-[#1E1B18]" x-text="fig.v"></strong></span>
                 </template>
               </p>
-              <div class="flex items-center gap-3 mt-2 text-xs">
-                <button type="button" @click="jumpToCard(side.code)" class="underline font-bold text-[#2C2620]">카드 보기 ↓</button>
-                <a x-show="side.url" :href="side.url || '#'" target="_blank" rel="noopener noreferrer" class="underline font-bold text-[#1E3A5F]">구글 플라이트 ↗</a>
-              </div>
-              <p class="text-[11px] text-[#7A7164] mt-1" x-show="side.note" x-text="side.note"></p>
             </article>
           </template>
           <p class="p-4 text-xs text-[#7A7164]" x-show="frontPage.sides.length === 0">오늘은 다른 기사 조건에 맞는 노선이 없습니다.</p>
@@ -516,7 +509,6 @@
           </div>
           <div x-ref="boardRows" class="fp-rows"></div>
         </div>
-        <p class="text-[11px] text-[#7A7164] mt-2"><a href="./about.html#frontpage" class="underline">1면 기사를 고르는 방법</a> · 1면 기사와 전광판은 오늘 실제 조회 가격으로 자동 작성됩니다. 연차 효율 일정은 날짜 검색 실조회 가격이며 편명·시각은 예약 사이트에서 확인하세요.</p>
       </div>
     </div>
   </section>
@@ -525,20 +517,20 @@
   <section class="max-w-7xl mx-auto px-4 mb-6" x-show="loadState === 'ok' && favs.length" x-cloak aria-labelledby="favTitle" id="favStrip">
     <div class="bg-[#FAF7F0] border-2 border-[#2C2620] px-4 py-3">
       <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
-        <h2 id="favTitle" class="font-serif-kr font-black text-base">★ 내 관심 도시</h2>
-        <span class="text-[11px] text-[#7A7164]">이 브라우저에만 저장됩니다 · 카드의 ☆를 눌러 넣고 빼세요</span>
+        <h2 id="favTitle" class="font-serif-kr font-black text-base inline-flex items-center gap-1"><svg viewBox="0 0 24 24" class="w-4 h-4 inline-block align-[-2px]" fill="#C99A06" stroke="#8A6A04" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"/></svg> 내 관심 도시</h2>
+        <span class="text-[11px] text-[#7A7164]">이 브라우저에만 저장</span>
       </div>
       <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
         <template x-for="fr in favRows" :key="fr.code">
           <li class="border border-[#D5CBB8] bg-white px-2.5 py-2 min-w-0">
             <div class="flex items-center justify-between gap-1">
               <a :href="'./city.html?code=' + fr.code" class="font-bold text-sm truncate hover:underline" x-text="fr.city"></a>
-              <button type="button" class="text-[#C99A06] text-base leading-none" @click="toggleFav(fr.code)" :aria-label="fr.city + ' 관심 도시에서 빼기'">★</button>
+              <button type="button" class="leading-none" @click="toggleFav(fr.code)" :aria-label="fr.city + ' 관심 도시에서 빼기'"><svg viewBox="0 0 24 24" class="w-4 h-4 inline-block align-[-2px]" fill="#C99A06" stroke="#8A6A04" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"/></svg></button>
             </div>
             <template x-if="fr.f">
               <button type="button" class="text-left w-full" @click="jumpToCard(fr.code)">
                 <span class="block font-serif-kr font-black text-base text-[#B8332A]" x-text="formatPrice(fr.f.price)"></span>
-                <span class="block text-[11px] text-[#5C5549]" x-text="shortDate(fr.f.depDate) + '-' + shortDate(fr.f.retDate) + ' · ' + fr.f.nights + '박'"></span>
+                <span class="block text-[11px] text-[#5C5549]" x-text="fmtRange(fr.f.depDate, fr.f.retDate) + ' ' + fmtNights(fr.f.nights)"></span>
               </button>
             </template>
             <template x-if="!fr.f"><span class="block text-[11px] text-[#7A7164] mt-1">이 호에는 미발행</span></template>
@@ -548,26 +540,6 @@
     </div>
   </section>
 
-  <!-- 오늘의 환율 박스(P3): 오늘 발행된 도시들의 현지 통화만. 조회 실패한 날은 숨김(이월 없음) -->
-  <section class="max-w-7xl mx-auto px-4 mb-6" x-show="loadState === 'ok' && fxRows.length" x-cloak aria-labelledby="fxTitle">
-    <div class="bg-[#FAF7F0] border border-[#2C2620] px-4 py-3">
-      <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
-        <h2 id="fxTitle" class="font-serif-kr font-black text-sm tracking-wider">💱 오늘의 환율 <span class="font-sans font-medium text-[11px] text-[#5C5549]">현지 통화 → 원화</span></h2>
-        <span class="text-[10px] text-[#7A7164]">
-          <span x-text="fxUpdatedText"></span> ·
-          <a :href="fx.sourceUrl || '#'" target="_blank" rel="noopener noreferrer" class="underline">Rates By Exchange Rate API</a>
-        </span>
-      </div>
-      <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-1.5 text-xs">
-        <template x-for="r in fxRows" :key="r.cur">
-          <li class="flex items-baseline justify-between gap-2 border-b border-dashed border-[#D5CBB8] pb-1">
-            <span class="text-[#3E3932]"><span x-text="r.flag"></span> <span x-text="r.label"></span></span>
-            <strong class="font-mono-flap text-[#1E1B18]" x-text="r.krwText"></strong>
-          </li>
-        </template>
-      </ul>
-    </div>
-  </section>
 
   <!-- ===================================================================== -->
   <!-- 3. 5대 대분류 면(Section) 탭 + 2단 세부 카테고리 필터 칩 + 검색/필터 바 -->
@@ -575,7 +547,7 @@
   <section class="max-w-7xl mx-auto px-4 mb-6">
     <!-- 1단: 신문 면(Section) 대분류 네비게이션 -->
     <div class="bg-[#FAF7F0] border-2 border-[#2C2620] p-2 shadow-sm">
-      <div class="flex flex-wrap items-center gap-1.5">
+      <div class="flex flex-wrap items-center gap-1.5" id="sectionTabs" role="tablist" aria-label="지면">
         <template x-for="sec in sections" :key="sec.id">
           <button
             type="button"
@@ -584,7 +556,7 @@
               ? 'bg-[#2C2620] text-[#FAF7F0] font-bold shadow-sm' 
               : 'bg-[#F2ECE1] text-[#3E3932] hover:bg-[#E5DEC9] font-medium'"
             class="px-3.5 py-2 rounded-sm text-xs sm:text-sm transition flex items-center gap-1.5">
-            <span x-text="sec.icon"></span>
+            <img x-show="sec.icon" :src="sec.icon" :class="sec.flag ? 'flag' : 'emo'" alt="" aria-hidden="true">
             <span class="font-serif-kr" x-text="sec.label"></span>
             <span 
               class="text-[11px] font-mono-flap px-1.5 py-0.2 rounded-full"
@@ -600,7 +572,7 @@
         x-transition
         class="mt-2.5 pt-2.5 border-t border-dashed border-[#C7BBA6] flex flex-wrap items-center gap-1.5">
         <span class="text-xs font-bold text-[#5C5549] mr-1 flex items-center gap-1">
-          🏷️ 세부 테마 필터:
+          <img class="emo" src="./images/emoji/1f3f7.svg" alt="" aria-hidden="true"> 세부 테마 필터:
         </span>
         <button
           type="button"
@@ -632,9 +604,9 @@
           <input 
             type="text" 
             x-model="searchQuery"
-            placeholder="도시명(예: 다낭, 사가, 하노이), 공항코드(DAD), 항공사 검색..."
+            placeholder="도시·공항·항공사 검색" aria-label="도시·공항·항공사 검색"
             class="w-full bg-[#EFECE4] border border-[#B8AD99] rounded-sm pl-8 pr-7 py-1.5 text-xs sm:text-sm text-[#1E1B18] placeholder-[#7A7164] focus:outline-none focus:border-[#2C2620]" />
-          <span class="absolute left-2.5 top-2 text-xs text-[#5C5549]">🔍</span>
+          <img class="emo absolute left-2.5 top-2" src="./images/emoji/1f50d.svg" alt="" aria-hidden="true">
           <button 
             x-show="searchQuery" 
             @click="searchQuery = ''"
@@ -645,14 +617,14 @@
         <div class="flex flex-wrap items-center gap-2 text-xs">
           <label class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-sm bg-[#F2ECE1] border border-[#C7BBA6] cursor-pointer select-none">
             <input type="checkbox" x-model="onlyGoldenSchedule" class="accent-[#2C2620]" />
-            <span class="font-semibold text-[#2C2620]">🌅 오전 출발 황금스케줄만</span>
+            <span class="font-semibold text-[#2C2620] inline-flex items-center gap-1"><img class="emo" src="./images/emoji/1f305.svg" alt="" aria-hidden="true"> 오전 출발 황금스케줄만</span>
           </label>
           <select 
             x-model="sortBy"
             class="bg-[#FAF7F0] border border-[#8C8275] rounded-sm px-2.5 py-1.5 text-xs font-bold text-[#1E1B18]">
-            <option value="price_asc">💰 왕복 최저가 낮은순</option>
-            <option value="drop_desc">📉 직전호 대비 인하폭순</option>
-            <option value="section_order">📰 신문 지면 기본편성순</option>
+            <option value="price_asc">왕복 최저가 낮은순</option>
+            <option value="drop_desc">직전호 대비 인하폭순</option>
+            <option value="section_order">기본편성순</option>
           </select>
         </div>
       </div>
@@ -671,9 +643,6 @@
           x-show="activeSubcategory !== 'ALL'" 
           class="text-xs font-bold px-2 py-0.5 rounded bg-[#8C8275] text-white"
           x-text="activeSubcategory"></span>
-      </div>
-      <div class="text-xs text-[#5C5549] font-medium">
-        총 <strong class="text-[#1E1B18] font-mono-flap" x-text="filteredFlights.length"></strong>개 직항 노선 기사 게재
       </div>
     </div>
 
@@ -817,33 +786,32 @@
   <!-- ===================================================================== -->
   <!-- 5. 하단 신문 판권(Colophon) 푸터 -->
   <!-- ===================================================================== -->
-  <!-- 오늘 발행하지 못한 노선과 사유 -->
-  <section class="max-w-7xl mx-auto px-4 mt-10" x-show="currentFailed.length > 0" x-cloak>
-    <div class="border-t-2 border-[#2C2620] pt-3">
-      <h2 class="font-serif-kr text-base font-black text-[#1E1B18] mb-2">오늘 발행하지 못한 노선 (<span x-text="currentFailed.length"></span>)</h2>
-      <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1 text-xs text-[#3E3932]">
+  <!-- 오늘 싣지 못한 도시(접어 둠). 사유는 쉬운 말로(수집 데이터의 사유 문자열은 그대로) -->
+  <section class="max-w-7xl mx-auto px-4 mt-10" x-show="currentFailed.length > 0" x-cloak id="failedList">
+    <details class="border-t-2 border-[#2C2620] pt-3">
+      <summary class="font-serif-kr text-base font-black text-[#1E1B18] cursor-pointer" x-text="'오늘 싣지 못한 도시 ' + currentFailed.length + '곳'"></summary>
+      <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1 text-xs text-[#3E3932] mt-2">
         <template x-for="f in currentFailed" :key="f.code">
-          <li><strong x-text="f.city"></strong> <span class="font-mono-flap text-[#7A7164]" x-text="'(' + f.code + ')'"></span> — <span x-text="f.reason"></span></li>
+          <li><strong x-text="f.city"></strong> — <span x-text="plainReason(f.reason)"></span></li>
         </template>
       </ul>
-    </div>
+    </details>
   </section>
 
   <footer class="max-w-7xl mx-auto px-4 mt-14">
-    <div class="double-rule-top pt-6 pb-8 text-center text-xs text-[#5C5549] space-y-1.5">
+    <div class="double-rule-top pt-6 pb-8 text-center text-xs text-[#5C5549] space-y-2">
       <img src="./images/brand/emblem.svg" width="96" height="96" class="w-24 h-24 mx-auto mb-3 select-none" alt="">
       <div class="font-masthead font-bold text-sm text-[#1E1B18] tracking-widest">
         THE BOARDING PASS TIMES · 보딩패스 타임즈 항공편집국
       </div>
-      <p>
-        본 조간지는 매일 아침 인천·김포 출발 직항 노선을 발행일 기준 2주~2개월 뒤, 주말을 낀 2박3일~8박9일 일정 전체에서 조회해 실제 왕복 최저가로 발행합니다.
-      </p>
-      <p>
-        <a href="./about.html" class="font-bold text-[#1E3A5F] underline">만드는 방법 · 자료 출처 · 사진 출처</a>
-      </p>
-      <p class="text-[11px] text-[#7A7164]">
-        ※ 운임은 조회 시점 가격이며 좌석 상황에 따라 바뀝니다. 카드 하단 구글 플라이트·네이버·스카이스캐너 링크에서 최종 운임을 확인하세요. 수하물 포함 여부는 항공사 운임 규정을 확인하세요.
-      </p>
+      <nav class="flex flex-wrap justify-center gap-x-4 gap-y-1 font-bold" aria-label="다른 지면">
+        <a href="./monthly.html" class="text-[#1E3A5F] underline">월간지</a>
+        <a href="./feed.xml" class="text-[#1E3A5F] underline">RSS</a>
+        <a href="./archive.html" class="text-[#1E3A5F] underline">지난 호</a>
+        <a href="./about.html" class="text-[#1E3A5F] underline">만드는 방법</a>
+      </nav>
+      <p x-show="currentStatus.total" x-cloak>오늘 발행 <strong class="text-[#1E1B18]" x-text="currentStatus.published + '/' + currentStatus.total"></strong>개 도시 · <span x-text="(currentStatus.generatedAt || '').slice(11) + ' 발행'"></span></p>
+      <p class="text-[11px] text-[#7A7164]">[주의] 운임은 조회 시점 가격이며 좌석 상황에 따라 변동 가능함. 카드 하단 구글 플라이트·네이버·스카이스캐너 링크에서 최종 운임 확인 필수. 수하물 포함 여부는 항공사 운임 규정 확인.</p>
     </div>
   </footer>
 
@@ -869,7 +837,7 @@
         this.widths = opts.widths || [4, 7, 3, 11, 10];
         this.reduce = Boolean(opts.reduceMotion);
         this.FLIP_MS = 66;
-        this.DRUM = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789₩,.-';
+        this.DRUM = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789₩,./-';
         this.rows = [];        // [{el, tiles: [[tile...] per col]}]
         this.targets = [];     // [{color, aria, cols: [str]}]
         this.active = [];
@@ -1092,15 +1060,14 @@
         historyStart: '',
         climate: {},        // 도시별 월 기후 평년값 {code: {tmean[12], precipMm[12]}}
         climateMeta: {},
-        fx: {},             // 오늘의 원화 환율 {source, updated, rates: {CUR: {krw, unit, name}}, cityCurrency}   // 실조회(live) 이력 첫 날짜. 이력 판정(A·C, 스탬프 1·3·6·7)은 이 날로부터 충분한 날이 지나야 켠다
 
         sections: [
-          { id: 'ALL', label: '전체 호외', icon: '🗞️' },
-          { id: 'SEC1', label: '1면: 일본', icon: '🇯🇵' },
-          { id: 'SEC2', label: '2면: 중국', icon: '🇨🇳' },
-          { id: 'SEC3', label: '3면: 동남아·대양주', icon: '🌴' },
-          { id: 'SEC4', label: '4면: 중앙아시아·몽골', icon: '🐎' },
-          { id: 'SEC5', label: '5면: 중화권', icon: '🏮' }
+          { id: 'ALL', label: '전체', icon: '' },
+          { id: 'SEC1', label: '일본', icon: './images/flags/jp.svg', flag: true },
+          { id: 'SEC2', label: '중국', icon: './images/flags/cn.svg', flag: true },
+          { id: 'SEC3', label: '동남아·대양주', icon: './images/emoji/1f334.svg' },
+          { id: 'SEC4', label: '중앙아시아·몽골', icon: './images/emoji/1f40e.svg' },
+          { id: 'SEC5', label: '중화권', icon: './images/emoji/1f3ee.svg' }
         ],
 
         taxonomyMap: {
@@ -1281,7 +1248,7 @@
           };
         },
 
-        // 발행일(rowDate) 이전 실조회 이력으로 판정용 수치를 만든다. 오늘 값은 넣지 않는다(오늘과 비교하기 위함)
+        // 발행일(rowDate) 이전 실제 조회 이력으로 판정용 수치를 만든다. 오늘 값은 넣지 않는다(오늘과 비교하기 위함)
         historyStats(series, rowDate) {
           const out = { min30: null, max30: null, n30: 0, median30: null, avg7: null, n7: 0, lccMedian30: null, nLcc30: 0 };
           if (!series || !Array.isArray(series.prices) || !rowDate) return out;
@@ -1309,7 +1276,7 @@
           return t.toISOString().slice(0, 10);
         },
 
-        // 이력이 'need'일 이상 쌓였는지(사이트 전체 실조회 시작일 기준) + 그 노선 관측이 절반 이상인지
+        // 이력이 'need'일 이상 쌓였는지(사이트 전체 실제 조회 시작일 기준) + 그 노선 관측이 절반 이상인지
         hasHistory(item, need) {
           if (!this.historyStart || !item || !item.editionDate) return false;
           if (this.historyStart > this.addDays(item.editionDate, -need)) return false;
@@ -1329,7 +1296,6 @@
           this.historyStart = hs;
           this.climate = (extData.climate && extData.climate.cities) || {};
           this.climateMeta = extData.climate || {};
-          this.fx = extData.fx || {};
           this.newRoutes = Array.isArray(extData.newRoutes) ? extData.newRoutes : [];
           const fresh = {};
           (Array.isArray(extData.flights) ? extData.flights : []).forEach(row => {
@@ -1391,7 +1357,7 @@
         },
 
         // ------------------------------------------------------------------
-        // 1면 뉴스 (docs/PLAN.md 3장). 유형: B 연차 효율 · E 빠른 탈출 · F 제철 여행지
+        // 1면 뉴스 (docs/PLAN.md 3장). 유형: B 연차 아끼기 · E 빠른 탈출 · F 제철 여행지
         // 같은 데이터면 언제 열어도 같은 1면(무작위 없음). 요일별로 톱 유형 우선순위를 돌린다.
         // ------------------------------------------------------------------
         FRONT_ORDER: [
@@ -1406,7 +1372,7 @@
         TYPE_META: {
           A: { label: '최저가 경신', boardLabel: '최저경신', color: '#B8332A' },
           C: { label: '주간 급락', boardLabel: '주간급락', color: '#7A2E8C' },
-          B: { label: '연차 효율', boardLabel: '연차효율', color: '#215E42' },
+          B: { label: '연차 아끼기', boardLabel: '연차절약', color: '#215E42' },
           E: { label: '빠른 탈출', boardLabel: '빠른탈출', color: '#1E3A5F' },
           F: { label: '제철 여행지', boardLabel: '제철여행', color: '#8A5A00' },
           N: { label: '신규 취항', boardLabel: '신규취항', color: '#B45309' },
@@ -1462,9 +1428,7 @@
             return {
               type: 'B', code: f.code, city: f.city,
               headline: t.leaveDays === 0 ? `연차 없이 ${t.nights}박, ${f.city} 왕복 ${p}` : `연차 ${t.leaveDays}일로 ${t.nights}박, ${f.city} 왕복 ${p}`,
-              dek: `${t.dates}${hol.length ? ' · ' + hol.join('·') + ' 포함' : ' · 주말 포함'} · ${this.originLabel(t.origin)} 출발 직항`,
-              figures: [{ k: '연차', v: `${t.leaveDays}일` }, { k: '일정', v: `${t.nights}박 ${t.nights + 1}일` }, { k: '왕복', v: p }],
-              note: t.source === 'calendar' ? '가격은 오늘 날짜 검색 실조회값입니다. 편명·시각은 예약 사이트에서 확인하세요.' : '',
+              metric: { v: `연차 ${t.leaveDays}일` },
               url: t.googleUrl || '',
               board: { city: f.city, origin: t.origin, dest: t.dest || f.dest, dep: t.depDate, ret: t.retDate, nights: t.nights, price: t.price }
             };
@@ -1484,9 +1448,7 @@
             return {
               type: 'E', code: f.code, city: f.city,
               headline: `금요일 ${o.dep} 퇴근길 출발, ${this.fmtDur(o.durationMin)}이면 ${f.city}`,
-              dek: `${f.dates} · ${o.airline} ${o.flightNo} · ${this.originLabel(f.origin)} 출발 직항`,
-              figures: [{ k: '금요일 출발', v: o.dep }, { k: '비행', v: this.fmtDur(o.durationMin) }, { k: '왕복', v: p }],
-              note: '',
+              metric: { v: `금 ${o.dep} 출발 · 비행 ${this.fmtDur(o.durationMin)}` },
               url: f.googleUrl || '',
               board: { city: f.city, origin: f.origin, dest: f.dest, dep: f.depDate, ret: f.retDate, nights: f.nights, price: f.price }
             };
@@ -1496,7 +1458,7 @@
         // 출발월이 기후 평년값상 좋은 달인가. 결과: { label, temp, precip } 또는 null
         //  - 편집 제철(bestSeasons)에 든 달: 평년 기온 5~30℃이고 강수가 그 도시 12개월 중 많은 쪽 1/4이 아니면 통과
         //    (설경·빙설·수빙·온천은 겨울이 제철이라 기온·강수 조건을 보지 않음)
-        //  - 편집 제철에 없어도 평년 기온 15~26℃ + 강수가 그 도시 월 중앙값 이하면 '쾌적한 날씨'
+        //  - 편집 제철에 없어도 평년 기온 15~26℃ + 강수가 그 도시 월 median 이하면 '쾌적한 날씨'
         //  - 기후 자료가 없는 도시는 편집 제철만 사용
         seasonOf(f, month) {
           const season = (f.bestSeasons || []).find(s => Array.isArray(s.months) && s.months.includes(month));
@@ -1516,13 +1478,9 @@
           return null;
         },
 
-        climateNote() {
-          const yrs = String(this.climateMeta.period || '').match(/(\d{4})\D+(\d{4})/);
-          return `평년 기온·강수: NASA POWER${yrs ? ` ${yrs[1]}~${yrs[2]}년 평균` : ''}(도시 중심 격자값).`;
-        },
 
         candidatesF(flights) {
-          // 출발월이 그 도시 제철(기후 평년값) + 가격이 같은 면(지면) 오늘 중앙값 이하
+          // 출발월이 그 도시 제철(기후 평년값) + 가격이 같은 면(지면) 오늘 median 이하
           const bySec = {};
           flights.forEach(f => { const sec = this.getTaxonomy(f.code).section; (bySec[sec] = bySec[sec] || []).push(f.price); });
           const median = arr => { const a = [...arr].sort((x, y) => x - y); const n = a.length; return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2; };
@@ -1538,18 +1496,11 @@
           out.sort((a, b) => a.ratio - b.ratio || a.f.price - b.f.price || a.f.code.localeCompare(b.f.code));
           return out.map(({ f, season, month, ratio }) => {
             const p = this.formatPrice(f.price);
-            const pct = Math.round((1 - ratio) * 100);
-            const sec = this.sections.find(x => x.id === this.getTaxonomy(f.code).section);
-            const secName = sec ? sec.label.replace(/^\d면:\s*/, '') : '같은 지면';
             const hasClimate = season.temp != null;
             return {
               type: 'F', code: f.code, city: f.city,
               headline: season.label === '쾌적한 날씨' ? `${f.city}, 날씨 좋은 ${month}월 — 왕복 ${p}` : `${f.city}, ${month}월 ${season.label}의 계절 — 왕복 ${p}`,
-              dek: `${f.dates}${hasClimate ? ` · ${month}월 평년 기온 ${season.temp}℃, 강수 ${season.precip}mm` : ''} · ${secName} 오늘 가격 중앙값보다 ${pct > 0 ? pct + '% 낮음' : '같은 수준'}`,
-              figures: hasClimate
-                ? [{ k: `${month}월 평년 기온`, v: `${Math.round(season.temp)}℃` }, { k: '지면 중앙값 대비', v: pct > 0 ? `-${pct}%` : '0%' }, { k: '왕복', v: p }]
-                : [{ k: '출발', v: `${month}월` }, { k: '지면 중앙값 대비', v: pct > 0 ? `-${pct}%` : '0%' }, { k: '왕복', v: p }],
-              note: hasClimate ? this.climateNote() : '',
+              metric: hasClimate ? { icon: '1f321', aria: '평년 기온', v: `${Math.round(season.temp)}℃` } : { v: `${month}월 출발` },
               url: f.googleUrl || '',
               board: { city: f.city, origin: f.origin, dest: f.dest, dep: f.depDate, ret: f.retDate, nights: f.nights, price: f.price }
             };
@@ -1565,9 +1516,7 @@
             return {
               type: 'A', code: f.code, city: f.city,
               headline: `${f.city} 30일 최저가 경신, 왕복 ${p}`,
-              dek: `${f.dates} · 직전 30일 최저 ${this.formatPrice(f.stats.min30)}보다 ${gap.toLocaleString('ko-KR')}원 낮음 · ${this.originLabel(f.origin)} 출발 직항`,
-              figures: [{ k: '오늘', v: p }, { k: '30일 최저', v: this.formatPrice(f.stats.min30) }, { k: '차이', v: `-${gap.toLocaleString('ko-KR')}원` }],
-              note: '', url: f.googleUrl || '',
+              metric: { v: `30일 최저 ${this.formatPrice(f.stats.min30)}` },
               board: { city: f.city, origin: f.origin, dest: f.dest, dep: f.depDate, ret: f.retDate, nights: f.nights, price: f.price }
             };
           });
@@ -1582,9 +1531,7 @@
             return {
               type: 'C', code: f.code, city: f.city,
               headline: `${f.city} 일주일 새 ${pct}% 하락, 왕복 ${p}`,
-              dek: `${f.dates} · 최근 7일 평균 ${this.formatPrice(Math.round(f.stats.avg7))} · ${this.originLabel(f.origin)} 출발 직항`,
-              figures: [{ k: '오늘', v: p }, { k: '7일 평균', v: this.formatPrice(Math.round(f.stats.avg7)) }, { k: '변화', v: `-${pct}%` }],
-              note: '', url: f.googleUrl || '',
+              metric: { v: `7일 평균보다 -${pct}%` },
               board: { city: f.city, origin: f.origin, dest: f.dest, dep: f.depDate, ret: f.retDate, nights: f.nights, price: f.price }
             };
           });
@@ -1601,9 +1548,7 @@
               return {
                 type: 'N', code: r.code, city: r.city,
                 headline: `김포에서 ${r.city} 가는 직항, 이번 주 처음 조회됐습니다 — 왕복 ${p}`,
-                dek: `${d(r.depDate)}~${d(r.retDate)} (${r.nights}박) · 김포 출발 직항(${r.dest})${r.airline ? ' · ' + r.airline : ''} · ${parseInt(am, 10)}월 ${parseInt(ad, 10)}일 김포 전체 노선 점검에서 처음 확인`,
-                figures: [{ k: '출발', v: '김포' }, { k: '일정', v: `${r.nights}박 ${r.nights + 1}일` }, { k: '왕복', v: p }],
-                note: r.airline ? '' : '가격은 오늘 날짜 검색 실조회값입니다. 편명·시각은 예약 사이트에서 확인하세요.',
+                metric: { v: '김포 출발' },
                 url: r.googleUrl || '',
                 board: { city: r.city, origin: 'GMP', dest: r.dest, dep: r.depDate, ret: r.retDate, nights: r.nights, price: r.price }
               };
@@ -1615,9 +1560,7 @@
           return {
             type: 'L', code: f.code, city: f.city,
             headline: `오늘 가장 싼 직항, ${f.city} 왕복 ${p}`,
-            dek: `${f.dates} · ${this.originLabel(f.origin)} 출발 직항${f.airline ? ' · ' + f.airline : ''}`,
-            figures: [{ k: '일정', v: `${f.nights}박 ${f.nights + 1}일` }, { k: '출발', v: this.originLabel(f.origin) }, { k: '왕복', v: p }],
-            note: '', url: f.googleUrl || '',
+            metric: { v: `${this.originLabel(f.origin)} 출발` },
             board: { city: f.city, origin: f.origin, dest: f.dest, dep: f.depDate, ret: f.retDate, nights: f.nights, price: f.price }
           };
         },
@@ -1625,7 +1568,13 @@
         buildFrontPage(flights, dateStr) {
           const empty = { top: null, sides: [], boardRows: [] };
           if (!Array.isArray(flights) || flights.length === 0) return empty;
-          const deco = a => Object.assign(a, this.TYPE_META[a.type]);
+          const deco = a => Object.assign(a, this.TYPE_META[a.type], {
+            figures: [
+              { k: 'sched', icon: '1f4c5', aria: '일정', v: `${this.fmtRange(a.board.dep, a.board.ret)} ${this.fmtNights(a.board.nights)}` },
+              { k: 'metric', icon: (a.metric || {}).icon || '', aria: (a.metric || {}).aria || '', v: (a.metric || {}).v || '' },
+              { k: 'price', icon: '1f4b0', aria: '왕복 가격', v: this.formatPrice(a.board.price) }
+            ]
+          });
           const cands = { A: this.candidatesA(flights), B: this.candidatesB(flights), C: this.candidatesC(flights),
                           E: this.candidatesE(flights), F: this.candidatesF(flights) };
           const order = this.FRONT_ORDER[this.weekdayOf(dateStr)];
@@ -1682,7 +1631,7 @@
           const meta = this.TYPE_META[r.type] || this.TYPE_META.L;
           let city = String(r.city || '');
           if (city.length > 7) city = city.split(' ')[0].slice(0, 7);
-          const sched = `${this.shortDate(r.dep)}-${this.shortDate(r.ret)}`;
+          const sched = `${this.shortDate(r.dep).replace('.', '/')}-${this.shortDate(r.ret).replace('.', '/')}`;   // 전광판만 MM/DD-MM/DD(요일 없이, 11칸)
           const price = this.formatPrice(r.price);
           const md = iso => { const [, m, d] = String(iso || '').split('-'); return m && d ? `${parseInt(m, 10)}월 ${parseInt(d, 10)}일` : ''; };
           const W = this.BOARD_WIDTHS;
@@ -1771,8 +1720,8 @@
         },
 
         get currentSectionTitle() {
-          const found = this.sections.find(s => s.id === this.activeSection);
-          return found ? `${found.icon} ${found.label}` : '전체 노선 브리핑';
+          const found = this.sections.find(x => x.id === this.activeSection);
+          return `${found ? found.label : '전체'} ${this.filteredFlights.length}곳`;
         },
 
         get currentSubcategories() {
@@ -1864,6 +1813,20 @@
           img.src = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=640&q=80';
         },
 
+        // 미발행 사유를 쉬운 말로(표에 없는 사유는 원문 그대로)
+        plainReason(r) {
+          const t = String(r || '');
+          const map = [
+            [/^탐색 기간\(D\+14~60\) 내 ICN·GMP 직항 없음$/, '2주~2개월 안에 직항 없음'],
+            [/^주말 포함·연차 5일 이하 조건에 맞는 직항 일정 없음$/, '주말 낀 일정 중 맞는 직항 없음'],
+            [/^상세 조회에서 직항 확인 실패$/, '항공편을 확인하지 못함'],
+            [/^수집 작업 실패/, '오늘 조회하지 못함'],
+            [/^조회 오류/, '오늘 조회하지 못함(오류)'],
+          ];
+          for (const [re, txt] of map) if (re.test(t)) return txt;
+          return t;
+        },
+
         // 공용 함수(js/common.js) 연결
         fmtMD(iso) { return window.BPT ? BPT.fmtMD(iso) : ''; },
         fmtRange(a, b) { return window.BPT ? BPT.fmtRange(a, b) : ''; },
@@ -1896,7 +1859,7 @@
           return (this.landmarkMeta[code] && this.landmarkMeta[code].caption) || '인천·김포 직항 취항 노선';
         },
 
-        // 도시 사진: 위키미디어 공용에서 고른 사진(data/photos.json + images/cities/)이 있으면 그것, 없으면 기존 임시 사진
+        // 도시 사진: 고른 공용 라이선스 사진(data/photos.json + images/cities/)이 있으면 그것, 없으면 기존 임시 사진
         cityPhoto(code, size) {
           if (this.photos[code]) return `images/cities/${code}${size === 'large' ? '' : '_640'}.jpg`;
           const u = this.getLandmarkPhoto(code);
@@ -1911,10 +1874,6 @@
         },
 
 
-        photoCaption(code) {
-          if (this.photos[code]) return `${this.photoPlace(code)} · 사진 ${this.photos[code].artist} / ${this.photos[code].license} / 위키미디어 공용`;
-          return `${this.photoPlace(code)} · 임시 사진(Unsplash)`;
-        },
 
         isMorningDeparture(scheduleStr) {
           if (!scheduleStr) return false;
@@ -1946,14 +1905,14 @@
         },
 
         discountOf(item) {
-          // 할인폭: 30일 중앙값 대비 하락률(이력이 없으면 0)
+          // 할인폭: 30일 median 대비 하락률(이력이 없으면 0)
           const m = item.stats && item.stats.median30;
           return m ? (m - item.price) / m : 0;
         },
 
         computeStamps(flights) {
           // 스탬프 카드가 전체의 25%를 넘으면 정리. SUPER DEAL은 상한에서 제외(항상 표시).
-          // 할인폭(30일 중앙값 대비)이 큰 순, 같으면 가격이 낮은 순으로 남긴다.
+          // 할인폭(30일 median 대비)이 큰 순, 같으면 가격이 낮은 순으로 남긴다.
           const map = {};
           const list = (flights || []).map(f => ({ f, s: this.rawStamp(f) })).filter(x => x.s);
           list.filter(x => x.s.key === 'SUPER').forEach(x => { map[x.f.code] = x.s; });
@@ -1965,33 +1924,6 @@
           return map;
         },
 
-        FX_FLAG: { JPY: '🇯🇵', CNY: '🇨🇳', VND: '🇻🇳', THB: '🇹🇭', PHP: '🇵🇭', TWD: '🇹🇼', HKD: '🇭🇰', MOP: '🇲🇴',
-                   IDR: '🇮🇩', MYR: '🇲🇾', SGD: '🇸🇬', LAK: '🇱🇦', BND: '🇧🇳', USD: '🇺🇸', KZT: '🇰🇿', UZS: '🇺🇿', MNT: '🇲🇳' },
-        FX_SHORT: { JPY: '엔', CNY: '위안', VND: '동', THB: '바트', PHP: '페소', TWD: '대만달러', HKD: '홍콩달러', MOP: '파타카',
-                    IDR: '루피아', MYR: '링깃', SGD: '싱가포르달러', LAK: '킵', BND: '브루나이달러', USD: '달러', KZT: '텡게', UZS: '숨', MNT: '투그릭' },
-
-        fxOf(code) {
-          const cur = this.fx && this.fx.cityCurrency && this.fx.cityCurrency[code];
-          const r = cur && this.fx.rates && this.fx.rates[cur];
-          if (!r) return null;
-          const krw = r.krw >= 1000 ? Math.round(r.krw).toLocaleString('ko-KR') : r.krw.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
-          return { cur, flag: this.FX_FLAG[cur] || '', label: `${r.unit.toLocaleString('ko-KR')}${this.FX_SHORT[cur] || cur}`, krwText: `₩${krw}` };
-        },
-
-        get fxRows() {
-          const seen = new Set(), out = [];
-          [...this.currentEditionFlights]
-            .sort((a, b) => this.getTaxonomy(a.code).order - this.getTaxonomy(b.code).order)
-            .forEach(f => { const x = this.fxOf(f.code); if (x && !seen.has(x.cur)) { seen.add(x.cur); out.push(x); } });
-          return out;
-        },
-
-        get fxUpdatedText() {
-          const t = Date.parse((this.fx && this.fx.updated) || '');
-          if (!t) return '';
-          const k = new Date(t + 9 * 3600 * 1000).toISOString();
-          return `기준 ${k.slice(0, 10)} ${k.slice(11, 16)} (한국 시각)`;
-        },
 
         // 링크 공유(P4): 카드별 공유 페이지 s/<도시>/ 주소를 보낸다. 링크 미리보기(og:image)는 그 페이지의 썸네일.
         // 휴대폰은 기기 공유 창, 컴퓨터는 링크 복사. 날짜(?d=)를 붙여 메신저의 지난 미리보기 캐시를 피한다.
@@ -2000,7 +1932,7 @@
           const base = new URL('.', location.href.split('#')[0]).href;
           const url = `${base}s/${item.code}/?d=${d}`;
           const [, em, ed] = String(item.editionDate || this.selectedDate || '').split('-');
-          const sched = `${this.shortDate(item.depDate)}-${this.shortDate(item.retDate)}`;
+          const sched = this.fmtRange(item.depDate, item.retDate);
           const won = (Number(item.price) || 0).toLocaleString('ko-KR') + '원';
           const text = `[보딩패스 타임즈] ${item.city} 왕복 ${won} · ${this.originLabel(item.origin)} 출발 직항 · ${sched} (${parseInt(em, 10)}/${parseInt(ed, 10)} 조회)`;
           return { url, text, title: `${item.city} 왕복 ${won} · ${this.originLabel(item.origin)} 출발 직항` };
