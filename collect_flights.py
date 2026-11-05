@@ -615,8 +615,12 @@ def collect_phase(cities: List[Dict[str, Any]], today: datetime.date) -> Dict[st
         found[m["code"]] = collect_city(m, today, full_gmp)
         f = found[m["code"]]
         best = f["candidates"][0] if f["candidates"] else None
+        per_ap = {}
+        for c in f["candidates"]:   # 가격순: 공항별 첫 후보가 그 공항 최저(여러 공항 도시 확인용)
+            per_ap.setdefault(c["dest"], c["price"])
         print(f" · [{i:02d}/{len(cities)}] {m['city']} ({m['code']}): 날짜 검색 {f['calls']}회(오류 {f['errors']}), "
-              f"조건 통과 {len(f['candidates'])}건" + (f", 최저 {best['price']:,}원 {best['origin']}→{best['dest']} {best['dep']}~{best['ret']}" if best else ""))
+              f"조건 통과 {len(f['candidates'])}건" + (f", 최저 {best['price']:,}원 {best['origin']}→{best['dest']} {best['dep']}~{best['ret']}" if best else "")
+              + (" | 공항별 최저 " + ", ".join(f"{k} {v:,}" for k, v in per_ap.items()) if len(m["airports"]) > 1 and per_ap else ""))
     print(f"⏱️ 날짜 검색 {time.time() - t0:.0f}초")
     new_gmp = sorted({d for f in found.values() for d in f.get("newGmp", [])})
     if new_gmp:
@@ -675,7 +679,8 @@ def print_summary(published: List[Dict[str, Any]], failed: List[Dict[str, Any]],
     for r in published:
         tag = "" if r.get("outbound") else " (항공편 정보 없음: " + r.get("detailError", "")[:60] + ")"
         alt = f" | 2위 {r['alt']['price']:,}원 {r['alt']['depDate']}" if r.get("alt") else ""
-        print(f" ✓ {r['city']}: {r['price']:,}원 {r['origin']}→{r['dest']} {r['dates']} {r['airline']} {r['timeSlot']}{tag}{alt}")
+        arr = f" | 연차 {r['leaveDays']}일, 귀국 도착 {r['retArrDate']}({r['retArrSource']})" if r.get("retArrDate") else ""
+        print(f" ✓ {r['city']}: {r['price']:,}원 {r['origin']}→{r['dest']} {r['dates']} {r['airline']} {r['timeSlot']}{tag}{alt}{arr}")
     for f in failed:
         print(f" ✗ {f['city']}: {f['reason']}" + (f" [{f['diag']}]" if f.get("diag") else ""))
     print(f"📌 발행 {len(published)}/{total}개 도시, 미발행 {len(failed)}개")
