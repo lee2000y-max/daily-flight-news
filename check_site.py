@@ -25,7 +25,11 @@ latest = data["latestDate"]
 expected = len([r for r in data["flights"] if r["date"] == latest])
 expected_failed = len([r for r in data["failed"] if r["date"] == latest])
 problems = []
-notes = []      # 목표 미달이지만 실패로 치지 않는 참고 항목(환경에 따라 달라지는 수치)
+notes = []
+import subprocess  # noqa: E402
+# data/cities.json·js/common.js가 routes.py와 같은지(화면 도시 표 이중 관리 방지)
+if subprocess.call([sys.executable, "build_cities.py", "--check"]) != 0:
+    problems.append("data/cities.json 또는 js/common.js가 routes.py와 다름(python build_cities.py)")      # 목표 미달이지만 실패로 치지 않는 참고 항목(환경에 따라 달라지는 수치)
 photos = (json.load(open("data/photos.json", encoding="utf-8")).get("cities") or {}) if os.path.exists("data/photos.json") else {}
 with sync_playwright() as p:
     b = p.chromium.launch()
@@ -191,6 +195,27 @@ with sync_playwright() as p:
             if not moved:
                 problems.append(f"{name}: 1면 제목을 눌러도 카드로 이동하지 않음")
             page.evaluate("window.scrollTo(0, 0)")
+        # 분류 8탭(2026-11-05): 1단계 9칸(전체+8), 2단계 줄은 동남아·중앙·남아시아·대양주·유럽·미주에서만, 탭 아이콘 모두 불러옴, 넘침 없음
+        if name in ("desktop", "mobile"):
+            tabs = page.locator("#sectionTabs button")
+            labels = [t.strip() for t in page.eval_on_selector_all("#sectionTabs button span.font-serif-kr", "els => els.map(e => e.textContent)")]
+            sub_seen = {}
+            for i in range(tabs.count()):
+                tabs.nth(i).click(); page.wait_for_timeout(150)
+                st = page.evaluate("""() => { const s = document.querySelector('#subTabs');
+                  const vis = !!(s && s.offsetParent);
+                  const imgs = [...document.querySelectorAll('#sectionTabs img, #subTabs img')].filter(i => i.offsetParent);
+                  return { vis, n: vis ? s.querySelectorAll('button').length : 0, broken: imgs.filter(i => !(i.complete && i.naturalWidth > 0)).map(i => i.getAttribute('src')),
+                           allIcon: vis ? !!s.querySelector('button img') && !s.querySelector('button:first-child img') : null,
+                           ov: document.documentElement.scrollWidth - innerWidth } }""")
+                sub_seen[labels[i]] = st
+            tabs.nth(0).click(); page.wait_for_timeout(150)
+            want_sub = {"동남아": 5, "중앙·남아시아": 3, "대양주": 3, "유럽": 4, "미주": 4}
+            bad_tab = {k: v for k, v in sub_seen.items() if v["vis"] != (k in want_sub) or (k in want_sub and v["n"] != want_sub[k])
+                       or v["broken"] or v["ov"] > 0 or (k in want_sub and not v["allIcon"])}
+            print(f"   분류 탭: {labels}, 2단계 보임 {[k for k, v in sub_seen.items() if v['vis']]}, 이상 {bad_tab or '없음'}")
+            if labels != ["전체", "일본", "중국", "중화권", "동남아", "중앙·남아시아", "대양주", "유럽", "미주"] or bad_tab:
+                problems.append(f"{name}: 분류 탭 이상 {labels} {bad_tab}")
         # 링크 공유 버튼(이미지 공유 버튼은 없앰)
         if page.locator("article.newspaper-card button.share-btn").count() != cards:
             problems.append(f"{name}: 링크 공유 버튼 수 이상")
@@ -358,7 +383,7 @@ with sync_playwright() as p:
                 problems.append(f"city {rec['code']}: 가격 이력 표시 이상(이력 {hist_n}일)")
             if photos.get(rec["code"]) and img_w <= 0:
                 problems.append(f"city {rec['code']}: 사진을 불러오지 못함")
-            if opts < 58:
+            if opts < len({r_["code"] for r_ in data["flights"] + data["failed"]}):
                 problems.append(f"city: 도시 목록 {opts}개")
             if ov_c > 0:
                 problems.append(f"city {rec['code']} {vw}px: 가로 넘침 {ov_c}px")

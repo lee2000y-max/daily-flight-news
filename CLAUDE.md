@@ -5,10 +5,10 @@
 
 ## 구조
 - `index.html`: 단일 파일 사이트(Tailwind CDN + Alpine.js, **Alpine은 `alpinejs@3.14.9`로 다섯 페이지 모두 고정**). `./flights_data.json`(형식 v2)을 읽어 렌더링. 불러오기 실패 시 가짜 데이터 없이 안내만 표시.
-- `routes.py`: 도시 마스터(가격과 무관한 정보만). `airports`에 도시의 도착 공항들, `GMP_DESTINATIONS`에 김포 취항지.
+- `routes.py`: 도시 마스터 132곳(가격과 무관한 정보만, 2026-11-05 74곳 추가). `airports`에 도시의 도착 공항들(방콕 BKK+DMK, 뉴욕 JFK+EWR), `GMP_DESTINATIONS`에 김포 취항지. 분류: `section`(SEC1 일본·SEC2 중국·SEC5 중화권·SEC3 동남아·SEC4 중앙·남아시아·SEC6 대양주·SEC7 유럽·SEC8 미주, 화면 순서 이대로) + `sub`(2단계 권역, 일본·중국·중화권은 빈 값). 선택 필드 `minNights`(최소 박수: 유럽·미주 4, HNL·SYD·BNE·MEL·AKL 3), `arrNextDay`(귀국편 다음 날 도착 → 연차를 도착일까지). 신규 74곳은 `note`·`BEST_SEASONS` 비움(사용자 확인 전). 고치면 `python build_cities.py`로 `data/cities.json`(화면 분류)·`js/common.js`(국기)를 다시 만들어 함께 커밋(`check_site.py`가 확인).
 - `collect_flights.py`: 매일 수집.
-  1. 날짜 검색(fli 0.9.0, 구글 달력 API): 출발 ICN(+김포 취항지는 GMP) × 공항 × 2~8박, 출발 D+14~60, 직항, KRW.
-  2. 토·일 포함 + 연차(공휴일 제외 평일) 5일 이하만 후보.
+  1. 날짜 검색(fli 0.9.0, 구글 달력 API): 출발 ICN(+김포 취항지는 GMP) × 공항 × 2~8박(`minNights`부터), 출발 D+14~60, 직항, KRW.
+  2. 토·일 포함 + 연차(공휴일 제외 평일) 5일 이하만 후보. `arrNextDay` 도시는 귀국일+1일까지 세고, 상세 검색의 실제 도착일로 `leaveDays`를 다시 셈(`retArrDate`·`retArrSource`). 기존 58곳 계산은 그대로.
   3. 후보를 가격순으로 상세 검색(최대 6개)해 직항이 확인된 일정끼리 1위·2위(출발일 3일 이상 차이) 선정. 화면 가격 = 상세 검색 가격.
      상세 미확인 2위는 날짜 검색 가격 중 1위 이상만. 상세가 모두 오류이거나 모두 빈 결과(0건)면 날짜 검색 가격으로 발행(항공편 정보 없음, `detailError`에 사유). 경유만 나오면 발행하지 않음.
   4. 직항 0건·조건 불일치·조회 오류 도시는 발행하지 않고 `failed`에 사유 기록.
@@ -38,13 +38,14 @@
 - 환율(P3): 수집 합치기 단계에서 `open.er-api.com`(키 없음) 조회 → `flights_data.json`의 `fx`. 실패하면 빈 값(환율 박스 숨김, 이월 없음). 통화는 `routes.CITY_CURRENCY`.
 - 링크 공유(P4, 공유 이미지 버튼 대체): 카드의 '🔗 이 특가 공유' → `s/<도시>/?d=YYYYMMDD` 주소를 공유(휴대폰 공유 창, 컴퓨터 복사). `build_share.py`가 사이트 배포 때 `s/<도시>/index.html`(og 태그만, 열면 `./#<도시>`로 이동)과 `thumb.jpg`(1200×630, Pillow + fonts-noto-cjk), `s/og.jpg`(사이트 기본 미리보기 = 오늘 최저가 도시)를 만든다. `s/`는 커밋하지 않는다(.gitignore). 미발행 도시는 가격 없는 썸네일·"오늘은 발행되지 않았습니다". 실패해도 배포는 계속.
 - 배포(P4, 2026-11-03 사용자 결정): GitHub Pages를 브랜치 배포에서 워크플로 배포(`.github/workflows/pages.yml`)로. main 푸시, 또는 매일 수집·진단 워크플로가 main에서 끝나면(`workflow_run`) 저장소 + `s/`를 묶어 배포. 브랜치에서 수동 실행하면 묶기만(배포 안 함). 저장소 설정 Pages Source = "GitHub Actions" 필요.
-- 도시 사진(P4): `data/photos.json`(출처: title·page·license·artist, 선택 place) + `images/cities/<도시>.jpg`(1600)·`_640.jpg`. 위키미디어 공용만, 출처 표기 필수(카드·1면 사진 설명). 고르기: 진단 워크플로 `mode=photos`(후보 3장 → `preview/photos` 브랜치) → 사용자가 고르면 `mode=photos_fetch`, route에 `"YGJ:2 SDJ:1 ..."`. 마음에 드는 후보가 없는 도시는 `mode=photos_more`, route에 `"CTS KOJ"`(검색어 `build_photos.REQUERY`, 4번부터 덧붙임). 사진이 없는 도시는 기존 Unsplash 임시 사진.
+- 도시 사진(P4): `data/photos.json`(출처: title·page·license·artist, 선택 place) + `images/cities/<도시>.jpg`(1600)·`_640.jpg`. 위키미디어 공용만, 출처 표기 필수(카드·1면 사진 설명). 고르기: 진단 워크플로 `mode=photos`(후보 3장 → `preview/photos` 브랜치) → 사용자가 고르면 `mode=photos_fetch`, route에 `"YGJ:2 SDJ:1 ..."`. 마음에 드는 후보가 없는 도시는 `mode=photos_more`, route에 `"CTS KOJ"`(검색어 `build_photos.REQUERY`, 4번부터 덧붙임). 사진이 없는 기존 58곳은 기존 Unsplash 임시 사진, 2026-11-05 추가 74곳은 사진을 고르기 전까지 비움(카드 워터마크·1면 사진 숨김, 임의 사진 금지).
 - 1면 전광판(P4): `FlapBoard` 엔진(index.html, rAF 루프 하나, 윗장 낙하·아랫장 펼침). 열 [유형 4|도시 7|도착 3|일정 11 `MM.DD-MM.DD`|왕복 가격 10]. 화면에 절반 이상 들어오면 재생(나갔다 다시 들어오면 재생), 휴대폰은 2줄 + 유형은 왼쪽 색 막대·범례. 한 줄 배치는 1024px 이상.
 - `sellers.py`: 판매처별 가격 읽기(사용자 결정으로 매일 수집 포함, 2026-11-03). 같은 출발 시각 직항을 못 찾으면 비움. 실험 기록 `docs/P3_booking_experiment.md`, 실험 스크립트 `probe_booking.py`.
 - `check_site.py`: 로컬에서 사이트를 띄워 데스크톱·모바일 화면 검사(카드 수, 구글 버튼, 금지어, 콘솔 오류, P4 전광판·사진·링크 공유·공유 페이지·360~1366px 넘침) 후 스크린샷. 전광판 부드러움(CPU 4배 느림)은 참고 수치(서버 화면 처리가 실제 기기와 달라 실패로 치지 않음). `probe_live_price.yml`을 `mode=site`로 실행하면 `preview/screenshots` 브랜치에 올린다.
 
 ## 알아 둘 함정
 - 하위 페이지(about·city·archive·monthly)는 `x-data="xxxPage()"`에 `init()` 메서드가 있으면 Alpine이 알아서 한 번 부른다. `x-init="init()"`를 함께 쓰면 **두 번** 실행된다(2026-11-04 수정: 데이터 요청 2회 → 1회). 새 페이지에도 `x-init`을 붙이지 않는다.
+- fli 0.9.0 공항 목록 보정은 `patch_fli.py`(OKA 이름 보정·FRU 추가·전 공항 점검). 목록에 없는 공항은 그 공항만 빼고 조회, 도시 공항이 모두 없으면 `failed` "수집 도구가 공항 코드를 지원하지 않음". OKA 보정 실패만 작업 중단.
 - fli는 0.9.0으로 고정. 0.10부터는 구글이 달력 API에 브라우저 서명을 요구해 날짜마다 페이지를 받으므로 수십 배 느림.
 - fli 0.9.0은 영문 이름이 같은 공항을 하나로 합침. 오키나와 OKA가 인도네시아 NAH로 바뀌던 문제를 워크플로 `Patch fli airport aliases` 단계에서 보정·검사한다. 노선을 추가하면 이 검사가 잡아 준다.
 - fli 항공사 목록이 오래됨(예: 9G를 "9G Rail"로 표기). `AIRLINE_KO`에 없는 코드는 코드로 표시한다.
@@ -76,4 +77,5 @@
 - 2026-11-03: P3(PR #4) 병합. 판매처별 가격 매일 수집(PR #5).
 - 2026-11-03: P4 기획안(2판) 착수: 전광판 재작성·1면 사진·링크 공유·위키미디어 사진 후보. main 병합은 11/5 '3일 연속 수집' 판정 뒤.
 - 2026-11-03: P4 PR #6(병합은 11/5 판정 뒤). P5 기획안 승인(`docs/P5_PLAN.md`), 브랜치 `feat/p5-pages`(P4 브랜치에서 분기, P4 병합 뒤 main 기준으로 정리). P5-1 소개 페이지 착수.
+- 2026-11-05: 도시 74곳 추가(132곳)·분류 8탭 + 2단계 권역 탭(테마 태그 폐지, 기능 필터 추가 안 함)·장거리 규칙(최소 박수, 도착일까지 연차). 브랜치 `feat/cities-132`. 신규 도시 사진·현지 메모·제철은 후속.
 - 2026-11-04: 2026-11-03 사용자 결정으로 '쏠림 지수'(한국인 여행객 쏠림, 1면 '한적한 여행지' 유형 포함) 폐기. 수집·워크플로·화면·데이터 키에서 모두 삭제. 사유: 정확하다고 보기 어렵고, 한국인이 적다고 다른 여행객도 적다는 보장이 없음.
