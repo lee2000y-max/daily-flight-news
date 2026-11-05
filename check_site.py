@@ -247,13 +247,17 @@ with sync_playwright() as p:
                 return as.length >= 2 && cols === as.length && as.every(a => { const lg = a.querySelector('.bstub img.bk-logo'), nm = a.querySelector('.bname');
                   return lg && lg.complete && lg.naturalWidth > 0 && Math.round(lg.getBoundingClientRect().width) === 18 && nm && nm.textContent.trim() && nm.scrollWidth <= nm.clientWidth; }); }).length,
               emojiChars: cards.filter(c => emo.test(c.innerText)).map(c => c.id).slice(0, 3),
-              terminals: cards.filter(c => c.querySelector('img[aria-label="터미널"]')).length,
+              // 2026-11-05 사용자 결정: 카드에서 터미널 행·전일 대비 등락 삭제, 절취선은 정보 박스 바로 아래
+              terminals: cards.filter(c => c.querySelector('img[aria-label="터미널"]') || /인천 T\d|⇄/.test(c.innerText)).length,
+              delta: cards.filter(c => /[▼▲]\s?[\d,]+원/.test(c.innerText)).length,
+              stubGap: cards.filter(c => { const i = c.querySelector('.card-info'), d = c.querySelector('.boarding-stub-divider');
+                return !i || !d || d.getBoundingClientRect().top - i.getBoundingClientRect().bottom > 16; }).length,
               ariaIcons: cards.every(c => [...c.querySelectorAll('.card-info img.emo')].every(i => i.getAttribute('aria-label'))),
               flightNo: cards.filter(c => /\b[A-Z0-9]{2}\d{2,4}\b/.test((c.querySelector('.card-info') || {}).innerText || '')).length,
             };
         }""")
-        print(f"   카드 점검: 출처 {cd['credit']}, 금지 문구 {cd['banned']}, 국기 {cd['flags']}/{cards}, 예약 버튼 {cd['books']}/{cards}, 문자 이모지 {cd['emojiChars']}, 터미널 행 {cd['terminals']}, 아이콘 라벨 {cd['ariaIcons']}, 편명 노출 {cd['flightNo']}")
-        if cd["credit"] or cd["banned"] or cd["flags"] != cards or cd["books"] != cards or cd["emojiChars"] or not cd["ariaIcons"] or cd["flightNo"]:
+        print(f"   카드 점검: 출처 {cd['credit']}, 금지 문구 {cd['banned']}, 국기 {cd['flags']}/{cards}, 예약 버튼 {cd['books']}/{cards}, 문자 이모지 {cd['emojiChars']}, 터미널 행 {cd['terminals']}, 등락 표시 {cd['delta']}, 절취선 간격 이상 {cd['stubGap']}, 아이콘 라벨 {cd['ariaIcons']}, 편명 노출 {cd['flightNo']}")
+        if cd["credit"] or cd["banned"] or cd["flags"] != cards or cd["books"] != cards or cd["emojiChars"] or not cd["ariaIcons"] or cd["flightNo"] or cd["terminals"] or cd["delta"] or cd["stubGap"]:
             problems.append(f"{name}: 카드 리뉴얼 점검 이상 {cd}")
         page.screenshot(path=f"screenshots/{name}_full.png", full_page=True)
         ctx.close()

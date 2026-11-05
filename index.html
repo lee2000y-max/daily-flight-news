@@ -67,18 +67,12 @@
     .card-tools .sep { width: 1px; height: 16px; background: var(--border-vintage); }
     .card-tools svg { width: 18px; height: 18px; }
     .card-tools .fav-star[aria-pressed="true"] svg { fill: #C99A06; stroke: #8A6A04; }
-    .price-delta { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 2px; }
-    .price-delta.is-down { color: var(--price-down); background: var(--price-down-bg); }
-    .price-delta.is-up { color: var(--price-up); background: var(--price-up-bg); }
     .card-info { background: var(--box-bg); border: 1px solid var(--border-vintage); border-radius: 4px; padding: 12px 16px; display: grid; gap: 8px; }
     .card-info .row { display: grid; grid-template-columns: 22px 1fr; align-items: start; column-gap: 8px; font-size: 14px; line-height: 20px; min-width: 0; }
     .card-info .row > .emo { height: 18px; margin-top: 1px; justify-self: center; vertical-align: 0; }
     .card-info .nights { color: var(--ink-muted); font-weight: 500; }
     .card-info .times { display: block; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--ink-muted); margin-top: 2px; }
     .card-info .times span + span::before { content: "·"; margin: 0 6px; color: #8C8275; }
-    .card-info .term { font-weight: 700; }
-    .card-info .term i { font-style: normal; color: var(--ink-muted); margin: 0 4px; }
-    .card-info .term .dir { font-weight: 500; color: var(--ink-muted); font-size: 12px; }
     /* 예약 버튼: 티켓 스텁(2026-11-05 B안). 위 = 브랜드 색 스텁 + 공식 로고, 아래 = 양피지 몸통 + 이름 */
     .book-btns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
     .book-btns.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -178,7 +172,7 @@
     .boarding-stub-divider {
       position: relative;
       border-top: 2px dashed #C7BBA6;
-      margin: 0.85rem -1.25rem;
+      margin: 0.75rem -1.25rem 0.85rem;
     }
 
     .boarding-stub-divider::before,
@@ -678,7 +672,7 @@
     <!-- 도시별 보딩패스 신문 카드 그리드 (스타일 A 전면 적용) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       <template x-for="item in filteredFlights" :key="item.code">
-        <article class="newspaper-card rounded-sm p-5 flex flex-col justify-between" :id="'card-' + item.code" :aria-label="item.city + ' 특가 카드'">
+        <article class="newspaper-card rounded-sm p-5 flex flex-col" :id="'card-' + item.code" :aria-label="item.city + ' 특가 카드'">
 
           <!-- 우측 상단 도시 사진 워터마크 -->
           <div class="landmark-watermark-wrap">
@@ -718,13 +712,10 @@
             </h3>
             <p class="text-[12px] text-[#5C5549] font-medium mt-0.5 mb-3.5" x-text="photoPlaceOnly(item.code)"></p>
 
-            <!-- 왕복 직항 최저가 + 직전호 대비 -->
+            <!-- 왕복 직항 최저가 -->
             <div class="pb-3 mb-3.5 border-b border-[#D5CBB8]">
               <div class="text-[11px] font-bold text-[#5C5549]">왕복 직항 최저가</div>
-              <div class="flex items-center gap-2.5">
-                <span class="font-serif-kr text-[30px] leading-[34px] font-black text-[#1E1B18] tracking-tight" x-text="formatPrice(item.price)"></span>
-                <span x-show="item.diff !== 0" class="price-delta" :class="item.diff < 0 ? 'is-down' : 'is-up'" x-text="formatDiff(item.diff)"></span>
-              </div>
+              <div class="font-serif-kr text-[30px] leading-[34px] font-black text-[#1E1B18] tracking-tight" x-text="formatPrice(item.price)"></div>
             </div>
 
             <!-- 상세 정보: 라벨 없이 아이콘 -->
@@ -743,27 +734,11 @@
                 <span x-show="item.airline"><b x-text="item.airline"></b></span>
                 <span x-show="!item.airline" class="text-[#7A7164] text-[13px]">항공편 상세 조회 실패 · 가격은 실제 조회값</span>
               </div>
-              <template x-if="terminalsOf(item)">
-                <div class="row">
-                  <img class="emo" :src="emoSrc('1f6eb')" role="img" alt="터미널" aria-label="터미널">
-                  <span class="term">
-                    <template x-if="terminalsOf(item).same">
-                      <span><span x-text="terminalsOf(item).home"></span><i>⇄</i><span x-text="terminalsOf(item).away"></span></span>
-                    </template>
-                    <template x-if="!terminalsOf(item).same">
-                      <span class="block">
-                        <span class="block"><span class="dir">가는 편</span> <span x-text="terminalsOf(item).outFrom"></span><i>→</i><span x-text="terminalsOf(item).away"></span></span>
-                        <span class="block"><span class="dir">오는 편</span> <span x-text="terminalsOf(item).away"></span><i>→</i><span x-text="terminalsOf(item).inTo"></span></span>
-                      </span>
-                    </template>
-                  </span>
-                </div>
-              </template>
             </div>
           </div>
 
-          <!-- 절취선 + 현지 메모 + 도장 + 예약 버튼 -->
-          <div class="relative z-10 mt-1">
+          <!-- 절취선 + 현지 메모 + 도장 + 예약 버튼(절취선은 정보 박스 바로 아래, 같은 줄 카드 높이 차이는 버튼 위 여백으로) -->
+          <div class="relative z-10 flex flex-col flex-1">
             <div class="boarding-stub-divider"></div>
 
             <div class="rounded-sm p-3 mb-3 border border-[#D8BE7F] flex items-center justify-between gap-2.5" style="background-color: var(--note-bg);">
@@ -780,7 +755,7 @@
               </div>
             </div>
 
-            <div class="book-btns" :class="{ two: !item.googleUrl }">
+            <div class="book-btns mt-auto" :class="{ two: !item.googleUrl }">
               <a x-show="item.googleUrl" :href="item.googleUrl || '#'" target="_blank" rel="noopener noreferrer" class="bk-google">
                 <span class="bstub"><img src="./images/brands/google-flights.png" alt="" aria-hidden="true" class="bk-logo"></span>
                 <span class="bname">구글 플라이트</span></a>
@@ -1356,10 +1331,6 @@
           } catch (e) {
             this.loadState = 'error';
           }
-          try {
-            const tr = await fetch('./data/terminals.json', { cache: 'no-cache' });
-            if (tr.ok) this.terminals = await tr.json();
-          } catch (e) { this.terminals = null; }
           this.loadFavs();
           try {
             const pr = await fetch('./data/photos.json', { cache: 'no-cache' });
@@ -1855,21 +1826,6 @@
           return cap.includes(' · ') ? cap.split(' · ').slice(1).join(' · ') : cap;
         },
 
-        // 터미널(인천공항 공식 '취항정보'의 항공사별 터미널, data/terminals.json). 확인된 값이 없으면 null → 🛫 행 숨김
-        terminals: null,
-        terminalsOf(item) {
-          const T = this.terminals;
-          if (!T || !item) return null;
-          const home = code => code === 'GMP' ? '김포' : null;
-          const icn = leg => (leg && leg.airlineCode && T.icn && T.icn[leg.airlineCode]) ? '인천 ' + T.icn[leg.airlineCode] : null;
-          const away = (T.airportName && T.airportName[item.dest]) || String(item.city || '').split(' ')[0];
-          let outFrom, inTo;
-          if (item.origin === 'GMP') { outFrom = inTo = home('GMP'); }
-          else { outFrom = icn(item.outbound); inTo = icn(item.inbound); }
-          if (!outFrom || !inTo || !away) return null;
-          return { same: outFrom === inTo, home: outFrom, outFrom, inTo, away };
-        },
-
         getLandmarkCaption(code) {
           return (this.landmarkMeta[code] && this.landmarkMeta[code].caption) || '인천·김포 직항 취항 노선';
         },
@@ -1991,12 +1947,6 @@
         formatPrice(val) {
           const num = Number(val) || 0;
           return '₩' + num.toLocaleString('ko-KR');
-        },
-
-        formatDiff(diff) {
-          if (!diff) return '-';
-          const abs = Math.abs(diff).toLocaleString('ko-KR');
-          return diff < 0 ? `▼ ${abs}원` : `▲ ${abs}원`;
         },
 
         formatDateKorean(dateStr) {
