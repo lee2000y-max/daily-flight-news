@@ -240,7 +240,12 @@ with sync_playwright() as p:
               credit: cards.filter(c => /위키미디어|CC BY|CC0|Public domain/.test(c.innerText)).length,
               banned: ['판매처', '현지 통화', '다른 일정 제안', '최근 가격 변동', '편집국 노트', '쏠림', 'RSS'].filter(w => txt.includes(w)),
               flags: cards.filter(c => c.querySelector('h3 img.flag[src*="images/flags/"]')).length,
-              books: cards.filter(c => c.querySelectorAll('.book-btns a').length >= 2).length,
+              // 예약 버튼(티켓 스텁): 보이는 버튼마다 스텁 + 불러온 로고 18px + 이름, 열 수 = 버튼 수(빈 칸 없음)
+              books: cards.filter(c => { const box = c.querySelector('.book-btns'); if (!box) return false;
+                const as = [...box.querySelectorAll('a')].filter(a => a.offsetParent);
+                const cols = getComputedStyle(box).gridTemplateColumns.split(' ').length;
+                return as.length >= 2 && cols === as.length && as.every(a => { const lg = a.querySelector('.bstub img.bk-logo'), nm = a.querySelector('.bname');
+                  return lg && lg.complete && lg.naturalWidth > 0 && Math.round(lg.getBoundingClientRect().width) === 18 && nm && nm.textContent.trim() && nm.scrollWidth <= nm.clientWidth; }); }).length,
               emojiChars: cards.filter(c => emo.test(c.innerText)).map(c => c.id).slice(0, 3),
               terminals: cards.filter(c => c.querySelector('img[aria-label="터미널"]')).length,
               ariaIcons: cards.every(c => [...c.querySelectorAll('.card-info img.emo')].every(i => i.getAttribute('aria-label'))),
