@@ -86,7 +86,6 @@
           <tr><td>최저가 경신</td><td>오늘 가격이 그 도시 최근 30일 최저보다 낮음</td><td>실조회 30일 이후</td></tr>
           <tr><td>연차 효율</td><td>공휴일·주말 덕분에 연차 1일 이하로 3박 이상</td><td>항상</td></tr>
           <tr><td>주간 급락</td><td>최근 7일 평균보다 15% 이상 하락</td><td>실조회 7일 이후</td></tr>
-          <tr><td>한적한 여행지</td><td>한국인 쏠림 지수 하위 2단계 + 가격이 중앙값 이하</td><td>쏠림 지수가 있을 때</td></tr>
           <tr><td>빠른 탈출</td><td>금요일 19시 이후 출발 + 비행 2시간 30분 이내</td><td>항상</td></tr>
           <tr><td>제철 여행지</td><td>출발월이 그 도시의 좋은 계절(평년 기온·강수) + 가격이 같은 지면 중앙값 이하</td><td>항상</td></tr>
         </tbody>
@@ -118,7 +117,6 @@
           <tr><th>판매처별 가격</th><td>같은 1위 일정의 구글 항공권 예약 옵션 화면</td></tr>
           <tr><th>공휴일</th><td>한국 공휴일(Python holidays 라이브러리)</td></tr>
           <tr><th>월별 평년 기온·강수</th><td x-text="climateText"></td></tr>
-          <tr><th>한국인 쏠림 지수</th><td x-text="crowdText"></td></tr>
           <tr><th>환율</th><td>open.er-api.com. 수집할 때 조회, 실패하면 싣지 않음</td></tr>
           <tr><th>도시 사진</th><td>위키미디어 공용(Wikimedia Commons). 아래 목록</td></tr>
         </tbody>
@@ -161,7 +159,6 @@
         failed: [],
         photoRows: [],
         climateText: 'NASA POWER(미국 항공우주국) 월별 기후값. 도시 중심 격자 기준',
-        crowdText: '인천공항 노선별 출발 여객(공공데이터) 기준. 최근 통계이며 실시간이 아님',
 
         licenseUrl(lic) {
           const s = String(lic || '').trim();
@@ -182,7 +179,6 @@
             (d.flights || []).concat(d.failed || []).forEach(f => { if (f.code && f.city) names[f.code] = f.city; });
             const yrs = String((d.climate && d.climate.period) || '').match(/(\d{4})\D+(\d{4})/);
             if (yrs) this.climateText = `NASA POWER(미국 항공우주국) ${yrs[1]}~${yrs[2]}년 월평균. 도시 중심 격자 기준`;
-            if (d.crowd && d.crowd.basis) this.crowdText = `${d.crowd.basis}${d.crowd.period ? ', ' + d.crowd.period + '년' : ''}. 최근 통계이며 실시간이 아니고 외국인 포함`;
           } catch (e) { /* 발행 정보 없이도 나머지는 보여 줌 */ }
           try {
             const r = await fetch('./data/photos.json', { cache: 'no-cache' });

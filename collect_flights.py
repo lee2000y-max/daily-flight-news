@@ -540,18 +540,6 @@ def fetch_fx() -> Dict[str, Any]:
         return {}
 
 
-def load_crowd() -> Dict[str, Any]:
-    """한국인 쏠림 지수(data/crowd_index.json). 형식: {"basis": "...", "period": "...", "cities": {code: {"level": 1~5}}}
-    level 1 = 가장 한적, 5 = 가장 붐빔. 파일이 없으면 빈 값(1면 D 유형은 쉼)."""
-    try:
-        with open(os.path.join("data", "crowd_index.json"), "r", encoding="utf-8") as f:
-            d = json.load(f)
-        return {"basis": d.get("basis", ""), "period": d.get("period", ""), "cities": d.get("cities", {}),
-                "months": d.get("months", {})}
-    except Exception:
-        return {}
-
-
 def load_climate() -> Dict[str, Any]:
     """도시별 월 기후 평년값(build_climate.py 결과). 없으면 빈 값(1면 F는 편집 제철 정보만 사용)."""
     try:
@@ -773,7 +761,6 @@ def main() -> None:
                             key=lambda r: (r["date"], r["dest"]), reverse=True),
         "historicalSeries": series,
         "climate": load_climate(),
-        "crowd": load_crowd(),
         "fx": fetch_fx(),
     }
     tmp = DATA_JSON_PATH + ".tmp"

@@ -87,25 +87,6 @@ jobs:
           git push -qf origin HEAD:preview/screenshots
           exit $rc
 
-      - name: 쏠림 지수 갱신(data/crowd_index.json 커밋)
-        if: github.event.inputs.mode == 'crowd'
-        env:
-          PYTHONUTF8: '1'
-          PYTHONUNBUFFERED: '1'
-          CROWD_DISCOVER: ${{ github.event.inputs.route == 'discover' && '1' || '0' }}
-          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
-          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
-        run: |
-          python build_crowd.py
-          [ "$CROWD_DISCOVER" = "1" ] && exit 0
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data/crowd_index.json
-          if git diff --staged --quiet; then echo "변경 없음"; exit 0; fi
-          git commit -m "Update crowd index"
-          git pull --rebase origin "${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
-
       - name: 위키미디어 사진 후보(preview/photos 브랜치에 올림)
         if: github.event.inputs.mode == 'photos'
         env:
