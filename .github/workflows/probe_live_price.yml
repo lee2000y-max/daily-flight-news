@@ -168,13 +168,16 @@ jobs:
           base=https://lee2000y-max.github.io/daily-flight-news
           bad=0
           for p in "" about.html city.html archive.html monthly.html flights_data.json data/photos.json images/cities/YGJ.jpg \
-                   s/og.jpg s/YGJ/ s/YGJ/thumb.jpg feed/YGJ.xml data/archive.json data/leadtime.json feed.xml; do
+                   s/og.jpg s/YGJ/ s/YGJ/thumb.jpg feed/YGJ.xml data/archive.json data/leadtime.json feed.xml \
+                   js/common.js data/terminals.json images/brand/emblem.svg images/flags/jp.svg images/emoji/1f4c5.svg images/brands/naver.svg images/brands/skyscanner.png; do
             code=$(curl -s -o /tmp/body -w "%{http_code}" "$base/$p?nc=$RANDOM")
             size=$(wc -c < /tmp/body)
             echo "$code ${size}B /$p"
             [ "$code" = "200" ] || bad=$((bad+1))
           done
           curl -s "$base/" | grep -c "FlapBoard" | sed 's/^/index.html FlapBoard 포함 줄 수: /'
+          curl -s "$base/" | grep -c "alpinejs@3.14.9" | sed 's/^/index.html Alpine 3.14.9 고정: /'
+          curl -s "$base/" | grep -c "emblem.svg" | sed 's/^/index.html 엠블럼 참조: /'
           curl -s "$base/s/YGJ/" | grep -o '<meta property="og:title"[^>]*>'
           echo "실패 $bad건"
           exit $bad
