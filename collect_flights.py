@@ -57,6 +57,13 @@ _START = time.monotonic()
 def over_budget() -> bool:
     return time.monotonic() - _START > TIME_BUDGET_SEC
 
+
+# 상세 검색이 오류로만 끝난 도시가 연달아 나오면(그 서버가 구글에서 오류만 받는 경우, 2026-11-05 시험: 도시당 약 8분)
+# 남은 도시는 상세 확인을 건너뛰고 날짜 검색 실가격으로 발행한다(시간 예산 초과와 같은 처리)
+DETAIL_FAIL_STREAK_LIMIT = 2
+_DETAIL_FAIL_STREAK = 0
+SKIP_DETAIL_MSG = "상세 조회 오류가 이어져 상세 확인 생략"
+
 AIRLINE_KO = {
     "7C": "제주항공", "LJ": "진에어", "TW": "티웨이항공", "BX": "에어부산", "RS": "에어서울",
     "ZE": "이스타항공", "KE": "대한항공", "OZ": "아시아나항공", "YP": "에어프레미아", "RF": "에어로케이",
@@ -383,6 +390,7 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
     1위 = 확인된 일정 중 최저가, 2위 = 1위와 출발일이 3일 이상 떨어진 확인된 일정 중 최저가.
     화면 가격은 상세 검색 가격이다. 상세 검색이 오류로만 끝나면 날짜 검색 가격으로 발행(항공편 정보 없이).
     """
+    global _DETAIL_FAIL_STREAK
     base = {"date": today_str, "code": meta["code"], "city": meta["city"]}
     cands = found["candidates"]
     if not cands:
@@ -407,6 +415,10 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
             errors.append("시간 예산 초과로 상세 확인 생략")
             tried += 1
             break
+        if _DETAIL_FAIL_STREAK >= DETAIL_FAIL_STREAK_LIMIT:
+            errors.append(SKIP_DETAIL_MSG)
+            tried += 1
+            break
         # 이미 확인된 1위 후보와 출발일이 같은 후보는 2위가 될 수 없으므로 건너뜀(1위 확인 전에는 모두 시도)
         if verified and all(abs((c["dep"] - v["dep"]).days) < ALT_MIN_GAP_DAYS for v in verified):
             continue
@@ -427,6 +439,11 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
                                       for x in verified for y in verified):
             break
 
+    if verified or diags:
+        _DETAIL_FAIL_STREAK = 0          # 구글이 정상 응답(결과 있음·없음)을 줬으면 초기화
+    elif errors and len(errors) == tried and not errors[-1].startswith(("시간 예산", SKIP_DETAIL_MSG)):
+        _DETAIL_FAIL_STREAK += 1
+
     if verified:
         verified.sort(key=lambda v: (v["price"], v["leave"], v["dep"]))
         first = verified[0]
@@ -436,7 +453,7 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
             alt = next((c for c in cands if abs((c["dep"] - first["dep"]).days) >= ALT_MIN_GAP_DAYS
                         and c["price"] >= first["price"]), None)
         detail = first["detail"]
-    elif errors and (len(errors) == tried or errors[-1].startswith("시간 예산")):
+    elif errors and (len(errors) == tried or errors[-1].startswith(("시간 예산", SKIP_DETAIL_MSG))):
         # 상세 조회가 모두 오류: 날짜 검색의 실제 가격으로 발행(항공편 정보 없이)
         first, detail = cands[0], None
         alt = pick_alt(cands, first)
