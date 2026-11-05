@@ -1778,6 +1778,7 @@
         // 카드 부제: 국기·국가명 없이 장소만(국기는 도시명 왼쪽 SVG)
         photoPlaceOnly(code) {
           const cap = this.getLandmarkCaption(code);
+          if (!cap) return (this.photos[code] && this.photos[code].place) || '';   // 2026-11-05 추가 도시: 고른 사진의 장소
           return cap.includes(' · ') ? cap.split(' · ').slice(1).join(' · ') : cap;
         },
 
