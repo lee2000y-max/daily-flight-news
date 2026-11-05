@@ -1,6 +1,7 @@
 name: Daily Flight News Collector
 
-# 도시를 8묶음으로 나눠 서로 다른 실행 서버에서 동시에 수집한 뒤(collect), 결과를 합쳐 저장한다(publish).
+# 도시를 17묶음으로 나눠 서로 다른 실행 서버에서 동시에 수집한 뒤(collect), 결과를 합쳐 저장한다(publish).
+# 2026-11-05 132곳: 8묶음(묶음당 16~17곳)은 묶음마다 5곳쯤부터 상세 검색이 빈 결과로 돌아와 항공편 정보가 빠지고 15~22분 걸림 → 묶음당 8곳 안팎으로.
 # 한 서버에서 수백 번 연속 조회하면 구글이 응답을 크게 늦추기 때문(2026-11-02 실측: 0.16초 → 3.4초/회,
 # 2026-11-03 4묶음에서도 한 묶음이 7분째부터 상세 검색 빈 결과 → 8묶음).
 
@@ -36,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -63,7 +64,7 @@ jobs:
           PYTHONUNBUFFERED: '1'
           MODE: collect
           SHARD_INDEX: ${{ matrix.shard }}
-          SHARD_COUNT: '8'
+          SHARD_COUNT: '17'
           ONLY_CITIES: ${{ github.event.inputs.only_cities }}
           FULL_GMP_SCAN: ${{ github.event.inputs.full_gmp }}
         run: python collect_flights.py
@@ -86,7 +87,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
