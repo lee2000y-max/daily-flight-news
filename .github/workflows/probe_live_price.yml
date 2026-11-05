@@ -8,7 +8,7 @@ on:
         required: false
         default: 'OKA'
       mode:
-        description: 'route(노선 진단) · site(화면 검증·스크린샷) · climate(기후 평년값 갱신·커밋) · booking(판매처별 가격 실험, route에 "ICN-YNT 2026-12-10 2026-12-16 ...") · photos(위키미디어 사진 후보 → preview/photos 브랜치) · photos_more(route의 도시만 다시 찾기, 예: "CTS KOJ") · pages_build(배포 묶음 시험, 배포 안 함) · photos_fetch(고른 사진 저장·커밋, route에 "YGJ:2 SDJ:1 ...")'
+        description: 'route(노선 진단) · site(화면 검증·스크린샷) · climate(기후 평년값 갱신·커밋) · booking(판매처별 가격 실험, route에 "ICN-YNT 2026-12-10 2026-12-16 ...") · photos(위키미디어 사진 후보 → preview/photos 브랜치, route에 "new"면 사진 없는 도시만) · photos_more(route의 도시만 다시 찾기, 예: "CTS KOJ") · pages_build(배포 묶음 시험, 배포 안 함) · photos_fetch(고른 사진 저장·커밋, route에 "YGJ:2 SDJ:1 ...")'
         required: false
         default: 'route'
 
@@ -91,8 +91,10 @@ jobs:
         env:
           PYTHONUTF8: '1'
           PYTHONUNBUFFERED: '1'
+          ROUTE: ${{ github.event.inputs.route }}
         run: |
-          python build_photos.py candidates
+          # route 비우면 전체 도시, "new"면 사진 없는 도시만(2026-11-05 추가 도시)
+          python build_photos.py candidates $ROUTE
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git checkout -q --orphan preview/photos

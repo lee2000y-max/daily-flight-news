@@ -9,6 +9,9 @@
       조건: 가로 사진(가로 ≥ 세로 × 1.25), 가로 1600px 이상, 라이선스 PD·CC0·CC BY·CC BY-SA.
       결과: data/photo_candidates.json, 미리보기 썸네일 photo_preview/<code>_<n>.jpg (가로 480px)
 
+  python build_photos.py candidates new
+      사진(data/photos.json)이 아직 없는 도시만 후보 3장을 찾는다(2026-11-05 추가 도시용).
+
   python build_photos.py candidates CTS KOJ ...
       지정한 도시만 다시 찾기(REQUERY 검색어). 기존 후보(1~3번)는 그대로 두고 새 후보를 4번부터 덧붙인다.
       기존 data/photo_candidates.json·photo_preview/가 있어야 한다(워크플로가 preview/photos 브랜치에서 가져옴).
@@ -89,6 +92,81 @@ PHOTO_QUERIES = {
     "GUM": ["Tumon Bay Guam", "Two Lovers Point Guam", "Guam beach"],
     "SPN": ["Managaha Island", "Grotto Saipan", "Saipan beach"],
     "DPS": ["Tegallalang rice terraces", "Uluwatu Temple", "Pura Ulun Danu Bratan"],
+    # 2026-11-05 추가 74곳
+    "UKB": ["Kobe Port Tower", "Kobe Harborland night", "Kitano Ijinkan Kobe"],
+    "HKD": ["Mount Hakodate night view", "Goryokaku", "Hakodate red brick warehouses"],
+    "OBO": ["Tokachi plain farmland", "Lake Shikaribetsu", "Obihiro Hokkaido"],
+    "ISG": ["Kabira Bay", "Ishigaki island beach", "Kabira Bay Ishigaki"],
+    "SHI": ["Irabu Bridge", "Yonaha Maehama Beach", "Miyakojima beach"],
+    "KMI": ["Aoshima Shrine", "Udo Shrine", "Takachiho Gorge"],
+    "TKS": ["Naruto whirlpools", "Iya Valley vine bridge", "Awa Odori"],
+    "OKJ": ["Okayama Korakuen", "Okayama Castle", "Kurashiki Bikan"],
+    "KIJ": ["Niigata Bandai Bridge", "Niigata city Shinano River", "Sado Island"],
+    "IBR": ["Hitachi Seaside Park nemophila", "Kairakuen Mito", "Fukuroda Falls"],
+    "SZX": ["Shenzhen skyline Ping An", "Shenzhen Bay", "Shenzhen Futian skyline"],
+    "NKG": ["Sun Yat-sen Mausoleum", "Confucius Temple Nanjing Qinhuai", "Nanjing city wall"],
+    "NGB": ["Tianyi Pavilion", "Ningbo Sanjiangkou", "Dongqian Lake Ningbo"],
+    "WEH": ["Weihai Liugong Island", "Weihai coastline", "Weihai city"],
+    "XMN": ["Gulangyu", "Xiamen skyline", "Nanputuo Temple"],
+    "SYX": ["Yalong Bay", "Sanya beach", "Sanya Bay"],
+    "TFU": ["Chengdu Research Base of Giant Panda Breeding", "Kuanzhai Alley Chengdu", "Wuhou Shrine Chengdu"],
+    "CKG": ["Hongyadong", "Chongqing skyline night", "Chaotianmen Chongqing"],
+    "KMG": ["Stone Forest Yunnan", "Dianchi Lake", "Kunming Green Lake"],
+    "YNJ": ["Mount Paektu Changbai Heaven Lake", "Yanji city", "Changbai Mountain"],
+    "RMQ": ["Rainbow Village Taichung", "National Taichung Theater", "Sun Moon Lake"],
+    "MNL": ["Intramuros Manila", "Manila Bay sunset", "Manila Cathedral"],
+    "KLO": ["White Beach Boracay", "Boracay beach", "Puka Shell Beach"],
+    "KTI": ["Royal Palace Phnom Penh", "Silver Pagoda Phnom Penh", "Phnom Penh riverside"],
+    "SAI": ["Angkor Wat sunrise", "Angkor Wat", "Bayon temple"],
+    "KUL": ["Petronas Towers", "Kuala Lumpur skyline", "Batu Caves"],
+    "CGK": ["National Monument Jakarta", "Jakarta skyline", "Kota Tua Jakarta"],
+    "BTH": ["Barelang Bridge", "Batam island", "Nongsa Batam"],
+    "NQZ": ["Bayterek Tower", "Astana skyline", "Khan Shatyr"],
+    "FRU": ["Ala Archa National Park", "Bishkek Ala-Too Square", "Issyk-Kul"],
+    "DEL": ["India Gate", "Humayun's Tomb", "Qutub Minar"],
+    "KTM": ["Boudhanath Stupa", "Swayambhunath", "Kathmandu Durbar Square"],
+    "CMB": ["Gangaramaya Temple", "Colombo Lotus Tower", "Galle Face Green"],
+    "SYD": ["Sydney Opera House Harbour Bridge", "Sydney Opera House", "Sydney Harbour"],
+    "BNE": ["Brisbane skyline Story Bridge", "Brisbane River", "South Bank Brisbane"],
+    "MEL": ["Flinders Street Station", "Melbourne skyline Yarra", "Twelve Apostles"],
+    "AKL": ["Auckland Sky Tower skyline", "Auckland Harbour Bridge", "Auckland waterfront"],
+    "HNL": ["Waikiki Beach Diamond Head", "Diamond Head", "Waikiki"],
+    "ROR": ["Rock Islands Palau", "Palau Rock Islands aerial", "Milky Way lagoon Palau"],
+    "CDG": ["Eiffel Tower", "Eiffel Tower Seine", "Paris skyline"],
+    "LHR": ["Tower Bridge London", "Big Ben Westminster", "London skyline Thames"],
+    "FRA": ["Frankfurt Römerberg", "Frankfurt skyline Main", "Frankfurt skyline"],
+    "MUC": ["Marienplatz Munich", "Munich Frauenkirche", "Nymphenburg Palace"],
+    "AMS": ["Amsterdam canal houses", "Amsterdam canal", "Rijksmuseum"],
+    "ZRH": ["Zurich Limmat Grossmünster", "Zurich old town lake", "Lake Zurich"],
+    "CPH": ["Nyhavn", "Nyhavn Copenhagen", "Copenhagen"],
+    "HEL": ["Helsinki Cathedral", "Senate Square Helsinki", "Helsinki harbour"],
+    "FCO": ["Colosseum", "Colosseum Rome", "Trevi Fountain"],
+    "MXP": ["Milan Cathedral", "Duomo di Milano", "Galleria Vittorio Emanuele II"],
+    "BCN": ["Sagrada Família", "Park Güell", "Barcelona skyline"],
+    "MAD": ["Royal Palace of Madrid", "Plaza Mayor Madrid", "Gran Vía Madrid"],
+    "LIS": ["Belém Tower", "Lisbon tram 28", "Lisbon Alfama"],
+    "IST": ["Hagia Sophia", "Blue Mosque Istanbul", "Istanbul Bosphorus"],
+    "VIE": ["Schönbrunn Palace", "St. Stephen's Cathedral Vienna", "Vienna State Opera"],
+    "PRG": ["Charles Bridge Prague Castle", "Prague Old Town Square", "Prague Castle"],
+    "BUD": ["Hungarian Parliament Building Danube", "Hungarian Parliament Building", "Fisherman's Bastion"],
+    "WAW": ["Warsaw Old Town Market Place", "Royal Castle Warsaw", "Warsaw skyline"],
+    "WRO": ["Wrocław Market Square", "Wrocław Old Town Hall", "Ostrów Tumski Wrocław"],
+    "LAX": ["Hollywood Sign", "Santa Monica Pier", "Los Angeles skyline"],
+    "SFO": ["Golden Gate Bridge", "Golden Gate Bridge San Francisco", "San Francisco skyline"],
+    "SEA": ["Space Needle Seattle skyline", "Space Needle", "Pike Place Market"],
+    "LAS": ["Las Vegas Strip night", "Las Vegas Strip", "Welcome to Fabulous Las Vegas sign"],
+    "JFK": ["Manhattan skyline", "Statue of Liberty", "Times Square"],
+    "ORD": ["Chicago skyline", "Cloud Gate", "Chicago River"],
+    "IAD": ["United States Capitol", "Lincoln Memorial", "Washington Monument"],
+    "BOS": ["Boston skyline", "Boston Public Garden", "Acorn Street Boston"],
+    "ATL": ["Atlanta skyline", "Centennial Olympic Park", "Atlanta Midtown"],
+    "DFW": ["Dallas skyline", "Dallas Reunion Tower", "Fort Worth Stockyards"],
+    "DTW": ["Detroit skyline", "Renaissance Center Detroit", "Detroit riverfront"],
+    "MSP": ["Minneapolis skyline", "Stone Arch Bridge Minneapolis", "Minnehaha Falls"],
+    "YVR": ["Vancouver skyline", "Stanley Park Vancouver", "Vancouver harbour"],
+    "YYZ": ["CN Tower Toronto skyline", "Toronto skyline", "Niagara Falls"],
+    "YUL": ["Notre-Dame Basilica Montreal", "Old Montreal", "Montreal skyline"],
+    "YYC": ["Moraine Lake", "Lake Louise", "Calgary skyline"],
 }
 
 # 다시 찾기용 검색어(1차 후보가 마음에 들지 않은 도시, 2026-11-03 사용자 요청)
@@ -217,7 +295,13 @@ def candidates(only=None) -> None:
     """only가 없으면 전체 도시(후보 3장), 있으면 그 도시만 REQUERY 검색어로 다시 찾아 4번부터 덧붙임."""
     os.makedirs(PREVIEW_DIR, exist_ok=True)
     result, short = {}, []
-    if only:
+    if only == ["NEW"]:
+        # 아직 사진이 없는 도시만 새로 후보 찾기(2026-11-05 추가 도시용, 기존 도시 후보는 다시 만들지 않음)
+        have = set(json.load(open(PHOTOS_PATH, encoding="utf-8")).get("cities", {})) if os.path.exists(PHOTOS_PATH) else set()
+        targets = {c: q for c, q in PHOTO_QUERIES.items() if c not in have}
+        only = None
+        print(f"사진 없는 도시 {len(targets)}곳 후보 찾기")
+    elif only:
         result = json.load(open(CAND_PATH, encoding="utf-8"))["cities"]
         targets = {c: REQUERY.get(c) or PHOTO_QUERIES[c] for c in only}
     else:
