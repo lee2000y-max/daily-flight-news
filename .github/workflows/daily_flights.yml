@@ -76,6 +76,57 @@ jobs:
           path: shard_out/
           retention-days: 3
 
+  # 일시적 실패로 보이는 도시(조회 오류, 경유 포함 조회도 0건)만 새 서버에서 한 번 더 수집한다.
+  # 2026-11-05 시험: 한 묶음 서버가 빈 응답만 받아 방콕·호치민 등 8곳이 모두 0건 → 새 서버에서 다시 조회하니 정상.
+  # 실패해도 발행은 계속된다(묶음 결과 그대로).
+  retry:
+    needs: collect
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install "flights==0.9.0" "holidays>=0.50" "fast-flights==2.2" "primp==0.6.2"
+
+      - name: Patch fli airport aliases
+        run: python patch_fli.py
+
+      - name: Download shard results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: shard-*
+          path: shard_out
+          merge-multiple: true
+
+      - name: Collect again
+        env:
+          PYTHONUTF8: '1'
+          PYTHONUNBUFFERED: '1'
+          MODE: retry
+          ONLY_CITIES: ${{ github.event.inputs.only_cities }}
+          FULL_GMP_SCAN: ${{ github.event.inputs.full_gmp }}
+        run: python collect_flights.py
+
+      - name: Upload retry result
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: retry
+          path: shard_retry/
+          if-no-files-found: ignore
+          retention-days: 3
+
   # 판매처별 가격(구글 예약 옵션): API 조회를 하지 않은 새 서버에서 브라우저로 읽는다.
   # 실패해도 발행은 계속된다(판매처 정보만 빠짐).
   sellers:
@@ -126,7 +177,7 @@ jobs:
           retention-days: 3
 
   publish:
-    needs: [collect, sellers]
+    needs: [collect, sellers, retry]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -145,6 +196,13 @@ jobs:
           pattern: shard-*
           path: shard_out
           merge-multiple: true
+
+      - name: Download retry result
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: retry
+          path: shard_retry
 
       - name: Download sellers results
         continue-on-error: true

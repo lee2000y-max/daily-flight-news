@@ -408,7 +408,12 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
             return None, dict(base, reason=f"수집 도구가 공항 코드를 지원하지 않음({', '.join(found['unsupported'])})", diag="")
         if found["calls"] and found["errors"] == found["calls"]:
             reason = f"조회 오류({found['lastError']})"
+            return None, dict(base, reason=reason, diag=found.get("diag", ""), retryable=True)
         elif found["raw"] == 0:
+            diag = found.get("diag", "")
+            if "경유 포함 조회 0건" in diag or "진단 조회 오류" in diag:
+                # 경유를 허용해도 0건이면 '직항 없음'으로 볼 수 없다(그 서버가 빈 응답만 받은 경우, 2026-11-05 시험에서 한 묶음 8곳 전부)
+                return None, dict(base, reason="조회 결과 없음(경유 포함 조회도 0건)", diag=diag, retryable=True)
             reason = "탐색 기간(D+14~60) 내 ICN·GMP 직항 없음"
         else:
             reason = "주말 포함·연차 5일 이하 조건에 맞는 직항 일정 없음"
@@ -745,6 +750,25 @@ def main() -> None:
         print(f"🏷️ 판매처 {len(got)}/{len(res.get('published', []))}개 도시, {time.time() - t1:.0f}초")
         return
 
+    if mode == "retry":
+        # 묶음 수집에서 '일시적 실패로 보이는' 도시(조회 오류, 경유 포함 조회도 0건)만 새 서버에서 한 번 더 수집한다.
+        # 결과는 shard_retry/shard_retry.json — 합치기(merge)에서 해당 도시의 묶음 결과를 이것으로 바꾼다.
+        codes = []
+        for name in sorted(os.listdir("shard_out")) if os.path.isdir("shard_out") else []:
+            with open(os.path.join("shard_out", name), encoding="utf-8") as f:
+                codes += [r["code"] for r in json.load(f).get("failed", []) if r.get("retryable")]
+        cities = [m for m in all_cities if m["code"] in set(codes)]
+        if not cities:
+            print("다시 수집할 도시 없음")
+            return
+        print(f"🔁 다시 수집: {len(cities)}개 도시 ({', '.join(m['code'] for m in cities)})")
+        res = collect_phase(cities, today)
+        os.makedirs("shard_retry", exist_ok=True)
+        with open("shard_retry/shard_retry.json", "w", encoding="utf-8") as f:
+            json.dump(res, f, ensure_ascii=False)
+        print_summary(res["published"], res["failed"], len(cities))
+        return
+
     if mode in ("", "collect"):
         cities = all_cities
         if mode == "collect":
@@ -771,19 +795,27 @@ def main() -> None:
             from collections import Counter
             today_str = Counter(s["date"] for s in shards).most_common(1)[0][0]
         published, failed, seen = [], [], set()
-        for res in shards:
-            for r in res["published"]:
+        retry = None
+        if os.path.exists("shard_retry/shard_retry.json"):
+            with open("shard_retry/shard_retry.json", encoding="utf-8") as f:
+                retry = json.load(f)
+        redo = set(retry["codes"]) if retry else set()
+        for res in shards + ([retry] if retry else []):
+            is_retry = res is retry
+            keep = (lambda r: True) if is_retry else (lambda r: r["code"] not in redo)
+            for r in res["published"] + res["failed"]:
                 r["date"] = today_str
-            for r in res["failed"]:
-                r["date"] = today_str
-            published += res["published"]
-            failed += res["failed"]
+            published += [r for r in res["published"] if keep(r)]
+            failed += [r for r in res["failed"] if keep(r)]
             seen |= set(res["codes"])
+        if retry:
+            got = [r["code"] for r in retry["published"]]
+            print(f"🔁 다시 수집 결과 반영: {len(redo)}개 도시 중 {len(got)}곳 발행 ({', '.join(got) or '없음'})")
         for m in all_cities:
             if m["code"] not in seen:
                 failed.append({"date": today_str, "code": m["code"], "city": m["city"], "reason": "수집 작업 실패(해당 묶음 결과 없음)"})
         print(f"🧩 묶음 결과 합치기: 수집된 도시 {len(seen)}/{len(all_cities)}")
-        gmp_shards = shards
+        gmp_shards = shards + ([retry] if retry else [])   # 다시 수집한 도시의 김포 점검 결과가 뒤에서 덮어씀
         got = {}
         for name in sorted(os.listdir("sellers_out")) if os.path.isdir("sellers_out") else []:
             try:
