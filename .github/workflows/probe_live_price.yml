@@ -18,7 +18,7 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -96,8 +96,10 @@ jobs:
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           ROUTE: ${{ github.event.inputs.route }}
         run: |
-          # route에 new면 현지 메모가 빈 도시 전부, 도시 코드를 넣으면 그 도시만
-          python build_drafts.py $ROUTE
+          # route에 new면 현지 메모가 빈 도시 중 아직 초안이 없는 곳, 도시 코드를 넣으면 그 도시만(다시 만듦)
+          # 지난 초안(preview/drafts)을 이어받고, 시간 제한 전에 멈춰 저장·업로드한다
+          git fetch -q origin preview/drafts && git show origin/preview/drafts:data/drafts.json > data/drafts.json || true
+          timeout 25m python build_drafts.py $ROUTE || echo "시간 제한으로 중단: 만든 것까지 올림(같은 명령으로 이어서 실행)"
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git checkout -q --orphan preview/drafts

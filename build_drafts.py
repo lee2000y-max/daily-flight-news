@@ -44,9 +44,13 @@ def strip(s):
     return re.sub(r"<[^>]+>", "", s or "").replace("&quot;", '"').replace("&amp;", "&").strip()
 
 
+NAVER_OFF = False
+
+
 def naver(kind, query, n=4):
+    global NAVER_OFF
     cid, sec = os.environ.get("NAVER_CLIENT_ID", ""), os.environ.get("NAVER_CLIENT_SECRET", "")
-    if not (cid and sec):
+    if not (cid and sec) or NAVER_OFF:
         return []
     req = urllib.request.Request(NAVER.format(kind) + urllib.parse.urlencode({"query": query, "display": n}),
                                  headers={"X-Naver-Client-Id": cid, "X-Naver-Client-Secret": sec})
@@ -60,6 +64,9 @@ def naver(kind, query, n=4):
         except Exception:
             pass
         print(f"   ! 네이버 {kind} '{query}': {type(e).__name__} {getattr(e, 'code', '')} {body}")
+        if getattr(e, "code", None) in (401, 403):
+            NAVER_OFF = True
+            print("   ! 네이버 키 인증 실패: 이번 실행에서는 네이버 근거 없이 진행")
         return []
     return [{"kind": kind, "title": strip(i.get("title")), "desc": strip(i.get("description"))[:220], "link": i.get("link", "")} for i in items]
 
@@ -101,7 +108,9 @@ def main():
     only = {a.upper() for a in sys.argv[1:]} - {"NEW"}   # "new" = 메모가 빈 도시 전부(워크플로 route 기본값을 피하려고)
     clim = json.load(open("data/climate_normals.json", encoding="utf-8")) if os.path.exists("data/climate_normals.json") else {}
     out = json.load(open(OUT, encoding="utf-8")) if os.path.exists(OUT) else {"cities": {}}
-    targets = [m for m in routes.CITY_MASTER if (m["code"] in only) or (not only and not m.get("note"))]
+    done = set(out.get("cities", {}))
+    # 지정 도시는 다시 만들고, 'new'는 이미 만든 초안을 건너뜀(시간 제한으로 끊겨도 이어서)
+    targets = [m for m in routes.CITY_MASTER if (m["code"] in only) or (not only and not m.get("note") and m["code"] not in done)]
     print(f"초안 대상 {len(targets)}곳 · 네이버 근거 {'사용' if os.environ.get('NAVER_CLIENT_ID') else '없음'}")
     for i, m in enumerate(targets, 1):
         code, city = m["code"], m["city"]
@@ -133,11 +142,16 @@ JSON만 출력: {{"note": "...", "seasons": [{{"months": [3,4], "label": "...", 
                                "refs": [{"title": r["title"], "link": r["link"]} for r in refs if r["link"]][:8], "model": model}
         print(f" ✓ [{i}/{len(targets)}] {city}: {out['cities'][code]['note']} | " +
               ", ".join(f"{s.get('months')} {s.get('label')}" for s in out["cities"][code]["seasons"]))
+        save(out)   # 도시마다 저장(작업 시간 제한에 걸려도 만든 것까지는 남김)
         time.sleep(1.0)
+    save(out)
+    print(f"저장: {OUT} ({len(out['cities'])}곳)")
+
+
+def save(out):
     out["generatedAt"] = time.strftime("%Y-%m-%d %H:%M")
     os.makedirs("data", exist_ok=True)
     json.dump(out, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(f"저장: {OUT} ({len(out['cities'])}곳)")
 
 
 if __name__ == "__main__":
