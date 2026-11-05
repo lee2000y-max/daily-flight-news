@@ -48,8 +48,7 @@ jobs:
           ROUTE: ${{ github.event.inputs.route }}
         run: |
           pip install -q "flights==0.9.0" "fast-flights==2.2" "primp==0.6.2"
-          F=$(python -c "import fli.models.airport as a; print(a.__file__)")
-          sed -i 's/"OKA": "Naha Airport",/"OKA": "Naha Airport (Okinawa)",/' "$F"
+          python patch_fli.py
           # 입력 예: "OIT" 또는 "OIT 2026-12-30 2027-01-05" 또는 "GMP-HND 2026-12-04 2026-12-07"
           python probe_route.py $ROUTE
 

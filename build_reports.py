@@ -211,8 +211,8 @@ def rebuild_all(meta: Dict[str, Dict[str, Any]]) -> List[str]:
 
 
 def _load_meta() -> Dict[str, Dict[str, Any]]:
-    from collect_flights import CITIES_58_MASTER
-    return {m["code"]: m for m in CITIES_58_MASTER}
+    from routes import CITY_MASTER
+    return {m["code"]: m for m in CITY_MASTER}
 
 
 def main() -> None:

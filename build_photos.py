@@ -214,7 +214,7 @@ def search(query: str, width: int, extra: str = "", limit: int = 20) -> list:
 
 
 def candidates(only=None) -> None:
-    """only가 없으면 58개 도시 전체(후보 3장), 있으면 그 도시만 REQUERY 검색어로 다시 찾아 4번부터 덧붙임."""
+    """only가 없으면 전체 도시(후보 3장), 있으면 그 도시만 REQUERY 검색어로 다시 찾아 4번부터 덧붙임."""
     os.makedirs(PREVIEW_DIR, exist_ok=True)
     result, short = {}, []
     if only:

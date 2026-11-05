@@ -1,0 +1,926 @@
+{
+ "KIX": {
+  "city": "오사카",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 1
+ },
+ "FUK": {
+  "city": "후쿠오카",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 2
+ },
+ "NRT": {
+  "city": "도쿄",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 3
+ },
+ "CTS": {
+  "city": "삿포로 신치토세",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 4
+ },
+ "NGO": {
+  "city": "나고야",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 5
+ },
+ "OKA": {
+  "city": "오키나와",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 6
+ },
+ "HSG": {
+  "city": "사가",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 7
+ },
+ "TAK": {
+  "city": "다카마쓰",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 8
+ },
+ "FSZ": {
+  "city": "시즈오카",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 9
+ },
+ "KOJ": {
+  "city": "가고시마",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 10
+ },
+ "OIT": {
+  "city": "오이타",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 11
+ },
+ "YGJ": {
+  "city": "요나고",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 12
+ },
+ "KKJ": {
+  "city": "기타큐슈",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 13
+ },
+ "SDJ": {
+  "city": "센다이",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 14
+ },
+ "MYJ": {
+  "city": "마쓰야마",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 15
+ },
+ "HIJ": {
+  "city": "히로시마",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 16
+ },
+ "KMJ": {
+  "city": "구마모토",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 17
+ },
+ "NGS": {
+  "city": "나가사키",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 18
+ },
+ "KMQ": {
+  "city": "코마쓰",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 19
+ },
+ "AOJ": {
+  "city": "아오모리",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 20
+ },
+ "AKJ": {
+  "city": "아사히카와",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 21
+ },
+ "DAD": {
+  "city": "다낭",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "베트남",
+  "order": 22
+ },
+ "CXR": {
+  "city": "나트랑",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "베트남",
+  "order": 23
+ },
+ "PQC": {
+  "city": "푸꾸옥",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "베트남",
+  "order": 24
+ },
+ "HAN": {
+  "city": "하노이",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "베트남",
+  "order": 25
+ },
+ "SGN": {
+  "city": "호치민",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "베트남",
+  "order": 26
+ },
+ "HPH": {
+  "city": "하이퐁",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "베트남",
+  "order": 27
+ },
+ "DLI": {
+  "city": "달랏",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "베트남",
+  "order": 28
+ },
+ "TPE": {
+  "city": "타이베이",
+  "section": "SEC5",
+  "major": "중화권",
+  "sub": "",
+  "order": 29
+ },
+ "KHH": {
+  "city": "가오슝",
+  "section": "SEC5",
+  "major": "중화권",
+  "sub": "",
+  "order": 30
+ },
+ "HKG": {
+  "city": "홍콩",
+  "section": "SEC5",
+  "major": "중화권",
+  "sub": "",
+  "order": 31
+ },
+ "MFM": {
+  "city": "마카오",
+  "section": "SEC5",
+  "major": "중화권",
+  "sub": "",
+  "order": 32
+ },
+ "TAO": {
+  "city": "칭다오",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 33
+ },
+ "PVG": {
+  "city": "상하이",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 34
+ },
+ "PKX": {
+  "city": "베이징",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 35
+ },
+ "YNT": {
+  "city": "옌타이",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 36
+ },
+ "DLC": {
+  "city": "다롄",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 37
+ },
+ "HGH": {
+  "city": "항저우",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 38
+ },
+ "XIY": {
+  "city": "시안",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 39
+ },
+ "DYG": {
+  "city": "장가계",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 40
+ },
+ "CAN": {
+  "city": "광저우",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 41
+ },
+ "HRB": {
+  "city": "하얼빈",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 42
+ },
+ "BKK": {
+  "city": "방콕",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "태국·인도차이나",
+  "order": 43
+ },
+ "CNX": {
+  "city": "치앙마이",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "태국·인도차이나",
+  "order": 44
+ },
+ "HKT": {
+  "city": "푸켓",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "태국·인도차이나",
+  "order": 45
+ },
+ "CEB": {
+  "city": "세부",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "필리핀",
+  "order": 46
+ },
+ "TAG": {
+  "city": "보홀 팡라오",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "필리핀",
+  "order": 47
+ },
+ "CRK": {
+  "city": "클락",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "필리핀",
+  "order": 48
+ },
+ "BKI": {
+  "city": "코타키나발루",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "싱가포르·말레이·인니",
+  "order": 49
+ },
+ "SIN": {
+  "city": "싱가포르 창이",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "싱가포르·말레이·인니",
+  "order": 50
+ },
+ "UBN": {
+  "city": "울란바토르",
+  "section": "SEC4",
+  "major": "중앙·남아시아",
+  "sub": "중앙아시아·몽골",
+  "order": 51
+ },
+ "ALA": {
+  "city": "알마티",
+  "section": "SEC4",
+  "major": "중앙·남아시아",
+  "sub": "중앙아시아·몽골",
+  "order": 52
+ },
+ "TAS": {
+  "city": "타슈켄트",
+  "section": "SEC4",
+  "major": "중앙·남아시아",
+  "sub": "중앙아시아·몽골",
+  "order": 53
+ },
+ "VTE": {
+  "city": "비엔티안",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "태국·인도차이나",
+  "order": 54
+ },
+ "BWN": {
+  "city": "반다르스리베가완",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "싱가포르·말레이·인니",
+  "order": 55
+ },
+ "GUM": {
+  "city": "괌",
+  "section": "SEC6",
+  "major": "대양주",
+  "sub": "태평양 휴양섬",
+  "order": 56
+ },
+ "SPN": {
+  "city": "사이판",
+  "section": "SEC6",
+  "major": "대양주",
+  "sub": "태평양 휴양섬",
+  "order": 57
+ },
+ "DPS": {
+  "city": "발리 덴파사르",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "싱가포르·말레이·인니",
+  "order": 58
+ },
+ "UKB": {
+  "city": "고베",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 59
+ },
+ "HKD": {
+  "city": "하코다테",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 60
+ },
+ "OBO": {
+  "city": "오비히로",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 61
+ },
+ "ISG": {
+  "city": "이시가키",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 62
+ },
+ "SHI": {
+  "city": "미야코",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 63
+ },
+ "KMI": {
+  "city": "미야자키",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 64
+ },
+ "TKS": {
+  "city": "도쿠시마",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 65
+ },
+ "OKJ": {
+  "city": "오카야마",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 66
+ },
+ "KIJ": {
+  "city": "니가타",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 67
+ },
+ "IBR": {
+  "city": "이바라키",
+  "section": "SEC1",
+  "major": "일본",
+  "sub": "",
+  "order": 68
+ },
+ "SZX": {
+  "city": "선전",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 69
+ },
+ "NKG": {
+  "city": "난징",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 70
+ },
+ "NGB": {
+  "city": "닝보",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 71
+ },
+ "WEH": {
+  "city": "웨이하이",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 72
+ },
+ "XMN": {
+  "city": "샤먼",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 73
+ },
+ "SYX": {
+  "city": "싼야",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 74
+ },
+ "TFU": {
+  "city": "청두",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 75
+ },
+ "CKG": {
+  "city": "충칭",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 76
+ },
+ "KMG": {
+  "city": "쿤밍",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 77
+ },
+ "YNJ": {
+  "city": "옌지",
+  "section": "SEC2",
+  "major": "중국",
+  "sub": "",
+  "order": 78
+ },
+ "RMQ": {
+  "city": "타이중",
+  "section": "SEC5",
+  "major": "중화권",
+  "sub": "",
+  "order": 79
+ },
+ "MNL": {
+  "city": "마닐라",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "필리핀",
+  "order": 80
+ },
+ "KLO": {
+  "city": "보라카이",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "필리핀",
+  "order": 81
+ },
+ "KTI": {
+  "city": "프놈펜",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "태국·인도차이나",
+  "order": 82
+ },
+ "SAI": {
+  "city": "씨엠립",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "태국·인도차이나",
+  "order": 83
+ },
+ "KUL": {
+  "city": "쿠알라룸푸르",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "싱가포르·말레이·인니",
+  "order": 84
+ },
+ "CGK": {
+  "city": "자카르타",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "싱가포르·말레이·인니",
+  "order": 85
+ },
+ "BTH": {
+  "city": "바탐",
+  "section": "SEC3",
+  "major": "동남아",
+  "sub": "싱가포르·말레이·인니",
+  "order": 86
+ },
+ "NQZ": {
+  "city": "아스타나",
+  "section": "SEC4",
+  "major": "중앙·남아시아",
+  "sub": "중앙아시아·몽골",
+  "order": 87
+ },
+ "FRU": {
+  "city": "비슈케크",
+  "section": "SEC4",
+  "major": "중앙·남아시아",
+  "sub": "중앙아시아·몽골",
+  "order": 88
+ },
+ "DEL": {
+  "city": "델리",
+  "section": "SEC4",
+  "major": "중앙·남아시아",
+  "sub": "남아시아",
+  "order": 89
+ },
+ "KTM": {
+  "city": "카트만두",
+  "section": "SEC4",
+  "major": "중앙·남아시아",
+  "sub": "남아시아",
+  "order": 90
+ },
+ "CMB": {
+  "city": "콜롬보",
+  "section": "SEC4",
+  "major": "중앙·남아시아",
+  "sub": "남아시아",
+  "order": 91
+ },
+ "SYD": {
+  "city": "시드니",
+  "section": "SEC6",
+  "major": "대양주",
+  "sub": "호주·뉴질랜드",
+  "order": 92
+ },
+ "BNE": {
+  "city": "브리즈번",
+  "section": "SEC6",
+  "major": "대양주",
+  "sub": "호주·뉴질랜드",
+  "order": 93
+ },
+ "MEL": {
+  "city": "멜버른",
+  "section": "SEC6",
+  "major": "대양주",
+  "sub": "호주·뉴질랜드",
+  "order": 94
+ },
+ "AKL": {
+  "city": "오클랜드",
+  "section": "SEC6",
+  "major": "대양주",
+  "sub": "호주·뉴질랜드",
+  "order": 95
+ },
+ "HNL": {
+  "city": "호놀룰루",
+  "section": "SEC6",
+  "major": "대양주",
+  "sub": "태평양 휴양섬",
+  "order": 96
+ },
+ "ROR": {
+  "city": "팔라우",
+  "section": "SEC6",
+  "major": "대양주",
+  "sub": "태평양 휴양섬",
+  "order": 97
+ },
+ "CDG": {
+  "city": "파리",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "서·북유럽",
+  "order": 98
+ },
+ "LHR": {
+  "city": "런던",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "서·북유럽",
+  "order": 99
+ },
+ "FRA": {
+  "city": "프랑크푸르트",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "서·북유럽",
+  "order": 100
+ },
+ "MUC": {
+  "city": "뮌헨",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "서·북유럽",
+  "order": 101
+ },
+ "AMS": {
+  "city": "암스테르담",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "서·북유럽",
+  "order": 102
+ },
+ "ZRH": {
+  "city": "취리히",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "서·북유럽",
+  "order": 103
+ },
+ "CPH": {
+  "city": "코펜하겐",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "서·북유럽",
+  "order": 104
+ },
+ "HEL": {
+  "city": "헬싱키",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "서·북유럽",
+  "order": 105
+ },
+ "FCO": {
+  "city": "로마",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "남유럽·지중해",
+  "order": 106
+ },
+ "MXP": {
+  "city": "밀라노",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "남유럽·지중해",
+  "order": 107
+ },
+ "BCN": {
+  "city": "바르셀로나",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "남유럽·지중해",
+  "order": 108
+ },
+ "MAD": {
+  "city": "마드리드",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "남유럽·지중해",
+  "order": 109
+ },
+ "LIS": {
+  "city": "리스본",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "남유럽·지중해",
+  "order": 110
+ },
+ "IST": {
+  "city": "이스탄불",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "남유럽·지중해",
+  "order": 111
+ },
+ "VIE": {
+  "city": "빈",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "중·동유럽",
+  "order": 112
+ },
+ "PRG": {
+  "city": "프라하",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "중·동유럽",
+  "order": 113
+ },
+ "BUD": {
+  "city": "부다페스트",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "중·동유럽",
+  "order": 114
+ },
+ "WAW": {
+  "city": "바르샤바",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "중·동유럽",
+  "order": 115
+ },
+ "WRO": {
+  "city": "브로츠와프",
+  "section": "SEC7",
+  "major": "유럽",
+  "sub": "중·동유럽",
+  "order": 116
+ },
+ "LAX": {
+  "city": "로스앤젤레스",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 서부",
+  "order": 117
+ },
+ "SFO": {
+  "city": "샌프란시스코",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 서부",
+  "order": 118
+ },
+ "SEA": {
+  "city": "시애틀",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 서부",
+  "order": 119
+ },
+ "LAS": {
+  "city": "라스베이거스",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 서부",
+  "order": 120
+ },
+ "JFK": {
+  "city": "뉴욕",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 동부·중부",
+  "order": 121
+ },
+ "ORD": {
+  "city": "시카고",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 동부·중부",
+  "order": 122
+ },
+ "IAD": {
+  "city": "워싱턴",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 동부·중부",
+  "order": 123
+ },
+ "BOS": {
+  "city": "보스턴",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 동부·중부",
+  "order": 124
+ },
+ "ATL": {
+  "city": "애틀랜타",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 동부·중부",
+  "order": 125
+ },
+ "DFW": {
+  "city": "댈러스",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 동부·중부",
+  "order": 126
+ },
+ "DTW": {
+  "city": "디트로이트",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 동부·중부",
+  "order": 127
+ },
+ "MSP": {
+  "city": "미니애폴리스",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "미국 동부·중부",
+  "order": 128
+ },
+ "YVR": {
+  "city": "밴쿠버",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "캐나다",
+  "order": 129
+ },
+ "YYZ": {
+  "city": "토론토",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "캐나다",
+  "order": 130
+ },
+ "YUL": {
+  "city": "몬트리올",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "캐나다",
+  "order": 131
+ },
+ "YYC": {
+  "city": "캘거리",
+  "section": "SEC8",
+  "major": "미주",
+  "sub": "캐나다",
+  "order": 132
+ }
+}
