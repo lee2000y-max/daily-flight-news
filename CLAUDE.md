@@ -5,7 +5,7 @@
 
 ## 구조
 - `index.html`: 단일 파일 사이트(Tailwind CDN + Alpine.js, **Alpine은 `alpinejs@3.14.9`로 다섯 페이지 모두 고정**). `./flights_data.json`(형식 v2)을 읽어 렌더링. 불러오기 실패 시 가짜 데이터 없이 안내만 표시.
-- `routes.py`: 도시 마스터 132곳(가격과 무관한 정보만, 2026-11-05 74곳 추가). `airports`에 도시의 도착 공항들(방콕 BKK+DMK, 뉴욕 JFK+EWR), `GMP_DESTINATIONS`에 김포 취항지. 분류: `section`(SEC1 일본·SEC2 중국·SEC5 중화권·SEC3 동남아·SEC4 중앙·남아시아·SEC6 대양주·SEC7 유럽·SEC8 미주, 화면 순서 이대로) + `sub`(2단계 권역, 일본·중국·중화권은 빈 값). 선택 필드 `minNights`(최소 박수: 유럽·미주 4, HNL·SYD·BNE·MEL·AKL 3), `arrNextDay`(귀국편 다음 날 도착 → 연차를 도착일까지). 신규 74곳은 `note`·`BEST_SEASONS` 비움(사용자 확인 전). 고치면 `python build_cities.py`로 `data/cities.json`(화면 분류)·`js/common.js`(국기)를 다시 만들어 함께 커밋(`check_site.py`가 확인).
+- `routes.py`: 도시 마스터 132곳(가격과 무관한 정보만, 2026-11-05 74곳 추가). `airports`에 도시의 도착 공항들(방콕 BKK+DMK, 뉴욕 JFK+EWR), `GMP_DESTINATIONS`에 김포 취항지. 분류: `section`(SEC1 일본·SEC2 중국·SEC5 중화권·SEC3 동남아·SEC4 중앙·남아시아·SEC6 대양주·SEC7 유럽·SEC8 미주, 화면 순서 이대로) + `sub`(2단계 권역, 일본·중국·중화권은 빈 값). 선택 필드 `minNights`(최소 박수: 유럽·미주 4, HNL·SYD·BNE·MEL·AKL 3), `arrNextDay`(귀국편 다음 날 도착 → 연차를 도착일까지). 신규 74곳의 `note`·`BEST_SEASONS`는 2026-11-05 사용자가 다른 AI로 받아 온 초안을 넣음(출처·확신 정도 `data/notes_sources.json`, 사실 확인으로 고친 3곳은 원문 함께 보관). 고치면 `python build_cities.py`로 `data/cities.json`(화면 분류)·`js/common.js`(국기)를 다시 만들어 함께 커밋(`check_site.py`가 확인).
 - `collect_flights.py`: 매일 수집.
   1. 날짜 검색(fli 0.9.0, 구글 달력 API): 출발 ICN(+김포 취항지는 GMP) × 공항 × 2~8박(`minNights`부터), 출발 D+14~60, 직항, KRW.
   2. 토·일 포함 + 연차(공휴일 제외 평일) 5일 이하만 후보. `arrNextDay` 도시는 귀국일+1일까지 세고, 상세 검색의 실제 도착일로 `leaveDays`를 다시 셈(`retArrDate`·`retArrSource`). 기존 58곳 계산은 그대로.
@@ -78,5 +78,5 @@
 - 2026-11-03: P3(PR #4) 병합. 판매처별 가격 매일 수집(PR #5).
 - 2026-11-03: P4 기획안(2판) 착수: 전광판 재작성·1면 사진·링크 공유·위키미디어 사진 후보. main 병합은 11/5 '3일 연속 수집' 판정 뒤.
 - 2026-11-03: P4 PR #6(병합은 11/5 판정 뒤). P5 기획안 승인(`docs/P5_PLAN.md`), 브랜치 `feat/p5-pages`(P4 브랜치에서 분기, P4 병합 뒤 main 기준으로 정리). P5-1 소개 페이지 착수.
-- 2026-11-05: 도시 74곳 추가(132곳)·분류 8탭 + 2단계 권역 탭(테마 태그 폐지, 기능 필터 추가 안 함)·장거리 규칙(최소 박수, 도착일까지 연차). 브랜치 `feat/cities-132`. 신규 도시 사진·현지 메모·제철은 후속.
+- 2026-11-05: 도시 74곳 추가(132곳)·분류 8탭 + 2단계 권역 탭(테마 태그 폐지, 기능 필터 추가 안 함)·장거리 규칙(최소 박수, 도착일까지 연차). 브랜치 `feat/cities-132`. 신규 도시 사진 132곳 완료(PR #16~#19), 현지 메모·제철 반영(초안 도구 `build_drafts.py`·`mode=drafts`는 남겨 둠).
 - 2026-11-04: 2026-11-03 사용자 결정으로 '쏠림 지수'(한국인 여행객 쏠림, 1면 '한적한 여행지' 유형 포함) 폐기. 수집·워크플로·화면·데이터 키에서 모두 삭제. 사유: 정확하다고 보기 어렵고, 한국인이 적다고 다른 여행객도 적다는 보장이 없음.
