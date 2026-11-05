@@ -96,7 +96,7 @@ jobs:
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           ROUTE: ${{ github.event.inputs.route }}
         run: |
-          # route 비우면 현지 메모가 빈 도시 전부, 도시 코드를 넣으면 그 도시만
+          # route에 new면 현지 메모가 빈 도시 전부, 도시 코드를 넣으면 그 도시만
           python build_drafts.py $ROUTE
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'

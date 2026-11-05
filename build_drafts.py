@@ -14,7 +14,7 @@
 규칙: 가격·운임·항공사·편명은 쓰지 않는다(절대 규칙 1, 날마다 바뀌는 값). 키는 GitHub Secrets(GEMINI_API_KEY,
 NAVER_CLIENT_ID·NAVER_CLIENT_SECRET)에서만 읽고 출력하지 않는다. 네이버 키가 없으면 기후 근거만으로 만든다.
 
-  python build_drafts.py            # note가 빈 도시 전부
+  python build_drafts.py new        # note가 빈 도시 전부(워크플로 route=new)
   python build_drafts.py UKB HKD    # 지정 도시만
 """
 import json
@@ -65,7 +65,7 @@ def gemini(prompt):
         raise SystemExit("GEMINI_API_KEY 없음")
     body = json.dumps({"contents": [{"parts": [{"text": prompt}]}],
                        "generationConfig": {"temperature": 0.3, "responseMimeType": "application/json"}}).encode()
-    last = None
+    errs = []
     for model in MODELS:
         for attempt in range(3):
             req = urllib.request.Request(GEMINI.format(model), data=body,
@@ -76,9 +76,12 @@ def gemini(prompt):
                 text = d["candidates"][0]["content"]["parts"][0]["text"]
                 return json.loads(text), model
             except Exception as e:
-                last = f"{model}: {type(e).__name__} {str(e)[:120]}"
+                code = getattr(e, "code", None)
+                errs.append(f"{model}: {type(e).__name__} {str(e)[:80]}")
+                if code in (400, 401, 402, 403, 404):
+                    break   # 키·결제·모델 문제는 다시 시도해도 같음
                 time.sleep(3 + 5 * attempt)
-    raise RuntimeError(last)
+    raise RuntimeError(" | ".join(errs))
 
 
 def climate_line(clim, code):
@@ -90,7 +93,7 @@ def climate_line(clim, code):
 
 
 def main():
-    only = {a.upper() for a in sys.argv[1:]}
+    only = {a.upper() for a in sys.argv[1:]} - {"NEW"}   # "new" = 메모가 빈 도시 전부(워크플로 route 기본값을 피하려고)
     clim = json.load(open("data/climate_normals.json", encoding="utf-8")) if os.path.exists("data/climate_normals.json") else {}
     out = json.load(open(OUT, encoding="utf-8")) if os.path.exists(OUT) else {"cities": {}}
     targets = [m for m in routes.CITY_MASTER if (m["code"] in only) or (not only and not m.get("note"))]
