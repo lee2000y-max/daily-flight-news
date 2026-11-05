@@ -480,6 +480,14 @@
    "place": "보라카이 화이트 비치",
    "title": "File:Boracay White Beach.png"
   },
+  "KMG": {
+   "artist": "Colin W",
+   "description": "The Dragon Gate, Western Hill, Kunming",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:The_Dragon_Gate,_Western_Hill,_Kunming_-_panoramio.jpg",
+   "place": "쿤밍 시산 용문",
+   "title": "File:The Dragon Gate, Western Hill, Kunming - panoramio.jpg"
+  },
   "KMI": {
    "artist": "Naokijp",
    "description": "宮崎県宮崎市青島にある青島神社。拝殿",
@@ -576,6 +584,14 @@
    "place": "마드리드 왕궁",
    "title": "File:Palacio Real de Madrid - 13.jpg"
   },
+  "MEL": {
+   "artist": "Dietmar Rabich",
+   "description": "Flinders Street Station, Melbourne, Victoria, Australia",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Melbourne_(AU),_Flinders_Street_Railway_Station_--_2019_--_202623.jpg",
+   "place": "멜버른 플린더스 스트리트역",
+   "title": "File:Melbourne (AU), Flinders Street Railway Station -- 2019 -- 202623.jpg"
+  },
   "MFM": {
    "artist": "Diego Delso",
    "description": "Remains of the Cathedral of St. Paul, Macau",
@@ -583,6 +599,14 @@
    "page": "https://commons.wikimedia.org/wiki/File:Restos_de_la_Catedral_de_San_Pablo,_Macao,_2013-08-08,_DD_41.jpg",
    "place": "성 바울 성당 유적",
    "title": "File:Restos de la Catedral de San Pablo, Macao, 2013-08-08, DD 41.jpg"
+  },
+  "MNL": {
+   "artist": "Vyacheslav Argenberg",
+   "description": "Roxas Boulevard is a popular waterfront promenade in Manila. This boulevard runs along the shores of Manila Bay and is well known for its beautiful sunsets and coconut trees. Manila, Manila Bay, Phili",
+   "license": "CC BY 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Roxas_Boulevard,_Manila,_Philippines.jpg",
+   "place": "마닐라 록사스 대로",
+   "title": "File:Roxas Boulevard, Manila, Philippines.jpg"
   },
   "MSP": {
    "artist": "AlexiusHoratius",
@@ -879,6 +903,14 @@
    "page": "https://commons.wikimedia.org/wiki/File:Chengdu_Sichuan_China_Panda-breeding-and-research-center-02.jpg",
    "place": "청두 판다 기지",
    "title": "File:Chengdu Sichuan China Panda-breeding-and-research-center-02.jpg"
+  },
+  "TKS": {
+   "artist": "NYyyYN",
+   "description": "View of Ōnaruto Bridge from Magosaki Cape, Naruto, Tokushima prefecture, Japan",
+   "license": "CC BY 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:View_of_%C5%8Cnaruto_Bridge_from_Magosaki_Cape.jpg",
+   "place": "나루토 오나루토교",
+   "title": "File:View of Ōnaruto Bridge from Magosaki Cape.jpg"
   },
   "TPE": {
    "artist": "Another Believer",
