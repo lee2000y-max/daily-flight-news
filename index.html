@@ -473,10 +473,10 @@
                 </div>
               </template>
             </dl>
-            <figure class="fp-photo mt-4 flex flex-col lg:flex-1">
+            <figure class="fp-photo mt-4 flex flex-col lg:flex-1" x-show="cityPhoto(frontPage.top.code, 'large')">
               <button type="button" @click="jumpToCard(frontPage.top.code)" class="fp-photo-frame block w-full overflow-hidden border border-[#2C2620] bg-[#D5CBB8] lg:flex-1"
                 :aria-label="frontPage.top.city + ' 카드로 이동'">
-                <img :src="cityPhoto(frontPage.top.code, 'large')" :alt="photoPlace(frontPage.top.code) + ' 사진'"
+                <img :src="cityPhoto(frontPage.top.code, 'large') || null" :alt="photoPlace(frontPage.top.code) + ' 사진'"
                   @error="handleImageFallback($event, frontPage.top.code)" class="w-full h-full object-cover" />
               </button>
             </figure>
@@ -572,14 +572,12 @@
         </template>
       </div>
 
-      <!-- 2단: 선택된 대분류의 하위 카테고리 필터 칩 (제안 1 + 방법 B 반영) -->
+      <!-- 2단: 권역 탭(동남아·중앙·남아시아·대양주·유럽·미주만). '전체' 칸에는 아이콘 없음 -->
       <div 
         x-show="currentSubcategories.length > 0" 
         x-transition
+        id="subTabs"
         class="mt-2.5 pt-2.5 border-t border-dashed border-[#C7BBA6] flex flex-wrap items-center gap-1.5">
-        <span class="text-xs font-bold text-[#5C5549] mr-1 flex items-center gap-1">
-          <img class="emo" src="./images/emoji/1f3f7.svg" alt="" aria-hidden="true"> 세부 테마 필터:
-        </span>
         <button
           type="button"
           @click="activeSubcategory = 'ALL'"
@@ -597,6 +595,7 @@
               ? 'bg-[#5B7083] text-white font-bold shadow-sm'
               : 'bg-[#EFECE4] text-[#4A433B] hover:bg-[#E2DDD2] border border-[#C7BBA6]'"
             class="px-2.5 py-1 rounded-full text-xs transition flex items-center gap-1">
+            <img class="emo" :src="emoSrc(sub.icon)" alt="" aria-hidden="true">
             <span x-text="sub.name"></span>
             <span class="text-[11px] opacity-80" x-text="'(' + sub.count + ')'"></span>
           </button>
@@ -675,9 +674,9 @@
         <article class="newspaper-card rounded-sm p-5 flex flex-col" :id="'card-' + item.code" :aria-label="item.city + ' 특가 카드'">
 
           <!-- 우측 상단 도시 사진 워터마크 -->
-          <div class="landmark-watermark-wrap">
+          <div class="landmark-watermark-wrap" x-show="cityPhoto(item.code)">
             <img
-              :src="cityPhoto(item.code)"
+              :src="cityPhoto(item.code) || null"
               alt=""
               loading="lazy"
               @error="handleImageFallback($event, item.code)"
@@ -689,7 +688,7 @@
             <div class="flex items-center justify-between gap-1.5 mb-2.5">
               <div class="flex flex-wrap items-center gap-1.5">
                 <span class="px-2 py-0.5 text-[11px] font-bold text-white rounded-sm tracking-tight" style="background-color: var(--badge-primary);" x-text="getTaxonomy(item.code).major"></span>
-                <span class="px-2 py-0.5 text-[11px] font-bold text-white rounded-sm tracking-tight" style="background-color: var(--badge-sub);" x-text="getTaxonomy(item.code).sub"></span>
+                <span x-show="getTaxonomy(item.code).sub" class="px-2 py-0.5 text-[11px] font-bold text-white rounded-sm tracking-tight" style="background-color: var(--badge-sub);" x-text="getTaxonomy(item.code).sub"></span>
               </div>
               <div class="card-tools">
                 <button type="button" class="fav-star" @click="toggleFav(item.code)"
@@ -741,8 +740,11 @@
           <div class="relative z-10 flex flex-col flex-1">
             <div class="boarding-stub-divider"></div>
 
-            <div class="rounded-sm p-3 mb-3 border border-[#D8BE7F] flex items-center justify-between gap-2.5" style="background-color: var(--note-bg);">
-              <div class="text-[13px] text-[#2C2416] leading-snug flex-1">
+            <!-- 현지 메모가 없는 도시(2026-11-05 추가분, 사용자 확인 전)는 메모 행을 숨기고 도장만 -->
+            <div x-show="item.note || stampByCode[item.code]" class="rounded-sm mb-3 flex items-center gap-2.5"
+              :class="item.note ? 'p-3 border border-[#D8BE7F] justify-between' : 'justify-end'"
+              :style="item.note ? { backgroundColor: 'var(--note-bg)' } : {}">
+              <div x-show="item.note" class="text-[13px] text-[#2C2416] leading-snug flex-1">
                 <span class="font-extrabold mr-1"><img class="emo" :src="emoSrc('1f4cc')" alt="" aria-hidden="true"> 현지 메모:</span>
                 <span x-text="item.note"></span>
               </div>
@@ -1055,75 +1057,24 @@
           { id: 'ALL', label: '전체', icon: '' },
           { id: 'SEC1', label: '일본', icon: './images/flags/jp.svg', flag: true },
           { id: 'SEC2', label: '중국', icon: './images/flags/cn.svg', flag: true },
-          { id: 'SEC3', label: '동남아·대양주', icon: './images/emoji/1f334.svg' },
-          { id: 'SEC4', label: '중앙아시아·몽골', icon: './images/emoji/1f40e.svg' },
-          { id: 'SEC5', label: '중화권', icon: './images/emoji/1f3ee.svg' }
+          { id: 'SEC5', label: '중화권', icon: './images/emoji/1f3ee.svg' },
+          { id: 'SEC3', label: '동남아', icon: './images/emoji/1f334.svg' },
+          { id: 'SEC4', label: '중앙·남아시아', icon: './images/emoji/1f40e.svg' },
+          { id: 'SEC6', label: '대양주', icon: './images/emoji/1f998.svg' },
+          { id: 'SEC7', label: '유럽', icon: './images/emoji/1f3f0.svg' },
+          { id: 'SEC8', label: '미주', icon: './images/emoji/1f5fd.svg' }
         ],
-
-        taxonomyMap: {
-          NRT: { section: 'SEC1', major: '일본', sub: '대도시', order: 1 },
-          KIX: { section: 'SEC1', major: '일본', sub: '대도시', order: 2 },
-          FUK: { section: 'SEC1', major: '일본', sub: '대도시', order: 3 },
-          NGO: { section: 'SEC1', major: '일본', sub: '대도시', order: 4 },
-          HSG: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 5 },
-          TAK: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 6 },
-          MYJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 7 },
-          YGJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 8 },
-          FSZ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 9 },
-          KOJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 10 },
-          OIT: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 11 },
-          KMJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 12 },
-          KKJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 13 },
-          HIJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 14 },
-          NGS: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 15 },
-          KMQ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 16 },
-          SDJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 17 },
-          AOJ: { section: 'SEC1', major: '일본', sub: '소도시·온천', order: 18 },
-          CTS: { section: 'SEC1', major: '일본', sub: '홋카이도·오키나와', order: 19 },
-          AKJ: { section: 'SEC1', major: '일본', sub: '홋카이도·오키나와', order: 20 },
-          OKA: { section: 'SEC1', major: '일본', sub: '홋카이도·오키나와', order: 21 },
-
-          PVG: { section: 'SEC2', major: '중국', sub: '대도시', order: 22 },
-          PKX: { section: 'SEC2', major: '중국', sub: '대도시', order: 23 },
-          CAN: { section: 'SEC2', major: '중국', sub: '대도시', order: 24 },
-          TAO: { section: 'SEC2', major: '중국', sub: '단거리·해안', order: 25 },
-          YNT: { section: 'SEC2', major: '중국', sub: '단거리·해안', order: 26 },
-          DLC: { section: 'SEC2', major: '중국', sub: '단거리·해안', order: 27 },
-          HGH: { section: 'SEC2', major: '중국', sub: '문화·절경', order: 28 },
-          XIY: { section: 'SEC2', major: '중국', sub: '문화·절경', order: 29 },
-          DYG: { section: 'SEC2', major: '중국', sub: '문화·절경', order: 30 },
-          HRB: { section: 'SEC2', major: '중국', sub: '문화·절경', order: 31 },
-
-          DAD: { section: 'SEC3', major: '동남아', sub: '베트남 휴양', order: 32 },
-          CXR: { section: 'SEC3', major: '동남아', sub: '베트남 휴양', order: 33 },
-          PQC: { section: 'SEC3', major: '동남아', sub: '베트남 휴양', order: 34 },
-          DLI: { section: 'SEC3', major: '동남아', sub: '베트남 휴양', order: 35 },
-          HAN: { section: 'SEC3', major: '동남아', sub: '베트남 도시', order: 36 },
-          SGN: { section: 'SEC3', major: '동남아', sub: '베트남 도시', order: 37 },
-          HPH: { section: 'SEC3', major: '동남아', sub: '베트남 도시', order: 38 },
-          BKK: { section: 'SEC3', major: '동남아', sub: '태국 도시·감성', order: 39 },
-          CNX: { section: 'SEC3', major: '동남아', sub: '태국 도시·감성', order: 40 },
-          HKT: { section: 'SEC3', major: '동남아', sub: '태국 휴양', order: 41 },
-          CEB: { section: 'SEC3', major: '동남아', sub: '필리핀 휴양', order: 42 },
-          TAG: { section: 'SEC3', major: '동남아', sub: '필리핀 휴양', order: 43 },
-          CRK: { section: 'SEC3', major: '동남아', sub: '필리핀 휴양', order: 44 },
-          DPS: { section: 'SEC3', major: '동남아', sub: '인기 휴양섬', order: 45 },
-          BKI: { section: 'SEC3', major: '동남아', sub: '인기 휴양섬', order: 46 },
-          SIN: { section: 'SEC3', major: '동남아', sub: '도시·이색', order: 47 },
-          VTE: { section: 'SEC3', major: '동남아', sub: '도시·이색', order: 48 },
-          BWN: { section: 'SEC3', major: '동남아', sub: '도시·이색', order: 49 },
-          GUM: { section: 'SEC3', major: '동남아', sub: '남태평양 휴양', order: 50 },
-          SPN: { section: 'SEC3', major: '동남아', sub: '남태평양 휴양', order: 51 },
-
-          ALA: { section: 'SEC4', major: '중앙아시아', sub: '실크로드·자연', order: 52 },
-          TAS: { section: 'SEC4', major: '중앙아시아', sub: '실크로드·자연', order: 53 },
-          UBN: { section: 'SEC4', major: '중앙아시아', sub: '초원·이색', order: 54 },
-
-          TPE: { section: 'SEC5', major: '중화권', sub: '대만', order: 55 },
-          KHH: { section: 'SEC5', major: '중화권', sub: '대만', order: 56 },
-          HKG: { section: 'SEC5', major: '중화권', sub: '홍콩·마카오', order: 57 },
-          MFM: { section: 'SEC5', major: '중화권', sub: '홍콩·마카오', order: 58 }
+        // 2단계 권역 탭(2026-11-05). 일본·중국·중화권은 2단계 없음. 이름은 routes.py의 sub와 같아야 함
+        subTabs: {
+          SEC3: [{ name: '베트남', icon: '1f6f5' }, { name: '필리핀', icon: '1f3d6' }, { name: '태국·인도차이나', icon: '1f418' }, { name: '싱가포르·말레이·인니', icon: '1f33a' }],
+          SEC4: [{ name: '중앙아시아·몽골', icon: '1f42b' }, { name: '남아시아', icon: '1f35b' }],
+          SEC6: [{ name: '호주·뉴질랜드', icon: '1f428' }, { name: '태평양 휴양섬', icon: '1f422' }],
+          SEC7: [{ name: '서·북유럽', icon: '1f3a1' }, { name: '남유럽·지중해', icon: '1f3db' }, { name: '중·동유럽', icon: '1f3bb' }],
+          SEC8: [{ name: '미국 서부', icon: '1f309' }, { name: '미국 동부·중부', icon: '1f3d9' }, { name: '캐나다', icon: '1f341' }]
         },
+
+        // 도시 분류(탭·배지·정렬): data/cities.json(routes.py에서 build_cities.py로 생성). 없으면 발행 행의 값
+        taxonomyMap: {},
 
         landmarkMeta: {
           NRT: { caption: '🇯🇵 일본 · 도쿄타워 스카이라인 & 아사쿠사 센소지', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=640&q=80' },
@@ -1290,7 +1241,7 @@
           const fresh = {};
           (Array.isArray(extData.flights) ? extData.flights : []).forEach(row => {
             if (!row || !row.date || !row.code) return;
-            if (row.section) {
+            if (row.section && !this.taxonomyMap[row.code]) {
               this.taxonomyMap[row.code] = { section: row.section, major: row.major, sub: row.sub, order: row.order };
             }
             if (!fresh[row.date]) fresh[row.date] = [];
@@ -1324,6 +1275,10 @@
           try {
             this.reduceMotion = Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
           } catch (e) { this.reduceMotion = false; }
+          try {
+            const cr = await fetch('./data/cities.json', { cache: 'no-cache' });
+            if (cr.ok) this.taxonomyMap = await cr.json();
+          } catch (e) { /* 발행 행의 분류 값으로 대신함 */ }
           try {
             const res = await fetch('./flights_data.json?t=' + Date.now(), { cache: 'no-store' });
             const ok = res.ok && this.ingestExternalPayload(await res.json());
@@ -1711,16 +1666,14 @@
         },
 
         get currentSubcategories() {
-          if (this.activeSection === 'ALL') return [];
-          const sectionFlights = this.currentEditionFlights.filter(
-            f => this.getTaxonomy(f.code).section === this.activeSection
-          );
+          const tabs = this.subTabs[this.activeSection];
+          if (!tabs) return [];
           const counts = {};
-          sectionFlights.forEach(f => {
-            const sub = this.getTaxonomy(f.code).sub;
-            counts[sub] = (counts[sub] || 0) + 1;
+          this.currentEditionFlights.forEach(f => {
+            const t = this.getTaxonomy(f.code);
+            if (t.section === this.activeSection) counts[t.sub] = (counts[t.sub] || 0) + 1;
           });
-          return Object.keys(counts).map(name => ({ name, count: counts[name] }));
+          return tabs.map(t => ({ name: t.name, icon: t.icon, count: counts[t.name] || 0 }));
         },
 
         get filteredFlights() {
@@ -1783,18 +1736,18 @@
         },
 
         getTaxonomy(code) {
-          return this.taxonomyMap[code] || { section: 'SEC3', major: '동남아', sub: '도시·이색', order: 99 };
+          return this.taxonomyMap[code] || { section: '', major: '', sub: '', order: 999 };
         },
 
         getLandmarkPhoto(code) {
-          return (this.landmarkMeta[code] && this.landmarkMeta[code].img) 
-            || 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=640&q=80';
+          // 기존 58곳의 임시 사진만. 2026-11-05 추가 도시는 사진을 고르기 전까지 비움(임의 사진 금지)
+          return (this.landmarkMeta[code] && this.landmarkMeta[code].img) || '';
         },
 
         handleImageFallback(event, code) {
           // 한 번만 대체(대체 사진도 실패하면 그대로 둔다. 전에는 실패→대체→실패가 끝없이 반복됐음)
           const img = event.target;
-          if (img.dataset.fallback) return;
+          if (img.dataset.fallback || !this.landmarkMeta[code]) return;
           img.dataset.fallback = '1';
           img.src = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=640&q=80';
         },
@@ -1808,6 +1761,8 @@
             [/^상세 조회에서 직항 확인 실패$/, '항공편을 확인하지 못함'],
             [/^수집 작업 실패/, '오늘 조회하지 못함'],
             [/^조회 오류/, '오늘 조회하지 못함(오류)'],
+            [/^조회 결과 없음/, '오늘 조회하지 못함(응답 없음)'],
+            [/^수집 도구가 공항 코드를 지원하지 않음/, '조회 도구가 이 공항을 지원하지 않음'],
           ];
           for (const [re, txt] of map) if (re.test(t)) return txt;
           return t;
@@ -1827,13 +1782,14 @@
         },
 
         getLandmarkCaption(code) {
-          return (this.landmarkMeta[code] && this.landmarkMeta[code].caption) || '인천·김포 직항 취항 노선';
+          return (this.landmarkMeta[code] && this.landmarkMeta[code].caption) || '';
         },
 
         // 도시 사진: 고른 공용 라이선스 사진(data/photos.json + images/cities/)이 있으면 그것, 없으면 기존 임시 사진
         cityPhoto(code, size) {
           if (this.photos[code]) return `images/cities/${code}${size === 'large' ? '' : '_640'}.jpg`;
           const u = this.getLandmarkPhoto(code);
+          if (!u) return '';
           return size === 'large' ? u.replace('w=640', 'w=1280') : u;
         },
 

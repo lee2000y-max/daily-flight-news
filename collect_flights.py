@@ -27,7 +27,7 @@ import sys
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from routes import BEST_SEASONS, CITY_CURRENCY, CITY_MASTER, CURRENCY_NAME, CURRENCY_UNIT, ORIGINS, GMP_DESTINATIONS, CITIES_58_MASTER  # noqa: F401  (CITIES_58_MASTER: build_reports 호환)
+from routes import BEST_SEASONS, CITY_CURRENCY, CITY_MASTER, CURRENCY_NAME, CURRENCY_UNIT, ORIGINS, GMP_DESTINATIONS
 
 DATA_JSON_PATH = "flights_data.json"
 
@@ -37,7 +37,8 @@ GMP_QUERY = set(GMP_DESTINATIONS)
 SCHEMA_VERSION = 2
 KEEP_EDITIONS = 14            # flights_data.json 에 담을 최근 발행일 수(영구 이력은 data/history)
 WINDOW_START, WINDOW_END = 14, 60
-NIGHTS = range(2, 9)          # 2박3일 ~ 8박9일
+NIGHTS = range(2, 9)          # 2박3일 ~ 8박9일(도시별 최소 박수 routes의 minNights: 유럽·미주 4, 장거리 대양주 3)
+MAX_NIGHTS = 8
 MAX_LEAVE_DAYS = 5
 ALT_MIN_GAP_DAYS = 3          # 2위는 1위와 출발일이 3일 이상 떨어져야 함
 DETAIL_CANDIDATES = 6         # 1·2위를 상세 검색으로 확인할 때 시도하는 최대 후보 수
@@ -56,6 +57,13 @@ _START = time.monotonic()
 def over_budget() -> bool:
     return time.monotonic() - _START > TIME_BUDGET_SEC
 
+
+# 상세 검색이 오류로만 끝난 도시가 연달아 나오면(그 서버가 구글에서 오류만 받는 경우, 2026-11-05 시험: 도시당 약 8분)
+# 남은 도시는 상세 확인을 건너뛰고 날짜 검색 실가격으로 발행한다(시간 예산 초과와 같은 처리)
+DETAIL_FAIL_STREAK_LIMIT = 2
+_DETAIL_FAIL_STREAK = 0
+SKIP_DETAIL_MSG = "상세 조회 오류가 이어져 상세 확인 생략"
+
 AIRLINE_KO = {
     "7C": "제주항공", "LJ": "진에어", "TW": "티웨이항공", "BX": "에어부산", "RS": "에어서울",
     "ZE": "이스타항공", "KE": "대한항공", "OZ": "아시아나항공", "YP": "에어프레미아", "RF": "에어로케이",
@@ -68,9 +76,19 @@ AIRLINE_KO = {
     "UA": "유나이티드항공", "HO": "준야오항공", "8L": "럭키항공", "GS": "톈진항공", "JD": "베이징캐피털항공",
     "9C": "춘추항공", "VZ": "타이 비엣젯", "AK": "에어아시아", "FD": "타이 에어아시아", "QZ": "인도네시아 에어아시아",
     "XJ": "타이 에어아시아X", "SL": "타이 라이언에어", "DD": "녹에어", "BL": "퍼시픽항공", "7G": "스타플라이어",
+    # 2026-11-05 도시 추가(장거리·신규 노선)
+    "AI": "에어인디아", "JQ": "젯스타", "QF": "콴타스항공", "NZ": "에어뉴질랜드", "HA": "하와이안항공",
+    "AF": "에어프랑스", "KL": "KLM 네덜란드항공", "LH": "루프트한자", "BA": "영국항공", "AY": "핀에어",
+    "LO": "LOT 폴란드항공", "TK": "튀르키예항공", "OS": "오스트리아항공", "LX": "스위스항공", "AZ": "ITA항공",
+    "IB": "이베리아항공", "TP": "TAP 포르투갈항공", "AC": "에어캐나다", "DL": "델타항공", "AA": "아메리칸항공",
+    "UL": "스리랑카항공", "RA": "네팔항공", "3U": "쓰촨항공", "HU": "하이난항공", "MF": "샤먼항공", "ZH": "선전항공",
+    "PG": "방콕에어웨이즈", "JX": "스타럭스항공", "OD": "바틱에어 말레이시아", "ID": "바틱에어", "KR": "캄보디아 에어웨이즈",
+    "K6": "캄보디아 앙코르에어", "QH": "뱀부항공", "WS": "웨스트젯",
 }
 FSC = {"KE", "OZ", "JL", "NH", "CI", "BR", "CX", "MU", "CZ", "CA", "FM", "TG", "PR", "MH", "SQ", "GA",
-       "VN", "OM", "KC", "HY", "BI", "UA", "QV", "NX", "SC"}
+       "VN", "OM", "KC", "HY", "BI", "UA", "QV", "NX", "SC",
+       "AI", "QF", "NZ", "HA", "AF", "KL", "LH", "BA", "AY", "LO", "TK", "OS", "LX", "AZ", "IB", "TP", "AC", "DL", "AA",
+       "UL", "RA", "3U", "HU", "MF", "ZH", "PG", "JX"}
 
 
 # ------------------------------------------------------------------------------
@@ -92,8 +110,23 @@ def kr_holidays():
     return _HOLIDAYS
 
 
+def city_nights(meta: Dict[str, Any]) -> range:
+    """도시별 여행 길이(박). 기본 2~8박, routes의 minNights가 있으면 그 박수부터."""
+    return range(int(meta.get("minNights") or NIGHTS.start), MAX_NIGHTS + 1)
+
+
+def trip_end(meta: Dict[str, Any], ret: datetime.date, arr_offset: Optional[int] = None) -> datetime.date:
+    """연차·주말을 셀 마지막 날. 귀국편이 다음 날 인천에 도착하는 도시(routes의 arrNextDay)는 도착일까지.
+    arr_offset(상세 검색으로 확인한 귀국편 도착 날짜 차이)이 있으면 그 값을 쓴다. 기존 58곳은 arrNextDay가 없어 귀국 출발일까지(변경 없음)."""
+    if not meta.get("arrNextDay"):
+        return ret
+    off = 1 if arr_offset is None else max(0, int(arr_offset))
+    return ret + datetime.timedelta(days=off)
+
+
 def trip_rules(dep: datetime.date, ret: datetime.date) -> Tuple[bool, int]:
-    """(주말 조건 통과 여부, 연차 일수). 주말 = 토요일과 그다음 일요일이 모두 일정 안에 있음."""
+    """(주말 조건 통과 여부, 연차 일수). 주말 = 토요일과 그다음 일요일이 모두 일정 안에 있음.
+    ret는 셀 마지막 날(trip_end 결과)."""
     days = [dep + datetime.timedelta(days=i) for i in range((ret - dep).days + 1)]
     has_weekend = any(d.weekday() == 5 and (d + datetime.timedelta(days=1)) <= ret for d in days)
     hol = kr_holidays()
@@ -237,18 +270,38 @@ def detail_search(org: str, dst: str, dep: datetime.date, ret: datetime.date) ->
 # ------------------------------------------------------------------------------
 # 도시 단위 처리
 # ------------------------------------------------------------------------------
+_AIRPORT_OK: Dict[str, bool] = {}
+
+
+def airport_supported(code: str) -> bool:
+    """fli 0.9.0 공항 목록에 그 코드가 있고 다른 공항으로 합쳐지지 않았는지(워크플로 'Patch fli airport aliases' 참고)."""
+    if code not in _AIRPORT_OK:
+        try:
+            from fli.models import Airport
+            _AIRPORT_OK[code] = Airport[code].name == code
+        except Exception:
+            _AIRPORT_OK[code] = False
+    return _AIRPORT_OK[code]
+
+
 def collect_city(meta: Dict[str, Any], today: datetime.date, full_gmp: bool = False) -> Dict[str, Any]:
     """도시 하나의 후보 일정 수집. {'candidates': [...], 'errors': n, 'calls': n, 'raw': n}"""
     cands, errors, calls, raw = [], 0, 0, 0
     last_err = ""
     gmp_found = []
     gmp_checks = {}   # 김포 출발로 조회한 공항별 직항 확인 결과(월요일 전체 점검·자동 추가 판정용)
+    unsupported = [a for a in meta["airports"] if not airport_supported(a)]
+    airports = [a for a in meta["airports"] if a not in unsupported]
+    if not airports:
+        # 수집 도구가 모르는 공항뿐: 조회하지 않고 사유만 남긴다(묶음 전체는 계속)
+        return {"candidates": [], "errors": 0, "calls": 0, "raw": 0, "lastError": "", "unsupported": unsupported,
+                "newGmp": [], "gmpChecks": {}, "gmpBest": {}, "diag": ""}
     for org in ORIGINS:
-        for dst in meta["airports"]:
+        for dst in airports:
             if org == "GMP" and not full_gmp and dst not in GMP_QUERY:
                 continue
             before, err_before = raw, errors
-            for n in NIGHTS:
+            for n in city_nights(meta):
                 calls += 1
                 try:
                     rows = date_search(org, dst, n, today)
@@ -258,7 +311,7 @@ def collect_city(meta: Dict[str, Any], today: datetime.date, full_gmp: bool = Fa
                     rows = []
                 raw += len(rows)
                 for dep, ret, price in rows:
-                    ok_weekend, leave = trip_rules(dep, ret)
+                    ok_weekend, leave = trip_rules(dep, trip_end(meta, ret))
                     if ok_weekend and leave <= MAX_LEAVE_DAYS:
                         cands.append({"origin": org, "dest": dst, "dep": dep, "ret": ret,
                                       "nights": (ret - dep).days, "leave": leave, "price": price})
@@ -277,16 +330,19 @@ def collect_city(meta: Dict[str, Any], today: datetime.date, full_gmp: bool = Fa
     if raw == 0 and errors < calls:
         # 직항 결과가 0건일 때만: 경유 허용 조회 1회로 '노선 자체가 조회되는지' 확인(진단용, 발행에는 쓰지 않음)
         try:
-            any_rows = date_search("ICN", meta["airports"][0], 3, today, nonstop=False)
-            diag = f"진단: ICN→{meta['airports'][0]} 3박 경유 포함 조회 {len(any_rows)}건"
+            n0 = max(3, city_nights(meta).start)
+            any_rows = date_search("ICN", airports[0], n0, today, nonstop=False)
+            diag = f"진단: ICN→{airports[0]} {n0}박 경유 포함 조회 {len(any_rows)}건"
         except Exception as e:
             diag = f"진단 조회 오류 {type(e).__name__}"
     gmp_best = {}
     for c in cands:   # 가격순 정렬됨: 공항별 첫 김포 출발 후보가 그날 김포 최저(날짜 검색 실조회값)
         if c["origin"] == "GMP" and c["dest"] not in gmp_best:
             gmp_best[c["dest"]] = {"price": c["price"], "dep": str(c["dep"]), "ret": str(c["ret"]), "nights": c["nights"], "leave": c["leave"]}
+    if unsupported:
+        diag = (diag + " | " if diag else "") + f"수집 도구 미지원 공항 제외: {', '.join(unsupported)}"
     return {"candidates": cands, "errors": errors, "calls": calls, "raw": raw, "lastError": last_err,
-            "newGmp": gmp_found, "gmpChecks": gmp_checks, "gmpBest": gmp_best, "diag": diag}
+            "unsupported": unsupported, "newGmp": gmp_found, "gmpChecks": gmp_checks, "gmpBest": gmp_best, "diag": diag}
 
 
 def pick_alt(cands: List[Dict[str, Any]], first: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -344,12 +400,20 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
     1위 = 확인된 일정 중 최저가, 2위 = 1위와 출발일이 3일 이상 떨어진 확인된 일정 중 최저가.
     화면 가격은 상세 검색 가격이다. 상세 검색이 오류로만 끝나면 날짜 검색 가격으로 발행(항공편 정보 없이).
     """
+    global _DETAIL_FAIL_STREAK
     base = {"date": today_str, "code": meta["code"], "city": meta["city"]}
     cands = found["candidates"]
     if not cands:
+        if found.get("unsupported") and not found["calls"]:
+            return None, dict(base, reason=f"수집 도구가 공항 코드를 지원하지 않음({', '.join(found['unsupported'])})", diag="")
         if found["calls"] and found["errors"] == found["calls"]:
             reason = f"조회 오류({found['lastError']})"
+            return None, dict(base, reason=reason, diag=found.get("diag", ""), retryable=True)
         elif found["raw"] == 0:
+            diag = found.get("diag", "")
+            if "경유 포함 조회 0건" in diag or "진단 조회 오류" in diag:
+                # 경유를 허용해도 0건이면 '직항 없음'으로 볼 수 없다(그 서버가 빈 응답만 받은 경우, 2026-11-05 시험에서 한 묶음 8곳 전부)
+                return None, dict(base, reason="조회 결과 없음(경유 포함 조회도 0건)", diag=diag, retryable=True)
             reason = "탐색 기간(D+14~60) 내 ICN·GMP 직항 없음"
         else:
             reason = "주말 포함·연차 5일 이하 조건에 맞는 직항 일정 없음"
@@ -364,6 +428,10 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
             break
         if over_budget():
             errors.append("시간 예산 초과로 상세 확인 생략")
+            tried += 1
+            break
+        if _DETAIL_FAIL_STREAK >= DETAIL_FAIL_STREAK_LIMIT:
+            errors.append(SKIP_DETAIL_MSG)
             tried += 1
             break
         # 이미 확인된 1위 후보와 출발일이 같은 후보는 2위가 될 수 없으므로 건너뜀(1위 확인 전에는 모두 시도)
@@ -386,6 +454,11 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
                                       for x in verified for y in verified):
             break
 
+    if verified or diags:
+        _DETAIL_FAIL_STREAK = 0          # 구글이 정상 응답(결과 있음·없음)을 줬으면 초기화
+    elif errors and len(errors) == tried and not errors[-1].startswith(("시간 예산", SKIP_DETAIL_MSG)):
+        _DETAIL_FAIL_STREAK += 1
+
     if verified:
         verified.sort(key=lambda v: (v["price"], v["leave"], v["dep"]))
         first = verified[0]
@@ -395,7 +468,7 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
             alt = next((c for c in cands if abs((c["dep"] - first["dep"]).days) >= ALT_MIN_GAP_DAYS
                         and c["price"] >= first["price"]), None)
         detail = first["detail"]
-    elif errors and (len(errors) == tried or errors[-1].startswith("시간 예산")):
+    elif errors and (len(errors) == tried or errors[-1].startswith(("시간 예산", SKIP_DETAIL_MSG))):
         # 상세 조회가 모두 오류: 날짜 검색의 실제 가격으로 발행(항공편 정보 없이)
         first, detail = cands[0], None
         alt = pick_alt(cands, first)
@@ -417,6 +490,13 @@ def finalize_city(meta: Dict[str, Any], found: Dict[str, Any], today_str: str) -
     if detail is None:
         row["detailError"] = errors[-1] if errors else ""
     row.update(trip_fields(first))
+    if meta.get("arrNextDay"):
+        # 귀국편이 다음 날 도착하는 도시: 상세 검색으로 확인한 실제 인천 도착일로 연차를 다시 센다(모르면 날짜 검색 때의 +1일 값)
+        off = detail["inbound"].get("arrDayOffset") if detail else None
+        end = trip_end(meta, first["ret"], off)
+        row["leaveDays"] = trip_rules(first["dep"], end)[1]
+        row["retArrDate"] = end.isoformat()
+        row["retArrSource"] = "detail" if (detail and off is not None) else "assumed"
     row["alt"] = trip_fields(alt) if alt else None
     if row["alt"] is not None:
         row["alt"]["verified"] = bool(alt.get("detail"))
@@ -567,8 +647,12 @@ def collect_phase(cities: List[Dict[str, Any]], today: datetime.date) -> Dict[st
         found[m["code"]] = collect_city(m, today, full_gmp)
         f = found[m["code"]]
         best = f["candidates"][0] if f["candidates"] else None
+        per_ap = {}
+        for c in f["candidates"]:   # 가격순: 공항별 첫 후보가 그 공항 최저(여러 공항 도시 확인용)
+            per_ap.setdefault(c["dest"], c["price"])
         print(f" · [{i:02d}/{len(cities)}] {m['city']} ({m['code']}): 날짜 검색 {f['calls']}회(오류 {f['errors']}), "
-              f"조건 통과 {len(f['candidates'])}건" + (f", 최저 {best['price']:,}원 {best['origin']}→{best['dest']} {best['dep']}~{best['ret']}" if best else ""))
+              f"조건 통과 {len(f['candidates'])}건" + (f", 최저 {best['price']:,}원 {best['origin']}→{best['dest']} {best['dep']}~{best['ret']}" if best else "")
+              + (" | 공항별 최저 " + ", ".join(f"{k} {v:,}" for k, v in per_ap.items()) if len(m["airports"]) > 1 and per_ap else ""))
     print(f"⏱️ 날짜 검색 {time.time() - t0:.0f}초")
     new_gmp = sorted({d for f in found.values() for d in f.get("newGmp", [])})
     if new_gmp:
@@ -627,7 +711,8 @@ def print_summary(published: List[Dict[str, Any]], failed: List[Dict[str, Any]],
     for r in published:
         tag = "" if r.get("outbound") else " (항공편 정보 없음: " + r.get("detailError", "")[:60] + ")"
         alt = f" | 2위 {r['alt']['price']:,}원 {r['alt']['depDate']}" if r.get("alt") else ""
-        print(f" ✓ {r['city']}: {r['price']:,}원 {r['origin']}→{r['dest']} {r['dates']} {r['airline']} {r['timeSlot']}{tag}{alt}")
+        arr = f" | 연차 {r['leaveDays']}일, 귀국 도착 {r['retArrDate']}({r['retArrSource']})" if r.get("retArrDate") else ""
+        print(f" ✓ {r['city']}: {r['price']:,}원 {r['origin']}→{r['dest']} {r['dates']} {r['airline']} {r['timeSlot']}{tag}{alt}{arr}")
     for f in failed:
         print(f" ✗ {f['city']}: {f['reason']}" + (f" [{f['diag']}]" if f.get("diag") else ""))
     print(f"📌 발행 {len(published)}/{total}개 도시, 미발행 {len(failed)}개")
@@ -665,13 +750,32 @@ def main() -> None:
         print(f"🏷️ 판매처 {len(got)}/{len(res.get('published', []))}개 도시, {time.time() - t1:.0f}초")
         return
 
+    if mode == "retry":
+        # 묶음 수집에서 '일시적 실패로 보이는' 도시(조회 오류, 경유 포함 조회도 0건)만 새 서버에서 한 번 더 수집한다.
+        # 결과는 shard_retry/shard_retry.json — 합치기(merge)에서 해당 도시의 묶음 결과를 이것으로 바꾼다.
+        codes = []
+        for name in sorted(os.listdir("shard_out")) if os.path.isdir("shard_out") else []:
+            with open(os.path.join("shard_out", name), encoding="utf-8") as f:
+                codes += [r["code"] for r in json.load(f).get("failed", []) if r.get("retryable")]
+        cities = [m for m in all_cities if m["code"] in set(codes)]
+        if not cities:
+            print("다시 수집할 도시 없음")
+            return
+        print(f"🔁 다시 수집: {len(cities)}개 도시 ({', '.join(m['code'] for m in cities)})")
+        res = collect_phase(cities, today)
+        os.makedirs("shard_retry", exist_ok=True)
+        with open("shard_retry/shard_retry.json", "w", encoding="utf-8") as f:
+            json.dump(res, f, ensure_ascii=False)
+        print_summary(res["published"], res["failed"], len(cities))
+        return
+
     if mode in ("", "collect"):
         cities = all_cities
         if mode == "collect":
             idx, cnt = int(os.environ.get("SHARD_INDEX", "0")), int(os.environ.get("SHARD_COUNT", "1"))
             cities = all_cities[idx::cnt]
             print(f"🧩 묶음 {idx + 1}/{cnt}: {len(cities)}개 도시")
-        print(f"📰 [{today_str}] {len(cities)}개 도시 수집 시작 (출발 {', '.join(ORIGINS)} · D+{WINDOW_START}~{WINDOW_END} · 2~8박 · 직항)")
+        print(f"📰 [{today_str}] {len(cities)}개 도시 수집 시작 (출발 {', '.join(ORIGINS)} · D+{WINDOW_START}~{WINDOW_END} · 2~8박(유럽·미주 4~8, 장거리 대양주 3~8) · 직항)")
         res = collect_phase(cities, today)
         if mode == "collect":
             os.makedirs("shard_out", exist_ok=True)
@@ -691,19 +795,27 @@ def main() -> None:
             from collections import Counter
             today_str = Counter(s["date"] for s in shards).most_common(1)[0][0]
         published, failed, seen = [], [], set()
-        for res in shards:
-            for r in res["published"]:
+        retry = None
+        if os.path.exists("shard_retry/shard_retry.json"):
+            with open("shard_retry/shard_retry.json", encoding="utf-8") as f:
+                retry = json.load(f)
+        redo = set(retry["codes"]) if retry else set()
+        for res in shards + ([retry] if retry else []):
+            is_retry = res is retry
+            keep = (lambda r: True) if is_retry else (lambda r: r["code"] not in redo)
+            for r in res["published"] + res["failed"]:
                 r["date"] = today_str
-            for r in res["failed"]:
-                r["date"] = today_str
-            published += res["published"]
-            failed += res["failed"]
+            published += [r for r in res["published"] if keep(r)]
+            failed += [r for r in res["failed"] if keep(r)]
             seen |= set(res["codes"])
+        if retry:
+            got = [r["code"] for r in retry["published"]]
+            print(f"🔁 다시 수집 결과 반영: {len(redo)}개 도시 중 {len(got)}곳 발행 ({', '.join(got) or '없음'})")
         for m in all_cities:
             if m["code"] not in seen:
                 failed.append({"date": today_str, "code": m["code"], "city": m["city"], "reason": "수집 작업 실패(해당 묶음 결과 없음)"})
         print(f"🧩 묶음 결과 합치기: 수집된 도시 {len(seen)}/{len(all_cities)}")
-        gmp_shards = shards
+        gmp_shards = shards + ([retry] if retry else [])   # 다시 수집한 도시의 김포 점검 결과가 뒤에서 덮어씀
         got = {}
         for name in sorted(os.listdir("sellers_out")) if os.path.isdir("sellers_out") else []:
             try:

@@ -216,7 +216,7 @@
           const today = (d.flights || []).filter(x => x.date === this.latest);
           const failedToday = (d.failed || []).filter(x => x.date === this.latest);
           const names = {};
-          (d.flights || []).concat(d.failed || []).forEach(x => { if (x.code && x.city) names[x.code] = x.city; });
+          (d.flights || []).concat(d.failed || []).forEach(x => { if (x.code && x.city && !names[x.code]) names[x.code] = x.city; });  // 최신 발행 이름 우선(방콕 수완나품 → 방콕)
           this.cityList = Object.entries(names).map(([code, city]) => ({ code, city })).sort((a, b) => a.city.localeCompare(b.city, 'ko'));
           if (!this.code) this.code = (today.slice().sort((a, b) => a.price - b.price)[0] || {}).code || (this.cityList[0] || {}).code || '';
           if (!names[this.code]) { this.state = 'nocity'; return; }
