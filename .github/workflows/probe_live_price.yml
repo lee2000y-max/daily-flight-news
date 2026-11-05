@@ -8,7 +8,7 @@ on:
         required: false
         default: 'OKA'
       mode:
-        description: 'route(노선 진단) · site(화면 검증·스크린샷) · climate(기후 평년값 갱신·커밋) · booking(판매처별 가격 실험, route에 "ICN-YNT 2026-12-10 2026-12-16 ...") · photos(위키미디어 사진 후보 → preview/photos 브랜치, route에 "new"면 사진 없는 도시만) · photos_more(route의 도시만 다시 찾기, 예: "CTS KOJ") · pages_build(배포 묶음 시험, 배포 안 함) · photos_fetch(고른 사진 저장·커밋, route에 "YGJ:2 SDJ:1 ...")'
+        description: 'route(노선 진단) · site(화면 검증·스크린샷) · climate(기후 평년값 갱신·커밋) · booking(판매처별 가격 실험, route에 "ICN-YNT 2026-12-10 2026-12-16 ...") · photos(위키미디어 사진 후보 → preview/photos 브랜치, route에 "new"면 사진 없는 도시만) · photos_more(route의 도시만 다시 찾기, 예: "CTS KOJ") · pages_build(배포 묶음 시험, 배포 안 함) · photos_fetch(고른 사진 저장·커밋, route에 "YGJ:2 SDJ:1 ...") · drafts(현지 메모·제철 초안 → preview/drafts)'
         required: false
         default: 'route'
 
@@ -85,6 +85,26 @@ jobs:
           git commit -qm "판매처별 가격 실험 스크린샷 (${GITHUB_REF_NAME})"
           git push -qf origin HEAD:preview/screenshots
           exit $rc
+
+      - name: 현지 메모·제철 초안(Gemini + 네이버 검색 근거 → preview/drafts 브랜치, 화면에는 안 실음)
+        if: github.event.inputs.mode == 'drafts'
+        env:
+          PYTHONUTF8: '1'
+          PYTHONUNBUFFERED: '1'
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          ROUTE: ${{ github.event.inputs.route }}
+        run: |
+          # route 비우면 현지 메모가 빈 도시 전부, 도시 코드를 넣으면 그 도시만
+          python build_drafts.py $ROUTE
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -q --orphan preview/drafts
+          git rm -rq --cached . > /dev/null
+          git add -f data/drafts.json
+          git commit -qm "현지 메모·제철 초안 (${GITHUB_REF_NAME})"
+          git push -qf origin HEAD:preview/drafts
 
       - name: 위키미디어 사진 후보(preview/photos 브랜치에 올림)
         if: github.event.inputs.mode == 'photos'
