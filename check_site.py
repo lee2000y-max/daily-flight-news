@@ -3,10 +3,10 @@
 """
 사이트 화면 검증(수동 실행 전용). 저장소 폴더를 로컬 서버로 띄워 실제 브라우저로 연다.
 - 콘솔 오류, 카드 수, 발행 상태, 미발행 목록, 버튼 링크, 금지 문구(기준가·수하물) 검사
-- 1면: 위치(발행 문구 아래·면 필터 위), 톱 기사, 전광판 5행·글자 크기(데스크톱 20px·모바일 16px 이상), 스탬프 상한
-- 움직임 줄이기(prefers-reduced-motion) 설정에서도 전광판이 바로 채워지는지
-- P4: 전광판 머리글·일정(MM.DD-MM.DD)·도착 공항(데이터 대조), 화면 절반 이상 보이기 전 미재생·보이면 재생,
-  CPU 4배 느림 프레임 간격(참고 수치), 360·390·768·1024·1366px 가로 넘침, 톱기사 아래 빈 공간·사진 불러오기·출처,
+- 1면: 위치(발행 문구 아래·면 필터 위), 톱 기사, 스탬프 상한
+- 1면 社告 지면(2026-11-09, 전광판 대체): 보임, 데스크톱 3:1·휴대폰 세로형, 문구 조각(.notice-line)마다 줄바꿈 없음,
+  글자 칸 넘침 없음, 본문 도시 수 = 발행 상태 total, 누를 수 있는 요소 없음, 이름 규칙(ad·banner 등 금지), 그림 불러옴
+- 360·375·768·1024·1280px 가로 넘침, 톱기사 아래 빈 공간·사진 불러오기·출처,
   링크 공유 버튼, 공유 페이지(s/<도시>/) og 값 대조·썸네일 크기
 - 데스크톱·모바일 전체 화면 스크린샷을 screenshots/ 에 저장
 """
@@ -25,12 +25,66 @@ latest = data["latestDate"]
 expected = len([r for r in data["flights"] if r["date"] == latest])
 expected_failed = len([r for r in data["failed"] if r["date"] == latest])
 problems = []
-notes = []
+notes = []      # 목표 미달이지만 실패로 치지 않는 참고 항목(환경에 따라 달라지는 수치)
 import subprocess  # noqa: E402
 # data/cities.json·js/common.js가 routes.py와 같은지(화면 도시 표 이중 관리 방지)
 if subprocess.call([sys.executable, "build_cities.py", "--check"]) != 0:
-    problems.append("data/cities.json 또는 js/common.js가 routes.py와 다름(python build_cities.py)")      # 목표 미달이지만 실패로 치지 않는 참고 항목(환경에 따라 달라지는 수치)
+    problems.append("data/cities.json 또는 js/common.js가 routes.py와 다름(python build_cities.py)")
 photos = (json.load(open("data/photos.json", encoding="utf-8")).get("cities") or {}) if os.path.exists("data/photos.json") else {}
+
+NOTICE_JS = r"""() => {
+  const n = document.querySelector('.front-notice');
+  if (!n) return null;
+  const r = n.getBoundingClientRect();
+  const lines = [...n.querySelectorAll('.notice-line')].filter(e => e.offsetParent !== null);
+  const wrapped = lines.filter(e => {
+    const cs = getComputedStyle(e), lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.3;
+    if (cs.display === 'inline') return e.getClientRects().length > 1;
+    return e.getBoundingClientRect().height > lh * 1.5 || e.scrollWidth > e.clientWidth + 1;
+  }).map(e => e.textContent.trim());
+  const copy = n.querySelector('.notice-copy');
+  const parts = [n, ...n.querySelectorAll('*')];
+  const bad = /(^|[-_\s/.])(ad|ads|advert|banner|sponsor|promo)([-_\s/.]|$)/i;
+  const names = parts.flatMap(e => [e.id, ...(e.classList || []), e.getAttribute('src') || '', e.getAttribute('srcset') || '']).filter(x => x && bad.test(x));
+  const imgs = [...n.querySelectorAll('img')].filter(i => i.offsetParent !== null);
+  return { w: Math.round(r.width), h: Math.round(r.height), ratio: r.width / r.height,
+    wrapped, copyOver: copy ? copy.scrollWidth - copy.clientWidth : 0,
+    clickable: n.querySelectorAll('a, button, input, select, textarea, [onclick], [tabindex]').length,
+    names, broken: imgs.filter(i => !(i.complete && i.naturalWidth > 0)).map(i => i.getAttribute('src')),
+    text: n.innerText.replace(/\s+/g, ' '),
+    anim: parts.filter(e => { const c = getComputedStyle(e); return c.animationName !== 'none' || (parseFloat(c.transitionDuration) || 0) > 0; }).length };
+}"""
+
+
+def check_notice(page, label, vw):
+    """1면 社告 지면 검사. 문제 목록을 돌려준다."""
+    page.evaluate("document.querySelector('.front-notice') && document.querySelector('.front-notice').scrollIntoView({block: 'center'})")
+    page.wait_for_timeout(600)
+    nt = page.evaluate(NOTICE_JS)
+    out = []
+    if not nt or nt["h"] <= 0:
+        return [f"{label}: 1면 社告 지면이 보이지 않음"]
+    total = (data.get("status", {}).get(latest) or {}).get("total")
+    print(f"   社告 지면 {vw}px: {nt['w']}×{nt['h']}(비율 {nt['ratio']:.2f}), 줄바꿈 {nt['wrapped'] or '없음'}, 글자 칸 넘침 {nt['copyOver']}px, "
+          f"누를 수 있는 요소 {nt['clickable']}, 이름 규칙 위반 {nt['names'] or '없음'}, 그림 실패 {nt['broken'] or '없음'}, 움직임 {nt['anim']}")
+    if vw >= 768 and abs(nt["ratio"] - 1210 / 403) > 0.08:
+        out.append(f"{label}: 社告 지면 비율 {nt['ratio']:.2f} != 3:1")
+    if vw < 768 and nt["ratio"] > 1.2:
+        out.append(f"{label}: 휴대폰에서 세로형이 아님(비율 {nt['ratio']:.2f})")
+    if nt["wrapped"]:
+        out.append(f"{label}: 社告 문구 줄바꿈 {nt['wrapped']}")
+    if nt["copyOver"] > 1:
+        out.append(f"{label}: 社告 글자 칸 넘침 {nt['copyOver']}px")
+    if nt["clickable"] or nt["anim"]:
+        out.append(f"{label}: 社告 지면에 누를 수 있는 요소 {nt['clickable']}·움직임 {nt['anim']}")
+    if nt["names"]:
+        out.append(f"{label}: 社告 이름 규칙 위반 {nt['names']}")
+    if nt["broken"]:
+        out.append(f"{label}: 社告 그림 불러오기 실패 {nt['broken']}")
+    if total and f"{total}개 도시" not in nt["text"]:
+        out.append(f"{label}: 社告 본문 도시 수가 발행 상태({total})와 다름")
+    return out
+
 with sync_playwright() as p:
     b = p.chromium.launch()
     for name, vp, motion in (("desktop", {"width": 1366, "height": 900}, "no-preference"),
@@ -44,95 +98,29 @@ with sync_playwright() as p:
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.goto(f"http://127.0.0.1:{PORT}/index.html", wait_until="networkidle")
         if name == "reduced":
-            page.wait_for_timeout(400)
-            tiles = page.eval_on_selector_all(".fp-row .fp-tile > .b:not(.f) i", "els => els.map(e => e.textContent.trim()).join('')")
-            print(f"[{name}] 0.4초 뒤 전광판 글자 수 {len(tiles)}")
-            if len(tiles) < 40:
-                problems.append(f"{name}: 움직임 줄이기에서 전광판이 바로 채워지지 않음")
+            page.wait_for_timeout(800)
+            problems += check_notice(page, name, vp["width"])
             ctx.close()
             continue
         page.wait_for_timeout(2500)
-        # 전광판: 화면에 절반 이상 들어오기 전에는 재생하지 않음 → 보이게 스크롤하면 재생
-        vis0 = page.evaluate("""() => { const r = document.querySelector('.fp-rows').getBoundingClientRect();
-            const h = Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0)); return h / r.height; }""")
-        plays0 = page.evaluate("window.__flapStats ? window.__flapStats.plays + (window.__flapStats.playing ? 1 : 0) : -1")
-        print(f"   열었을 때 전광판 보임 {vis0:.0%}, 재생 {plays0}회")
-        if vis0 < 0.5 and plays0 != 0:
-            problems.append(f"{name}: 전광판이 보이기 전에 재생됨")
-        page.evaluate("document.querySelector('.fp-board').scrollIntoView({block: 'center'})")
-        page.wait_for_timeout(2600)
-        plays1 = page.evaluate("window.__flapStats.plays")
-        if plays1 < 1:
-            problems.append(f"{name}: 전광판이 보여도 재생되지 않음")
-        # 부드러움(참고): CPU 4배 느리게 하고 다시 재생, 재생 중 프레임 간격 기록
-        cdp = ctx.new_cdp_session(page)
-        cdp.send("Emulation.setCPUThrottlingRate", {"rate": 4})
-        smooth = page.evaluate("""async () => {
-            const fr = []; let last = performance.now(), on = true;
-            const f = t => { if (window.__flapStats.playing) fr.push(t - last); last = t; if (on) requestAnimationFrame(f); };
-            requestAnimationFrame(f);
-            window.__flapBoard.play();
-            await new Promise(r => setTimeout(r, 2600));
-            on = false;
-            const x = fr.slice(1);
-            return { ms: window.__flapStats.lastMs, n: x.length,
-                     p20: x.length ? Math.round(100 * x.filter(v => v <= 20).length / x.length) : 0,
-                     max: x.length ? Math.round(Math.max(...x)) : 0 };
-        }""")
-        cdp.send("Emulation.setCPUThrottlingRate", {"rate": 1})
-        print(f"   전광판(CPU 4배 느림) 재생 {smooth['ms']}ms, 프레임 {smooth['n']}개 중 20ms 이하 {smooth['p20']}%, 최대 {smooth['max']}ms (목표 95%·1.8초, 참고 수치)")
-        if smooth["ms"] > 1800 or smooth["p20"] < 95:
-            notes.append(f"{name}: 전광판 부드러움 목표 미달(4배 느림) {smooth}")
-        board = page.evaluate("""() => ({
-            head: [...document.querySelectorAll('.fp-head .fp-htext')].map(e => e.textContent.trim()),
-            rows: [...document.querySelectorAll('.fp-row')].map(r => ({
-              aria: r.getAttribute('aria-label'),
-              cols: [...r.querySelectorAll('.fp-col')].map(c => [...c.querySelectorAll('.fp-tile > .b:not(.f) i')].map(e => e.textContent).join(''))
-            }))
-        })""")
-        if board["head"] != ["유형", "도시", "도착", "일정", "왕복 가격"]:
-            problems.append(f"{name}: 전광판 머리글 {board['head']}")
-        by_city = {}
-        for r_ in data["flights"]:
-            if r_["date"] == latest:
-                by_city[r_["city"].split(" ")[0][:7]] = r_
-        for row in board["rows"]:
-            city_t, dest_t, sched_t = row["cols"][1].strip(), row["cols"][2].strip(), row["cols"][3].strip()
-            if not re.fullmatch(r"\d\d/\d\d-\d\d/\d\d", sched_t):
-                problems.append(f"{name}: 일정 형식 '{sched_t}'")
-            f_ = by_city.get(city_t)
-            if f_ and dest_t != f_["dest"] and not ((row["aria"] or "").find(f"도착 {dest_t}") >= 0 and f_.get("leaveSaver")):
-                problems.append(f"{name}: {city_t} 도착 {dest_t} != 데이터 {f_['dest']}")
-            price_t = row["cols"][4].strip()
-            if not price_t.startswith("₩") or "원" not in (row["aria"] or ""):
-                problems.append(f"{name}: 전광판 가격 표기 이상 '{price_t}'")
+        problems += check_notice(page, name, vp["width"])
+        page.evaluate("window.scrollTo(0, 0)")
         cards = page.locator("article.newspaper-card").count()
         body = page.inner_text("body")
         # 1면
         fp = page.locator("section[aria-labelledby='fpTitle']")
         top_h = page.locator("section[aria-labelledby='fpTitle'] h3").first.inner_text() if fp.count() else ""
         sides = page.locator("section[aria-labelledby='fpTitle'] h4").count()
-        rows = page.locator(".fp-row").count()
-        fsize = page.eval_on_selector(".fp-row .fp-tile", "e => parseFloat(getComputedStyle(e).fontSize)") if rows else 0
         y_pill = page.locator("text=항공편집국 발행").first.bounding_box()["y"]
         y_fp = fp.bounding_box()["y"] if fp.count() else -1
         y_tabs = page.locator("#sectionTabs").first.bounding_box()["y"]
-        board_aria = page.eval_on_selector_all(".fp-row", "els => els.map(e => e.getAttribute('aria-label'))")
-        tiles_text = page.eval_on_selector_all(".fp-row", "els => els.map(e => Array.from(e.querySelectorAll('.fp-tile > .b:not(.f) i')).map(t => t.textContent).join('').replace(/\\s+/g, ' ').trim())")
         stamps = page.locator("article.newspaper-card .passport-stamp:visible").count()
         supers = page.locator("article.newspaper-card .passport-stamp:visible:has-text('SUPER DEAL')").count()
-        print(f"   1면 톱: {top_h} | 사이드 {sides}건 | 전광판 {rows}행, 글자 {fsize}px | 스탬프 {stamps}개(SUPER {supers})")
-        for a_, t_ in zip(board_aria, tiles_text):
-            print(f"     · {t_}   ({a_})")
+        print(f"   1면 톱: {top_h} | 사이드 {sides}건 | 스탬프 {stamps}개(SUPER {supers})")
         if not top_h:
             problems.append(f"{name}: 1면 톱 기사 없음")
         if not (y_pill < y_fp < y_tabs):
             problems.append(f"{name}: 1면 위치 이상(발행 문구 {y_pill}, 1면 {y_fp}, 면 필터 {y_tabs})")
-        if rows != min(5, expected):
-            problems.append(f"{name}: 전광판 {rows}행")
-        min_px = 20 if name == "desktop" else 16
-        if fsize < min_px:
-            problems.append(f"{name}: 전광판 글자 {fsize}px < {min_px}px")
         if stamps - supers > expected // 4:
             problems.append(f"{name}: 스탬프 상한 초과 {stamps - supers} > {expected // 4}")
         overflow = page.evaluate("document.documentElement.scrollWidth - window.innerWidth")
@@ -167,7 +155,7 @@ with sync_playwright() as p:
             const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
             const emoHits = []; let n;
             while ((n = walker.nextNode())) {
-              const el = n.parentElement; if (!el || el.closest('option, .fp-board, script, style, template')) continue;
+              const el = n.parentElement; if (!el || el.closest('option, script, style, template')) continue;
               if (el.offsetParent === null) continue;
               if (emo.test(n.nodeValue)) emoHits.push(n.nodeValue.trim().slice(0, 20));
             }
@@ -286,18 +274,16 @@ with sync_playwright() as p:
             problems.append(f"{name}: 카드 리뉴얼 점검 이상 {cd}")
         page.screenshot(path=f"screenshots/{name}_full.png", full_page=True)
         ctx.close()
-    # 가로 넘침(360·768·1024px)
-    for w in (360, 768, 1024):
+    # 가로 넘침·社告 지면(360·375·768·1024·1280px)
+    for w in (360, 375, 768, 1024, 1280):
         page = b.new_page(viewport={"width": w, "height": 900})
         page.goto(f"http://127.0.0.1:{PORT}/index.html", wait_until="networkidle")
         page.wait_for_timeout(1500)
-        page.evaluate("document.querySelector('.fp-board').scrollIntoView({block: 'center'})")
-        page.wait_for_timeout(2200)
+        problems += check_notice(page, f"{w}px", w)
         ov = page.evaluate("document.documentElement.scrollWidth - window.innerWidth")
-        rov = page.evaluate("Math.max(0, ...[...document.querySelectorAll('.fp-row')].map(r => r.scrollWidth - r.clientWidth))")
-        print(f"[{w}px] 가로 넘침 {ov}px, 전광판 행 넘침 {rov}px")
-        if ov > 0 or rov > 2:
-            problems.append(f"{w}px: 가로 넘침 {ov}px / 전광판 {rov}px")
+        print(f"[{w}px] 가로 넘침 {ov}px")
+        if ov > 0:
+            problems.append(f"{w}px: 가로 넘침 {ov}px")
         page.locator("section[aria-labelledby='fpTitle']").screenshot(path=f"screenshots/w{w}_front.png")
         page.close()
     # 공유 페이지(s/<도시>/): og 값이 오늘 카드 값과 같은지, 썸네일 1200×630
