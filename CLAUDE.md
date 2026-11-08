@@ -24,12 +24,12 @@
   - `publish`는 `!cancelled()` 조건. 실행을 취소하면 저장도 하지 않는다(`always()`로 바꾸지 말 것).
 - 화면 판정(index.html): 1면 A·C와 스탬프 1·3·6·7은 실조회 이력이 필요 일수(30·7·14) 쌓인 뒤에만 켜짐(`hasHistory`).
 - `build_climate.py` → `data/climate_normals.json`(NASA POWER 월 평균기온·강수, 키 없음). 진단 워크플로 `mode=climate`로 갱신·커밋.
-- 텍스트 축소(S5, 2026-11-04): 메타 줄은 VOL·발행호 선택만(링크·발행 정보는 판권으로). 1면은 요약 줄·각주·버튼 없이 제목(누르면 카드로) + 숫자 칸 [📅 일정][유형별 지표][💰 가격]. 환율 박스 삭제(수집의 `fx`는 유지). 탭은 국기·이모지 SVG + 짧은 이름. 판권: 엠블럼 → 이름 → 링크 줄 → 발행 정보 → [주의] 문구. 오늘 싣지 못한 도시는 접어 두고 사유는 쉬운 말(`plainReason`). 메인에는 출처 표기·'중앙값'·'실조회'를 쓰지 않는다(출처는 about). 날짜는 `MM/DD(요일)`(전광판만 `MM/DD-MM/DD`, 글자판 드럼에 `/`).
+- 텍스트 축소(S5, 2026-11-04): 메타 줄은 VOL·발행호 선택만(링크·발행 정보는 판권으로). 1면은 요약 줄·각주·버튼 없이 제목(누르면 카드로) + 숫자 칸 [📅 일정][유형별 지표][💰 가격]. 환율 박스 삭제(수집의 `fx`는 유지). 탭은 국기·이모지 SVG + 짧은 이름. 판권: 엠블럼 → 이름 → 링크 줄 → 발행 정보 → [주의] 문구. 오늘 싣지 못한 도시는 접어 두고 사유는 쉬운 말(`plainReason`). 메인에는 출처 표기·'중앙값'·'실조회'를 쓰지 않는다(출처는 about). 날짜는 `MM/DD(요일)`.
 - 제호(S4): 왼쪽 엠블럼 `images/brand/emblem.svg`(저장소 자체 저작물, 손으로 고치지 않음) + 캡션·좌표, 오른쪽 붉은 인장. 1024px 미만은 엠블럼·인장을 한 줄에. 판권 맨 위에도 엠블럼 96px. (`images/brand/` = 엠블럼, `images/brands/` = 예약 버튼 로고)
 - 도시 카드(S3, 2026-11-04 리뉴얼): 배지 + 관심·공유 툴바(SVG), 국기(`images/flags/<iso2>.svg`, flag-icons MIT, 도시→국가 `routes.CITY_ISO2`·`js/common.js`), 가격(전일 대비 등락은 2026-11-05 삭제), 📅 일정(`MM/DD(요일)~MM/DD(요일) N박 N일`)+출도착 시각, ✈️ 항공사명(편명은 카드에 안 씀), 절취선(정보 박스 바로 아래, 같은 줄 카드 높이 차이는 예약 버튼 위 여백으로), 📌 현지 메모 + 도장, 예약 버튼 3개(티켓 스텁 2026-11-05: 위 브랜드 색 스텁 + 공식 로고 18px `images/brands/`, 아래 양피지에 이름. 구글 = 흰 스텁 + 4색 띠, 네이버 = 초록, 스카이스캐너 = 남색. 구글 링크가 없으면 2열). 출처·판매처·현지 통화·다른 일정·그래프·터미널은 카드에서 뺌.
 - 터미널: 2026-11-05 사용자 결정으로 카드에서 삭제(`data/terminals.json`·`terminalsOf`도 삭제). 다시 넣으려면 git 이력(PR #10)의 인천공항 공식 '취항정보' 표를 다시 확인해 쓴다. 도착 공항 터미널 번호는 공식 확인 자료가 없어 쓰지 않는다.
-- 이모지: 화면의 이모지는 문자 대신 `images/emoji/<코드포인트>.svg`(Noto Emoji, Apache-2.0)로. `<option>`·메타·전광판은 예외. 공용 함수 `js/common.js`(`BPT.fmtMD`·`fmtRange`·`fmtNights`·`flagSrc`).
-- `about.html`(P5-1): 만드는 방법·원칙·1면 유형·스탬프·자료 출처·**사진 출처 전체 목록**(`data/photos.json`, 라이선스 링크). 이번 호 미발행 도시는 `flights_data.json`에서. 상단 발행 줄·1면 전광판 안내·판권에서 링크.
+- 이모지: 화면의 이모지는 문자 대신 `images/emoji/<코드포인트>.svg`(Noto Emoji, Apache-2.0)로. `<option>`·메타는 예외. 공용 함수 `js/common.js`(`BPT.fmtMD`·`fmtRange`·`fmtNights`·`flagSrc`).
+- `about.html`(P5-1): 만드는 방법·원칙·1면 유형·스탬프·자료 출처·**사진 출처 전체 목록**(`data/photos.json`, 라이선스 링크). 이번 호 미발행 도시는 `flights_data.json`에서. 판권에서 링크.
 - `city.html?code=YGJ`(P5-2): 도시 상세. 오늘 1위·2위·연차 절약(실조회), 항공편·판매처, 가격 이력(`historicalSeries` 실조회 1위만, **7일 이상부터 그래프**), 월별 기후·추천 시즌. 미발행 도시는 사유만(가격 없음). 카드 도시 이름·'가격 이력·날씨 →'에서 연결.
 - 관심 도시(P5-3): 카드 ☆ → localStorage `bpt-favs`(이 브라우저만). 1면 아래 '내 관심 도시' 띠(미발행이면 가격 없이 '이 호에는 미발행').
 - `build_extras.py`(P5-3·4, 배포 때 실행, 커밋 안 함): `feed/<도시>.xml` 도시별 RSS(영구 이력 live만, 최근 30건) + `data/archive.json` 보관함 요약(날짜별 발행 수·하위 5곳, 이전 수집기 기록은 `source: reference`).
@@ -40,9 +40,9 @@
 - 링크 공유(P4, 공유 이미지 버튼 대체): 카드의 '🔗 이 특가 공유' → `s/<도시>/?d=YYYYMMDD` 주소를 공유(휴대폰 공유 창, 컴퓨터 복사). `build_share.py`가 사이트 배포 때 `s/<도시>/index.html`(og 태그만, 열면 `./#<도시>`로 이동)과 `thumb.jpg`(1200×630, Pillow + fonts-noto-cjk), `s/og.jpg`(사이트 기본 미리보기 = 오늘 최저가 도시)를 만든다. `s/`는 커밋하지 않는다(.gitignore). 미발행 도시는 가격 없는 썸네일·"오늘은 발행되지 않았습니다". 실패해도 배포는 계속.
 - 배포(P4, 2026-11-03 사용자 결정): GitHub Pages를 브랜치 배포에서 워크플로 배포(`.github/workflows/pages.yml`)로. main 푸시, 또는 매일 수집·진단 워크플로가 main에서 끝나면(`workflow_run`) 저장소 + `s/`를 묶어 배포. 브랜치에서 수동 실행하면 묶기만(배포 안 함). 저장소 설정 Pages Source = "GitHub Actions" 필요.
 - 도시 사진(P4): `data/photos.json`(출처: title·page·license·artist, 선택 place) + `images/cities/<도시>.jpg`(1600)·`_640.jpg`. 위키미디어 공용만, 출처 표기 필수(카드·1면 사진 설명). 고르기: 진단 워크플로 `mode=photos`(후보 3장 → `preview/photos` 브랜치) → 사용자가 고르면 `mode=photos_fetch`, route에 `"YGJ:2 SDJ:1 ..."`. 마음에 드는 후보가 없는 도시는 `mode=photos_more`, route에 `"CTS KOJ"`(검색어 `build_photos.REQUERY`, 4번부터 덧붙임). 사진이 없는 기존 58곳은 기존 Unsplash 임시 사진, 2026-11-05 추가 74곳은 사진을 고르기 전까지 비움(카드 워터마크·1면 사진 숨김, 임의 사진 금지).
-- 1면 전광판(P4): `FlapBoard` 엔진(index.html, rAF 루프 하나, 윗장 낙하·아랫장 펼침). 열 [유형 4|도시 7|도착 3|일정 11 `MM.DD-MM.DD`|왕복 가격 10]. 화면에 절반 이상 들어오면 재생(나갔다 다시 들어오면 재생), 휴대폰은 2줄 + 유형은 왼쪽 색 막대·범례. 한 줄 배치는 1024px 이상.
+- 1면 社告 지면(2026-11-09, 전광판 대체): 1면 상자 아래 창간 기념 장식 지면(`.front-notice`, 클릭·호버·움직임 없음). 데스크톱 3:1(1210×403 기준, 글자 크기는 지면 폭 비례 `cqw`, 문장마다 한 줄 고정), 767px 이하 세로형(그림 16:9 위·글자 아래, 문구 조각 `.notice-line` 안에서는 줄바꿈 없음). 그림 `images/notice/`(사용자 제공 AI 생성 그림, 크롭 기준 README). 본문 도시 수는 `currentStatus.total`. 이름에 ad·banner·sponsor·promo 등 광고 차단 단어 금지. `FlapBoard` 엔진·전광판 행 코드는 삭제(기사 후보의 `board` 필드는 1면 숫자 칸이 씀).
 - `sellers.py`: 판매처별 가격 읽기(사용자 결정으로 매일 수집 포함, 2026-11-03). 같은 출발 시각 직항을 못 찾으면 비움. 실험 기록 `docs/P3_booking_experiment.md`, 실험 스크립트 `probe_booking.py`.
-- `check_site.py`: 로컬에서 사이트를 띄워 데스크톱·모바일 화면 검사(카드 수, 구글 버튼, 금지어, 콘솔 오류, P4 전광판·사진·링크 공유·공유 페이지·360~1366px 넘침) 후 스크린샷. 전광판 부드러움(CPU 4배 느림)은 참고 수치(서버 화면 처리가 실제 기기와 달라 실패로 치지 않음). `probe_live_price.yml`을 `mode=site`로 실행하면 `preview/screenshots` 브랜치에 올린다.
+- `check_site.py`: 로컬에서 사이트를 띄워 데스크톱·모바일 화면 검사(카드 수, 구글 버튼, 금지어, 콘솔 오류, 1면 社告 지면(비율·줄바꿈·넘침·이름 규칙)·사진·링크 공유·공유 페이지·360~1280px 넘침) 후 스크린샷. `probe_live_price.yml`을 `mode=site`로 실행하면 `preview/screenshots` 브랜치에 올린다.
 
 ## 알아 둘 함정
 - 하위 페이지(about·city·archive·monthly)는 `x-data="xxxPage()"`에 `init()` 메서드가 있으면 Alpine이 알아서 한 번 부른다. `x-init="init()"`를 함께 쓰면 **두 번** 실행된다(2026-11-04 수정: 데이터 요청 2회 → 1회). 새 페이지에도 `x-init`을 붙이지 않는다.

@@ -19,7 +19,7 @@
   <!-- Alpine.js -->
   <script src="./js/common.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
-  <!-- Google Fonts: 정통 신문 명조체 + 본문 고딕 + 전광판 모노스페이스 -->
+  <!-- Google Fonts: 정통 신문 명조체 + 본문 고딕 + 모노스페이스(숫자·코드) + 社告 머리말(Playfair) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chonburi&family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
@@ -215,112 +215,61 @@
       user-select: none;
     }
 
-    /* 1면 전광판(P4): 5행 [유형 | 도시 | 도착 | 일정 | 왕복 가격]. 실제 스플릿플랩 구조
-       글자판 = 윗반쪽(다음 글자) + 아랫반쪽(현재 글자) + 떨어지는 윗장 + 펴지는 아랫장. 움직임은 transform만 */
-    .fp-board {
-      background: linear-gradient(180deg, #1A1917 0%, #100F0D 100%);
-      border: 2px solid #38342E;
-      border-radius: 6px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-      padding: 8px 8px 8px 6px;
-      font-size: 16px;               /* 모바일 최소 16px */
-      contain: layout paint;
-      will-change: transform;        /* 전광판만 별도 레이어: 넘김 때 페이지 전체를 다시 그리지 않게 */
-      --tw: 0.96em; --tg: 0.05em;    /* 글자판 너비·간격(모바일) */
-    }
+    /* 1면 社告(창간 기념, 장식용 정적 지면, 2026-11-09). 데스크톱 3:1(1210×403 기준), 글자는 지면 폭에 비례(cqw).
+       767px 이하는 세로형(그림 16:9 위, 글자 아래). 클릭·호버·움직임 없음. 이름에 광고 차단 단어(ad·banner 등)를 쓰지 않는다 */
+    .front-notice { position: relative; box-sizing: border-box; color: #1E1B18; font-family: 'Noto Serif KR', serif;
+      background-color: #FAF7F0;
+      background-image: radial-gradient(rgba(44,38,32,.055) .7px, transparent 1.1px), radial-gradient(rgba(140,130,117,.05) 1px, transparent 1.4px);
+      background-size: 5px 5px, 23px 23px; background-position: 0 0, 11px 7px;
+      aspect-ratio: auto; padding: 6px; }
+    .notice-frame { position: relative; height: 100%; box-sizing: border-box; border: 3px solid #2C2620; padding: 3px; }
+    .notice-inner { position: relative; height: 100%; box-sizing: border-box; border: 1px solid #2C2620; display: flex; align-items: stretch;
+      flex-direction: column; gap: 14px; padding: 10px; }
+    .notice-corner { position: absolute; width: 14px; height: 14px; background: #2C2620; transform: rotate(45deg) scale(.72); }
+    .notice-corner::after { content: ""; position: absolute; inset: 4px; background: #FAF7F0; }
+    .notice-corner.tl { left: -9px; top: -9px; } .notice-corner.tr { right: -9px; top: -9px; }
+    .notice-corner.bl { left: -9px; bottom: -9px; } .notice-corner.br { right: -9px; bottom: -9px; }
+    .notice-art { position: relative; flex: none; width: 100%; height: auto; aspect-ratio: 16 / 9; max-width: 100%; }
+    .notice-art picture { display: block; width: 100%; height: 100%; }
+    .notice-art-img { display: block; width: 100%; height: 100%; object-fit: cover;
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 6%, #000 94%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 6%, #000 94%, transparent 100%);
+      mask-composite: intersect; }
+    .notice-flag-mark { position: absolute; left: 75%; top: 51%; width: 25%; transform: translate(-50%, -50%) rotate(6deg) skewY(5deg);
+      mix-blend-mode: multiply; opacity: .84; pointer-events: none; }
+    .notice-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px;
+      text-align: center; padding: 2px 4px 4px; background: rgba(250,247,240,.72); }
+    .notice-copy p, .notice-copy h3 { margin: 0; }
+    .notice-line { white-space: nowrap; }
+    .notice-head { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 12px; line-height: 16px; letter-spacing: .16em; }
+    .notice-star { color: #B8332A; }
+    .notice-title { font-weight: 900; font-size: 38px; line-height: 1; letter-spacing: -.02em; }
+    .notice-slogan { border: 4px double #2C2620; outline: 1px solid #2C2620; outline-offset: 3px; padding: 4px 16px 6px; font-weight: 900;
+      font-size: 18px; line-height: 24px; letter-spacing: .04em; }
+    .notice-body { font-weight: 700; font-size: 15px; line-height: 23px; }
+    .notice-body .notice-line, .notice-foot .notice-line { display: block; }   /* 휴대폰: 조각마다 한 줄 */
+    .notice-shout { font-weight: 900; font-size: 20px; line-height: 26px; letter-spacing: -.01em; }
+    .notice-foot { font-family: 'Noto Sans KR', sans-serif; font-weight: 700; font-size: 12px; line-height: 17px; color: #2C2620; }
+    @media (max-width: 359px) { .notice-shout { font-size: 18px; } }
     @media (min-width: 768px) {
-      .fp-board { font-size: 20px; padding: 14px 16px; --tw: 1.05em; --tg: 0.06em; }   /* 데스크톱 최소 20px */
-    }
-    .fp-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 6px; font-size: 11px; color: #3E3932; }
-    .fp-legend i { display: inline-block; width: 4px; height: 12px; margin-right: 4px; vertical-align: -1px; border-radius: 1px; }
-    @media (min-width: 1024px) { .fp-legend { display: none; } }
-    .fp-head { display: none; padding: 0 0 4px; }
-    .fp-hcell { width: calc(var(--n) * (var(--tw) + var(--tg))); }
-    .fp-htext {
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      color: #9E9585;
-    }
-    .fp-row {
-      display: grid;
-      /* 휴대폰 2줄: [도시 | 가격] / [도착 | 일정]. 3열로 두어 일정이 가격 칸 폭까지 쓰게 함(360px에서 넘치지 않게) */
-      grid-template-areas: "city city price" "dest sched sched";
-      grid-template-columns: auto auto 1fr;
-      column-gap: 0.35em;
-      row-gap: 0.25em;
-      align-items: center;
-      padding: 0.35em 0 0.35em 6px;
-      border-bottom: 1px solid #2A2621;
-      border-left: 4px solid var(--rc, #F4EFE6);   /* 휴대폰: 유형은 왼쪽 색 막대로 */
-    }
-    .fp-row:last-child { border-bottom: 0; }
-    .fp-row .fp-col-0 { display: none; }
-    @media (min-width: 1024px) {
-      .fp-head, .fp-row {
-        display: grid;
-        grid-template-areas: "type city dest sched price";
-        grid-template-columns: auto auto auto auto 1fr;
-        column-gap: 0.75em;
-      }
-      .fp-row { border-left: 0; padding-left: 0; }
-      .fp-row .fp-col-0 { display: flex; }
-    }
-    .fp-col { display: flex; gap: var(--tg); }
-    .fp-col-0 { grid-area: type; }
-    .fp-col-1 { grid-area: city; }
-    .fp-col-2 { grid-area: dest; }
-    .fp-col-3 { grid-area: sched; }
-    .fp-col-4 { grid-area: price; justify-self: end; }
-    .fp-tile {
-      position: relative;
-      display: inline-block;
-      width: var(--tw);
-      height: 1.5em;
-      perspective: 5em;
-      font-family: 'JetBrains Mono', 'Noto Sans KR', monospace;
-      font-weight: 800;
-      font-size: 1em;
-      line-height: 1;
-      color: #F4EFE6;
-      user-select: none;
-      border-radius: 3px;
-      box-shadow: 0 2px 3px rgba(0,0,0,0.6);
-      contain: strict;               /* 크기 고정: 글자가 바뀌어도 이 칸 밖으로 레이아웃·그리기가 번지지 않게 */
-    }
-    .fp-tile.is-price { color: #FBBF24; }
-    .fp-tile > span {
-      position: absolute;
-      left: 0; right: 0;
-      height: 50%;
-      overflow: hidden;
-      border: 1px solid #3E3A34;
-    }
-    .fp-tile > .t { top: 0; border-bottom: 0; border-radius: 3px 3px 0 0; background: linear-gradient(180deg, #2E2B27, #221F1C); }
-    .fp-tile > .b { bottom: 0; border-top: 0; border-radius: 0 0 3px 3px; background: linear-gradient(180deg, #171513, #24211D); }
-    .fp-tile > .f { visibility: hidden; backface-visibility: hidden; z-index: 2; }
-    .fp-tile > .f.t { transform-origin: 50% 100%; }
-    .fp-tile > .f.b { transform-origin: 50% 0; }
-    .fp-tile i {
-      position: absolute;
-      left: 0; right: 0;
-      height: 200%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-style: normal;
-    }
-    .fp-tile > .t i { top: 0; }
-    .fp-tile > .b i { bottom: 0; }
-    .fp-tile s { position: absolute; inset: 0; background: #000; opacity: 0; text-decoration: none; }
-    .fp-tile::after {          /* 가운데 이음매 */
-      content: '';
-      position: absolute;
-      left: 0; right: 0; top: calc(50% - 0.5px);
-      height: 1px;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 3;
-      pointer-events: none;
+      .front-notice { container-type: inline-size; aspect-ratio: 1210 / 403; padding: 8px; }
+      .notice-inner { flex-direction: row; gap: 12px; padding: 6px; }
+      .notice-art { width: auto; height: 100%; aspect-ratio: 1600 / 1026; }
+      .notice-art-img {
+        -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3%, #000 93%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 4%, #000 95%, transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0, #000 3%, #000 93%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 4%, #000 95%, transparent 100%); }
+      .notice-flag-mark { left: 69.6%; top: 46.6%; width: 20%; }
+      .notice-copy { justify-content: space-evenly; gap: 0; padding: 6px 0; }
+      /* 글자 크기 = 1210px 지면에서의 px ÷ 1210 × 100cqw */
+      .notice-head { font-size: 1.405cqw; line-height: 1.818cqw; letter-spacing: .22em; }
+      .notice-title { font-size: 6.612cqw; }
+      .notice-slogan { font-size: 2.810cqw; line-height: 3.471cqw; padding: .331cqw 2.479cqw .496cqw; }
+      .notice-body { font-size: 2.149cqw; line-height: 2.975cqw; }
+      .notice-body p, .notice-foot { white-space: nowrap; }                      /* 데스크톱: 문장마다 한 줄 */
+      .notice-body .notice-line, .notice-foot .notice-line { display: inline; }
+      .notice-shout { font-size: 3.140cqw; line-height: 3.802cqw; }
+      .notice-foot { font-size: 1.405cqw; line-height: 1.818cqw; }
     }
 
     /* 1면 제목(누르면 카드로) · 숫자 칸 [일정][지표][가격] */
@@ -448,7 +397,7 @@
   </header>
 
   <!-- ===================================================================== -->
-  <!-- 1면: 오늘의 항공 뉴스(톱 1 + 사이드 2~3) + 5행 전광판. 모두 오늘 실제 조회값에서 자동 작성 -->
+  <!-- 1면: 오늘의 항공 뉴스(톱 1 + 사이드 2~3, 오늘 실제 조회값에서 자동 작성) + 社告 지면(장식) -->
   <!-- ===================================================================== -->
   <section class="max-w-7xl mx-auto px-4 mb-6" x-show="loadState === 'ok' && frontPage.top" x-cloak aria-labelledby="fpTitle">
     <div class="bg-[#FAF7F0] border-2 border-[#2C2620] shadow-sm">
@@ -502,19 +451,35 @@
         </div>
       </div>
 
-      <!-- 5행 전광판 -->
+      <!-- 1면 社告(창간 기념, 장식용 정적 지면). 전광판 자리(2026-11-09) -->
       <div class="border-t border-[#2C2620] bg-[#EFECE4] p-2 sm:p-4">
-        <div class="fp-legend" aria-hidden="true">
-          <template x-for="lg in boardLegend" :key="lg.type">
-            <span><i :style="'background:' + lg.color"></i><span x-text="lg.label"></span></span>
-          </template>
-        </div>
-        <div class="fp-board" role="table" aria-label="오늘의 1면 전광판">
-          <div class="fp-head" role="row" aria-hidden="true">
-            <span class="fp-hcell" style="grid-area:type;--n:4"><span class="fp-htext">유형</span></span><span class="fp-hcell" style="grid-area:city;--n:7"><span class="fp-htext">도시</span></span><span class="fp-hcell" style="grid-area:dest;--n:3"><span class="fp-htext">도착</span></span><span class="fp-hcell" style="grid-area:sched;--n:11"><span class="fp-htext">일정</span></span><span class="fp-hcell" style="grid-area:price;--n:10;justify-self:end;text-align:right"><span class="fp-htext">왕복 가격</span></span>
+        <aside class="front-notice" aria-label="사고">
+          <div class="notice-frame">
+            <i class="notice-corner tl" aria-hidden="true"></i><i class="notice-corner tr" aria-hidden="true"></i>
+            <i class="notice-corner bl" aria-hidden="true"></i><i class="notice-corner br" aria-hidden="true"></i>
+            <div class="notice-inner">
+              <div class="notice-art">
+                <picture>
+                  <source media="(max-width: 767px)" srcset="./images/notice/founding_800.webp">
+                  <img class="notice-art-img" src="./images/notice/founding_1600.webp" width="1600" height="1026"
+                       alt="보딩패스 타임즈 깃발을 단 프로펠러 여객기가 구름 위를 나는 판화풍 그림" loading="lazy" decoding="async">
+                </picture>
+                <img class="notice-flag-mark" src="./images/notice/emblem_ink.svg" alt="" aria-hidden="true">
+              </div>
+              <div class="notice-copy">
+                <p class="notice-line notice-head"><span class="notice-star">★</span> THE BOARDING PASS TIMES <span class="notice-star">★</span></p>
+                <h3 class="notice-line notice-title" aria-label="경축 대창간">慶祝·大創刊!</h3>
+                <div class="notice-slogan"><span class="notice-line">직항 운임 전문 조간</span></div>
+                <div class="notice-body">
+                  <p><span class="notice-line">흩어진 하늘길 최저가를</span> <span class="notice-line">매일 아침 무료 제공!</span></p>
+                  <p x-show="currentStatus.total"><span class="notice-line" x-text="(currentStatus.total || '') + '개 도시, 그날 실제 조회한'"></span> <span class="notice-line">가격만 싣습니다</span></p>
+                </div>
+                <p class="notice-line notice-shout">이런 신문은 일찍이 없었다!</p>
+                <p class="notice-foot"><span class="notice-line">★ 광고주를 모집합니다 ★</span> <span class="notice-line">(문의: 보딩패스 타임즈 항공편집국)</span></p>
+              </div>
+            </div>
           </div>
-          <div x-ref="boardRows" class="fp-rows"></div>
-        </div>
+        </aside>
       </div>
     </div>
   </section>
@@ -816,218 +781,6 @@
     x-text="toastMsg"></div>
 
   <script>
-    // ======================================================================
-    // 스플릿플랩 전광판 엔진(P4). Alpine 밖에서 글자판 DOM을 직접 움직인다.
-    //  - 160칸 전체를 requestAnimationFrame 루프 하나로. 칸별 타이머 없음
-    //  - 한 번 넘김 = 윗장 0°→-90° 떨어짐, 이어서 아랫장 90°→0° 펴짐 (FLIP_MS)
-    //  - 숫자·영문·기호: 고정 순서(DRUM)를 따라 6~14번. 한글: 보드에 쓰인 음절로 6~10번 뒤 목표 글자
-    //  - 화면에 절반 이상 들어오면 재생(나갔다가 다시 들어와도 재생). 동작 줄이기 설정이면 바로 표시
-    // ======================================================================
-    class FlapBoard {
-      constructor(rowsEl, opts = {}) {
-        this.el = rowsEl;
-        this.widths = opts.widths || [4, 7, 3, 11, 10];
-        this.reduce = Boolean(opts.reduceMotion);
-        this.FLIP_MS = 66;
-        this.DRUM = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789₩,./-';
-        this.rows = [];        // [{el, tiles: [[tile...] per col]}]
-        this.targets = [];     // [{color, aria, cols: [str]}]
-        this.active = [];
-        this.visible = false;
-        this.pending = true;
-        this.plays = 0;
-        this.raf = 0;
-        this.stats = { plays: 0, lastMs: 0, playing: false };
-        window.__flapStats = this.stats;
-        window.__flapBoard = this;   // 화면 검사(check_site.py)용
-        this._tick = this._tick.bind(this);
-        this._observe();
-      }
-
-      _isHangul(ch) { return /[ᄀ-ᇿ㄰-㆏가-힯]/.test(ch); }
-
-      _makeTile(isPrice) {
-        const t = document.createElement('span');
-        t.className = 'fp-tile' + (isPrice ? ' is-price' : '');
-        t.innerHTML = '<span class="t"><i> </i></span><span class="b"><i> </i></span>'
-                    + '<span class="f t"><i> </i><s></s></span><span class="f b"><i> </i><s></s></span>';
-        const q = t.children;
-        return { el: t, top: q[0].firstChild, bot: q[1].firstChild, ft: q[2], fb: q[3],
-                 ftI: q[2].firstChild, fbI: q[3].firstChild, ftS: q[2].lastChild, fbS: q[3].lastChild, ch: ' ' };
-      }
-
-      _ensureRows(n) {
-        while (this.rows.length < n) {
-          const row = document.createElement('div');
-          row.className = 'fp-row';
-          row.setAttribute('role', 'row');
-          const tiles = this.widths.map((w, c) => {
-            const col = document.createElement('div');
-            col.className = 'fp-col fp-col-' + c;
-            col.setAttribute('aria-hidden', 'true');
-            const arr = [];
-            for (let i = 0; i < w; i++) { const t = this._makeTile(c === 4); col.appendChild(t.el); arr.push(t); }
-            row.appendChild(col);
-            return arr;
-          });
-          this.el.appendChild(row);
-          this.rows.push({ el: row, tiles });
-        }
-        while (this.rows.length > n) this.rows.pop().el.remove();
-      }
-
-      _set(tile, ch) {   // 움직임 없이 글자 확정
-        tile.ch = ch;
-        tile.top.firstChild.nodeValue = ch; tile.bot.firstChild.nodeValue = ch;
-        tile.ft.style.visibility = 'hidden'; tile.fb.style.visibility = 'hidden';
-      }
-
-      setRows(rows) {
-        this.targets = rows;
-        this._ensureRows(rows.length);
-        rows.forEach((r, ri) => {
-          const row = this.rows[ri];
-          row.el.style.setProperty('--rc', r.color || '#F4EFE6');
-          row.el.setAttribute('aria-label', r.aria || '');
-          row.tiles[0].forEach(t => { t.el.style.color = r.color || ''; });
-        });
-        if (this.reduce) { this._applyAll(); return; }
-        this.pending = true;
-        if (this.visible) this.play();
-      }
-
-      _applyAll() {
-        this._stop();
-        this.targets.forEach((r, ri) => r.cols.forEach((text, ci) => {
-          Array.from(text).forEach((ch, i) => { const t = this.rows[ri].tiles[ci][i]; if (t) this._set(t, ch); });
-        }));
-        this.pending = false;
-      }
-
-      _seq(from, to, h) {
-        // from → to 로 넘길 글자 목록(마지막 = to)
-        const D = this.DRUM, L = D.length;
-        const ti = D.indexOf(to);
-        if (ti >= 0 && !this._isHangul(to)) {
-          let ci = D.indexOf(from); if (ci < 0) ci = 0;
-          let n = (ti - ci + L) % L;
-          if (n === 0) n = 6 + (h % 5);
-          const k = Math.max(6, Math.min(14, n));
-          const out = [];
-          for (let j = k - 1; j >= 0; j--) out.push(D[(ti - j + L * 2) % L]);
-          return out;
-        }
-        const pool = this.pool.length ? this.pool : ['가', '나', '다'];
-        const k = 6 + (h % 5);
-        const out = [];
-        for (let j = 0; j < k - 1; j++) out.push(pool[(h * 7 + j * 13) % pool.length]);
-        out.push(to);
-        return out;
-      }
-
-      play() {
-        if (this.reduce) { this._applyAll(); return; }
-        this._stop();
-        this.plays++;
-        const syll = new Set();
-        this.targets.forEach(r => r.cols.forEach(text => Array.from(text).forEach(ch => { if (this._isHangul(ch)) syll.add(ch); })));
-        this.pool = [...syll];
-        const now = performance.now();
-        this.active = [];
-        this.targets.forEach((r, ri) => {
-          const total = r.cols.reduce((a, s) => a + s.length, 0);
-          let k = 0;
-          r.cols.forEach((text, ci) => {
-            Array.from(text).forEach((to, i) => {
-              const t = this.rows[ri].tiles[ci][i];
-              if (!t) return;
-              const h = (ri * 31 + k * 17 + this.plays * 7) % 97;
-              const delay = ri * 60 + Math.round((k / Math.max(1, total - 1)) * 120) + (h % 3) * 8;
-              k++;
-              t.seq = this._seq(t.ch, to, h);
-              t.from = t.ch;
-              t.start = now + delay;
-              t.k = -1;
-              this.active.push(t);
-            });
-          });
-        });
-        this.pending = false;
-        this.stats.playing = true;
-        this.stats.t0 = now;
-        this.raf = requestAnimationFrame(this._tick);
-      }
-
-      _beginFlip(t, from, to) {
-        // 글자는 텍스트 노드 값만 바꾼다(요소 교체 없음 → Tailwind CDN의 DOM 감시가 다시 훑지 않음)
-        t.top.firstChild.nodeValue = to;      // 윗반쪽: 다음 글자(떨어지는 윗장 뒤에서 드러남)
-        t.bot.firstChild.nodeValue = from;    // 아랫반쪽: 현재 글자(펴지는 아랫장이 덮음)
-        t.ftI.firstChild.nodeValue = from;
-        t.fbI.firstChild.nodeValue = to;
-        t.ft.style.transform = 'rotateX(0deg)';
-        t.ft.style.visibility = 'visible';
-        t.fb.style.visibility = 'hidden';
-      }
-
-      _tick(now) {
-        const D = this.FLIP_MS;
-        let alive = 0;
-        for (const t of this.active) {
-          if (!t.seq) continue;
-          const el = now - t.start;
-          if (el < 0) { alive++; continue; }
-          const idx = Math.floor(el / D);
-          if (idx >= t.seq.length) { this._set(t, t.seq[t.seq.length - 1]); t.seq = null; continue; }
-          alive++;
-          if (idx !== t.k) {
-            const from = idx === 0 ? t.from : t.seq[idx - 1];
-            this._beginFlip(t, from, t.seq[idx]);
-            t.k = idx;
-          }
-          const p = (el - idx * D) / D;
-          if (p < 0.5) {
-            t.ft.style.transform = `rotateX(${(-180 * p).toFixed(1)}deg)`;
-            t.ftS.style.opacity = (p * 1.2).toFixed(2);
-          } else {
-            if (t.ft.style.visibility !== 'hidden') { t.ft.style.visibility = 'hidden'; t.fb.style.visibility = 'visible'; }
-            t.fb.style.transform = `rotateX(${(90 - 180 * (p - 0.5)).toFixed(1)}deg)`;
-            t.fbS.style.opacity = ((1 - p) * 1.2).toFixed(2);
-          }
-        }
-        if (alive) { this.raf = requestAnimationFrame(this._tick); return; }
-        this.raf = 0;
-        this.active = [];
-        this.stats.playing = false;
-        this.stats.plays++;
-        this.stats.lastMs = Math.round(now - this.stats.t0);
-      }
-
-      _stop() {
-        if (this.raf) cancelAnimationFrame(this.raf);
-        this.raf = 0;
-        this.active.forEach(t => { if (t.seq) this._set(t, t.seq[t.seq.length - 1]); t.seq = null; });
-        this.active = [];
-        this.stats.playing = false;
-      }
-
-      _observe() {
-        if (!('IntersectionObserver' in window)) { this.visible = true; return; }
-        const io = new IntersectionObserver(entries => {
-          entries.forEach(e => {
-            const vh = window.innerHeight || 1;
-            const half = e.isIntersecting && (e.intersectionRatio >= 0.5 || e.intersectionRect.height >= vh * 0.5);
-            if (half && !this.visible) {
-              this.visible = true;
-              if (this.targets.length) this.play();
-            } else if (!e.isIntersecting && this.visible) {
-              this.visible = false;    // 화면 밖으로 나가면 다음에 다시 들어올 때 재생
-            }
-          });
-        }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1] });
-        io.observe(this.el);
-      }
-    }
-
     function flightBriefingNewsroom() {
       return {
         selectedDate: '',
@@ -1041,12 +794,11 @@
         statusByDate: {},
         sortBy: 'section_order',
 
-        // 1면(기사·전광판)과 스탬프: 발행호가 바뀔 때 refreshFrontPage()에서 다시 계산
-        frontPage: { top: null, sides: [], boardRows: [] },
+        // 1면 기사와 스탬프: 발행호가 바뀔 때 refreshFrontPage()에서 다시 계산
+        frontPage: { top: null, sides: [] },
         newRoutes: [],      // 신규 김포 노선(P5-5): 감지된 주의 그날 실제 조회값만
         favs: [],           // 관심 도시 코드(P5-3, localStorage 'bpt-favs')
         photos: {},         // 도시 사진 출처 {code: {title, page, license, artist, place}} (data/photos.json, 없으면 빈 값)
-        flap: null,         // FlapBoard 엔진(전광판 DOM은 Alpine 밖에서 직접 움직임)
         stampByCode: {},
         reduceMotion: false,
         historyStart: '',
@@ -1311,14 +1063,14 @@
           ['B', 'F', 'A', 'C', 'E']   // 토
         ],
         TYPE_META: {
-          A: { label: '최저가 경신', boardLabel: '최저경신', color: '#B8332A' },
-          C: { label: '주간 급락', boardLabel: '주간급락', color: '#7A2E8C' },
-          B: { label: '연차 아끼기', boardLabel: '연차절약', color: '#215E42' },
-          E: { label: '빠른 탈출', boardLabel: '빠른탈출', color: '#1E3A5F' },
-          F: { label: '제철 여행지', boardLabel: '제철여행', color: '#8A5A00' },
-          N: { label: '신규 취항', boardLabel: '신규취항', color: '#B45309' },
-          L: { label: '오늘의 최저가', boardLabel: '최저운임', color: '#B8332A' },
-          G: { label: '황금 스케줄', boardLabel: '황금시간', color: '#6B4E16' }
+          A: { label: '최저가 경신', color: '#B8332A' },
+          C: { label: '주간 급락', color: '#7A2E8C' },
+          B: { label: '연차 아끼기', color: '#215E42' },
+          E: { label: '빠른 탈출', color: '#1E3A5F' },
+          F: { label: '제철 여행지', color: '#8A5A00' },
+          N: { label: '신규 취항', color: '#B45309' },
+          L: { label: '오늘의 최저가', color: '#B8332A' },
+          G: { label: '황금 스케줄', color: '#6B4E16' }
         },
         HOLIDAY_NAME: { '기독탄신일': '성탄절', '신정': '새해 첫날', '신정연휴': '새해 첫날', 'Christmas Day': '성탄절', "New Year's Day": '새해 첫날' },
 
@@ -1326,7 +1078,6 @@
           const flights = this.currentEditionFlights;
           this.stampByCode = this.computeStamps(flights);
           this.frontPage = this.buildFrontPage(flights, this.selectedDate);
-          this.updateBoard(this.frontPage.boardRows);
         },
 
         weekdayOf(dateStr) {
@@ -1338,11 +1089,6 @@
         fmtDur(min) {
           const h = Math.floor(min / 60), m = min % 60;
           return (h ? h + '시간' : '') + (m ? (h ? ' ' : '') + m + '분' : '');
-        },
-
-        shortDate(iso) {
-          const [, m, d] = String(iso || '').split('-');
-          return m && d ? `${m}.${d}` : '';
         },
 
         originLabel(code) {
@@ -1507,7 +1253,7 @@
         },
 
         buildFrontPage(flights, dateStr) {
-          const empty = { top: null, sides: [], boardRows: [] };
+          const empty = { top: null, sides: [] };
           if (!Array.isArray(flights) || flights.length === 0) return empty;
           const deco = a => Object.assign(a, this.TYPE_META[a.type], {
             figures: [
@@ -1544,69 +1290,7 @@
             if (lo) sides.push(this.articleLowest(lo));
           }
 
-          // 전광판 5행: 최저가 · B · E · F · 황금 스케줄. 비는 칸은 다음 최저가로
-          const rows = [];
-          const seen = new Set();
-          const pushRow = (type, b) => { if (b && !seen.has(b.city)) { rows.push({ type, ...b }); seen.add(b.city); } };   // 한 도시는 한 행만
-          pushRow('L', this.articleLowest(byPrice[0]).board);
-          candN.forEach(c => { if (rows.length < 5) pushRow('N', c.board); });
-          order.forEach(t => { if (rows.length < 5 && cands[t] && cands[t][0]) pushRow(t, cands[t][0].board); });
-          const golden = byPrice.find(f => this.isGoldenSchedule(f));
-          if (golden && rows.length < 5) pushRow('G', { city: golden.city, origin: golden.origin, dest: golden.dest, dep: golden.depDate, ret: golden.retDate, nights: golden.nights, price: golden.price });
-          for (const f of byPrice) {
-            if (rows.length >= 5) break;
-            pushRow('L', { city: f.city, origin: f.origin, dest: f.dest, dep: f.depDate, ret: f.retDate, nights: f.nights, price: f.price });
-          }
-
-          return { top: deco(top), sides: sides.slice(0, 3).map(deco), boardRows: rows.slice(0, 5) };
-        },
-
-        // ------------------------------------------------------------------
-        // 전광판(P4): [유형 4 | 도시 7 | 도착 3 | 일정 11 (MM.DD-MM.DD) | 왕복 가격 10]
-        // 움직임은 FlapBoard 엔진. 화면에 절반 이상 들어오면 재생, 동작 줄이기면 바로 표시. 소리 없음.
-        // ------------------------------------------------------------------
-        BOARD_WIDTHS: [4, 7, 3, 11, 10],
-        BOARD_COLOR: { N: '#F9A8D4', L: '#FBBF24', B: '#6EE7B7', E: '#93C5FD', F: '#FCD34D', G: '#FDBA74', A: '#FCA5A5', C: '#D8B4FE', D: '#BEF264' },
-
-        boardTexts(r) {
-          const meta = this.TYPE_META[r.type] || this.TYPE_META.L;
-          let city = String(r.city || '');
-          if (city.length > 7) city = city.split(' ')[0].slice(0, 7);
-          const sched = `${this.shortDate(r.dep).replace('.', '/')}-${this.shortDate(r.ret).replace('.', '/')}`;   // 전광판만 MM/DD-MM/DD(요일 없이, 11칸)
-          const price = this.formatPrice(r.price);
-          const md = iso => { const [, m, d] = String(iso || '').split('-'); return m && d ? `${parseInt(m, 10)}월 ${parseInt(d, 10)}일` : ''; };
-          const W = this.BOARD_WIDTHS;
-          return {
-            type: r.type,
-            color: this.BOARD_COLOR[r.type] || '#F4EFE6',
-            aria: `${meta.label}: ${r.city}, 도착 ${r.dest || ''}, ${md(r.dep)} 출발 ${md(r.ret)} 귀국, 왕복 ${(Number(r.price) || 0).toLocaleString('ko-KR')}원`
-              + (r.origin === 'GMP' ? ', 김포 출발' : ''),
-            cols: [
-              meta.boardLabel.padEnd(W[0], ' ').slice(0, W[0]),
-              city.padEnd(W[1], ' ').slice(0, W[1]),
-              String(r.dest || '').padEnd(W[2], ' ').slice(0, W[2]),
-              sched.padEnd(W[3], ' ').slice(0, W[3]),
-              price.padStart(W[4], ' ').slice(-W[4])
-            ]
-          };
-        },
-
-        get boardLegend() {
-          const seen = new Set(), out = [];
-          (this.frontPage.boardRows || []).forEach(r => {
-            if (seen.has(r.type)) return;
-            seen.add(r.type);
-            out.push({ type: r.type, color: this.BOARD_COLOR[r.type] || '#F4EFE6', label: (this.TYPE_META[r.type] || this.TYPE_META.L).label });
-          });
-          return out;
-        },
-
-        updateBoard(rows) {
-          if (!this.flap) {
-            if (!this.$refs.boardRows || typeof FlapBoard === 'undefined') return;
-            this.flap = new FlapBoard(this.$refs.boardRows, { widths: this.BOARD_WIDTHS, reduceMotion: this.reduceMotion });
-          }
-          this.flap.setRows(rows.map(r => this.boardTexts(r)));
+          return { top: deco(top), sides: sides.slice(0, 3).map(deco) };
         },
 
         // 관심 도시(P5-3): 이 브라우저에만 저장. 저장이 막힌 환경에서도 화면은 동작
